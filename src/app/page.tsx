@@ -9,14 +9,14 @@ export default function Home() {
       <Alternativas />
       <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-8">
         <div className="text-center">
-          <Image
+        <Image
             className="mx-auto mb-8"
-            src="/next.svg"
-            alt="Next.js logo"
+          src="/next.svg"
+          alt="Next.js logo"
             width={200}
             height={42}
-            priority
-          />
+          priority
+        />
           <h1 className="text-4xl font-bold text-gray-900 mb-4">
             Bienvenido a tu página web
           </h1>
@@ -35,15 +35,15 @@ export default function Home() {
               <li className="flex items-center">
                 <span className="w-2 h-2 bg-blue-500 rounded-full mr-3"></span>
                 Agregar más páginas
-              </li>
+          </li>
               <li className="flex items-center">
                 <span className="w-2 h-2 bg-blue-500 rounded-full mr-3"></span>
                 Configurar el diseño
-              </li>
+          </li>
             </ul>
           </div>
         </div>
-      </div>
+    </div>
     </>
   );
 }
