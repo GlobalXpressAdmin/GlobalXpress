@@ -1,0 +1,54 @@
+.custom-swiper-button-prev, .custom-swiper-button-next {
+  position: absolute;
+  top: 50%;
+  z-index: 10;
+  width: 40px;
+  height: 40px;
+  background: #fff;
+  border: 3px solid #00E6F6;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transform: translateY(-50%);
+  transition: background 0.2s, border 0.2s;
+}
+.custom-swiper-button-prev {
+  left: -56px;
+}
+.custom-swiper-button-next {
+  right: -56px;
+}
+.custom-swiper-button-prev::after, .custom-swiper-button-next::after {
+  font-size: 24px;
+  color: #00E6F6;
+}
+.custom-swiper-button-prev::after {
+  content: '\2039'; /* flecha izquierda */
+}
+.custom-swiper-button-next::after {
+  content: '\203A'; /* flecha derecha */
+}
+.custom-swiper-pagination {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.custom-swiper-pagination .swiper-pagination-bullet {
+  width: 10px;
+  height: 10px;
+  background: #222;
+  opacity: 0.5;
+  border-radius: 50%;
+  transition: opacity 0.2s, background 0.2s;
+}
+.custom-swiper-pagination .swiper-pagination-bullet-active {
+  background: #00E6F6;
+  opacity: 1;
+} 
