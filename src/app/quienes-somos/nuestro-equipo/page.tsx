@@ -18,7 +18,7 @@ export default function NuestroEquipo() {
     directivos: [
       {
         nombre: "Carlos Mendoza",
-        cargo: "Director General",
+        cargo: "Director de Recursos Humanos",
         experiencia: "15+ años en inmigración",
         especialidad: "Visas EB-5 y E-2",
         imagen: "/carlosmendoza.png",
