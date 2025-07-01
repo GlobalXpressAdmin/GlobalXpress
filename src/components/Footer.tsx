@@ -51,11 +51,11 @@ export default function Footer() {
           {/* Columna 4: Contacto */}
           <div className="flex flex-col gap-3 items-start max-w-xl w-full ml-0 text-left md:col-span-2">
             <div className="mb-2 w-full">
-              <div className="flex items-start gap-2 mb-2 w-full">
+              <div className="flex items-start gap-2 mb-2 w-full pl-0 ml-0">
                 <MdEmail className="text-[#00E6F6] mt-1" size={20} />
-                <div className="flex flex-col">
+                <div className="flex flex-col items-start">
                   <span className="font-bold">Correo:</span>
-                  <span className="break-all leading-tight">atencion.cliente@globalexpressrecruiting.com</span>
+                  <span className="break-all leading-tight pl-0 ml-0">atencion.cliente@globalexpressrecruiting.com</span>
                 </div>
               </div>
               <div className="flex items-start gap-2 mb-2 w-full">
