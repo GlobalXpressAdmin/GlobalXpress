@@ -23,7 +23,7 @@ const programas = [
 
 const Navbar = () => {
   return (
-    <nav className="shadow-sm font-sans" style={{ background: '#1161A9', fontFamily: 'Inter, sans-serif' }}>
+    <nav className="shadow-sm font-sans fixed top-0 left-0 w-full z-50" style={{ background: '#1161A9', fontFamily: 'Inter, sans-serif' }}>
       <div className="max-w-screen-2xl mx-auto px-6 flex items-center h-16 min-h-0">
         {/* Logo */}
         <div className="flex items-center flex-shrink-0 mr-10">

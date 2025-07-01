@@ -47,24 +47,8 @@ export default function NuestroEquipo() {
         cargo: "Consultora Senior",
         experiencia: "10+ años en visas",
         especialidad: "EB-2 NIW y EB-3",
-        imagen: "/logotransparente.png",
+        imagen: "/anacastillo.png",
         descripcion: "Experta en visas de trabajo y programas de excelencia profesional."
-      },
-      {
-        nombre: "Luis Herrera",
-        cargo: "Consultor de Inversiones",
-        experiencia: "8+ años en finanzas",
-        especialidad: "Análisis de proyectos",
-        imagen: "/logotransparente.png",
-        descripcion: "Especialista en evaluación de proyectos de inversión y desarrollo económico."
-      },
-      {
-        nombre: "Valentina Vega",
-        cargo: "Consultora Académica",
-        experiencia: "6+ años en educación",
-        especialidad: "Global Academic",
-        imagen: "/logotransparente.png",
-        descripcion: "Experta en programas educativos y asesoría para estudiantes internacionales."
       }
     ],
     especialistas: [
@@ -73,7 +57,7 @@ export default function NuestroEquipo() {
         cargo: "Especialista en Aviación",
         experiencia: "12+ años en aviación",
         especialidad: "Sky Masters",
-        imagen: "/logotransparente.png",
+        imagen: "/diegomorales.png",
         descripcion: "Piloto comercial con amplia experiencia en programas de formación aeronáutica."
       },
       {
@@ -81,7 +65,7 @@ export default function NuestroEquipo() {
         cargo: "Especialista en Salud",
         experiencia: "9+ años en sector salud",
         especialidad: "Credenciales médicas",
-        imagen: "/logotransparente.png",
+        imagen: "/isabellasilva.png",
         descripcion: "Experta en homologación de credenciales médicas y visas para profesionales de la salud."
       },
       {
@@ -89,8 +73,96 @@ export default function NuestroEquipo() {
         cargo: "Especialista en Tecnología",
         experiencia: "7+ años en IT",
         especialidad: "Visas H-1B y EB-1",
-        imagen: "/logotransparente.png",
+        imagen: "/andrestorres.png",
         descripcion: "Especialista en visas para profesionales de tecnología y emprendedores."
+      },
+      {
+        nombre: "Valentina Castro",
+        cargo: "Especialista en Enfermería",
+        experiencia: "8+ años en enfermería",
+        especialidad: "Visas TN, homologación de credenciales y trámites ante USCIS",
+        imagen: "/valentinacastro.png",
+        descripcion: "Especialista en procesos migratorios para personal de enfermería, homologación de títulos y gestión ante USCIS y consulados."
+      },
+      {
+        nombre: "Miguel Ángel Santos",
+        cargo: "Especialista en Ingeniería",
+        experiencia: "11+ años en ingeniería",
+        especialidad: "Visas H-1B, EB-2 y entrevistas consulares",
+        imagen: "/miguelangelsantos.png",
+        descripcion: "Asesor en migración para ingenieros, con experiencia en procesos ante USCIS y entrevistas en embajadas."
+      },
+      {
+        nombre: "Daniela Ortiz",
+        cargo: "Especialista en Derecho Migratorio",
+        experiencia: "9+ años en derecho",
+        especialidad: "Asilo, refugio, ajuste de estatus y peticiones familiares",
+        imagen: "/danielaortiz.png",
+        descripcion: "Experta en casos de asilo, protección humanitaria y ajuste de estatus ante USCIS y dependencias migratorias."
+      },
+      {
+        nombre: "Alejandro Méndez",
+        cargo: "Especialista en Comercio e Inversión",
+        experiencia: "10+ años en comercio",
+        especialidad: "Visas E-1/E-2, EB-5 y trámites consulares",
+        imagen: "/alejandromendez.png",
+        descripcion: "Especialista en procesos migratorios para inversionistas y comerciantes, con experiencia en trámites ante consulados y USCIS."
+      },
+      {
+        nombre: "Laura Jiménez",
+        cargo: "Especialista en Educación Internacional",
+        experiencia: "12+ años en educación",
+        especialidad: "Visas F-1/J-1, homologación académica y entrevistas consulares",
+        imagen: "/laurajimenez.png",
+        descripcion: "Asesora en migración para estudiantes y académicos, con experiencia en validación de títulos y procesos ante embajadas."
+      },
+      {
+        nombre: "Roberto Sánchez",
+        cargo: "Especialista en Inmigración Familiar",
+        experiencia: "14+ años en derecho familiar",
+        especialidad: "Reunificación familiar, I-130 y ajuste de estatus ante USCIS",
+        imagen: "/robertosanchez.png",
+        descripcion: "Especialista en peticiones familiares, ajuste de estatus y trámites ante USCIS y consulados."
+      },
+      {
+        nombre: "Gabriela Rojas",
+        cargo: "Especialista en Emprendimiento y Empresas",
+        experiencia: "8+ años en startups",
+        especialidad: "Visas EB-1C, L-1A, creación de empresas y trámites migratorios",
+        imagen: "/gabrielarojas .png",
+        descripcion: "Experta en migración para emprendedores y ejecutivos, con experiencia en procesos ante USCIS y embajadas."
+      },
+      {
+        nombre: "Fernando Cabrera",
+        cargo: "Especialista en Trámites Migratorios",
+        experiencia: "12+ años en trámites migratorios",
+        especialidad: "Gestión de expedientes, USCIS y consulados",
+        imagen: "/fernandocabrera.png",
+        descripcion: "Especialista en gestión integral de trámites migratorios, con amplia experiencia en procesos ante USCIS, embajadas y consulados."
+      },
+      {
+        nombre: "Javier Ruiz",
+        cargo: "Especialista en Ciencia e Investigación",
+        experiencia: "10+ años en investigación",
+        especialidad: "Visas EB-1A/EB-2 NIW, validación de logros y procesos migratorios",
+        imagen: "/javierruiz.png",
+        descripcion: "Asesor en migración para científicos, con experiencia en validación de méritos y trámites ante USCIS."
+      },
+      {
+        nombre: "Sarah Vega",
+        cargo: "Especialista en Programas Educativos",
+        experiencia: "11+ años en educación",
+        especialidad: "Visas F-1/J-1, programas de intercambio y trámites consulares",
+        imagen: "/sarahvega.png",
+        descripcion: "Especialista en programas educativos, intercambios y procesos ante embajadas y consulados."
+      },
+      {
+        nombre: "Luis Herrera",
+        cargo: "Especialista en Finanzas e Inversión",
+        experiencia: "13+ años en finanzas",
+        especialidad: "Visas EB-5, asesoría en inversión y procesos ante USCIS",
+        imagen: "/luisherrera.png",
+        descripcion: "Asesor en inversiones migratorias, con experiencia en trámites ante USCIS y dependencias migratorias."
       }
     ]
   };
@@ -128,14 +200,22 @@ export default function NuestroEquipo() {
         onMouseLeave={() => setHover(false)}
       >
         <div className="h-64 bg-gradient-to-br from-[#0D4A7A] to-[#1161A9] flex items-center justify-center">
-          <Image
-            src={miembro.imagen}
-            alt={miembro.nombre}
-            width={160}
-            height={160}
-            className="rounded-xl border-4 border-white object-cover"
-            style={{ boxShadow: '0 4px 24px 0 rgba(0,0,0,0.10)' }}
-          />
+          <div style={{width: 160, height: 200, display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+            <Image
+              src={miembro.imagen}
+              alt={miembro.nombre}
+              width={160}
+              height={200}
+              className="rounded-xl border-4 border-white object-cover"
+              style={{ 
+                boxShadow: '0 4px 24px 0 rgba(0,0,0,0.10)', 
+                objectFit: 'cover', 
+                width: '100%', 
+                height: '100%', 
+                objectPosition: getImagePosition(miembro.nombre)
+              }}
+            />
+          </div>
         </div>
         <div className="p-6">
           <h3 className="text-xl font-bold text-[#0D4A7A] mb-1">{miembro.nombre}</h3>
@@ -157,6 +237,33 @@ export default function NuestroEquipo() {
       </div>
     );
   }
+
+  // Elimino el estado y las pestañas, y muestro todas las tarjetas juntas
+  const todosLosMiembros = [
+    ...equipo.directivos,
+    ...equipo.consultores,
+    ...equipo.especialistas
+  ];
+
+  // Función para obtener la posición de la imagen según el nombre
+  const getImagePosition = (nombre: string) => {
+    const positions = {
+      'Isabella Silva': 'center top',
+      'Andrés Torres': 'center top',
+      'Fernando Cabrera': 'center top',
+      'Valentina Castro': 'center top',
+      'Miguel Ángel Santos': 'center top',
+      'Daniela Ortiz': 'center top',
+      'Alejandro Méndez': 'center top',
+      'Laura Jiménez': 'center top',
+      'Roberto Sánchez': 'center top',
+      'Gabriela Rojas': 'center top',
+      'Javier Ruiz': 'center top',
+      'Luis Herrera': 'center top',
+      'Sarah Vega': 'center top'
+    };
+    return positions[nombre as keyof typeof positions] || 'center 30%';
+  };
 
   return (
     <div className="min-h-screen bg-white">
@@ -186,33 +293,9 @@ export default function NuestroEquipo() {
             Conoce a Nuestro <span className="text-[#00E6F6]">Equipo</span>
           </h2>
           
-          {/* Tabs */}
-          <div className="flex justify-center mb-12">
-            <div className="flex space-x-1 bg-gray-100 p-1 rounded-lg">
-              {[
-                { id: 'directivos', label: 'Directivos', icon: UserGroupIcon },
-                { id: 'consultores', label: 'Consultores', icon: AcademicCapIcon },
-                { id: 'especialistas', label: 'Especialistas', icon: GlobeAltIcon }
-              ].map((tab) => (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center space-x-2 px-6 py-3 rounded-md transition-all ${
-                    activeTab === tab.id
-                      ? 'bg-[#0D4A7A] text-white shadow-lg'
-                      : 'text-gray-600 hover:text-[#0D4A7A] hover:bg-gray-200'
-                  }`}
-                >
-                  <tab.icon className="w-5 h-5" />
-                  <span className="font-medium">{tab.label}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-
           {/* Miembros del equipo */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 items-start">
-            {equipo[activeTab as keyof typeof equipo].map((miembro, index) => (
+            {todosLosMiembros.map((miembro, index) => (
               <TarjetaMiembro key={index} miembro={miembro} />
             ))}
           </div>
