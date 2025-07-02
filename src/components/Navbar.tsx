@@ -89,6 +89,13 @@ const Navbar = () => {
           >
             Contacto
           </Link>
+          {/* Pagos */}
+          <Link
+            href="/pagos"
+            className="px-4 py-2 text-white hover:text-[#00E6F6] text-base font-normal border-b-2 border-transparent transition-all"
+          >
+            Pagos
+          </Link>
         </div>
         {/* Botón Ingreso cliente y selector de idioma */}
         <div className="flex items-center space-x-4 ml-10">
