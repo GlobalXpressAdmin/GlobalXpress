@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import FamiliasMigrantesSection from '../../../components/FamiliasMigrantesSection';
 import FormacionSliderSection from '../../../components/FormacionSliderSection';
 import IconoCard from '../../../components/IconoCard';
+import { FaPhone } from 'react-icons/fa';
 
 export default function VisaEB5() {
   const [form, setForm] = useState({
@@ -145,14 +146,18 @@ export default function VisaEB5() {
               value={form.email}
               onChange={handleChange}
             />
-            <input
-              type="tel"
-              name="telefono"
-              placeholder="🇨🇴 +57 Teléfono"
-              className="p-3 rounded-lg bg-white border-none outline-none text-black"
-              value={form.telefono}
-              onChange={handleChange}
-            />
+            <div className="flex items-center bg-white rounded p-3 gap-2">
+              <FaPhone className="text-gray-400 mr-2" />
+              <span className="text-gray-700 font-semibold mr-2">+57</span>
+              <input
+                type="tel"
+                name="telefono"
+                placeholder="Teléfono"
+                className="flex-1 bg-transparent outline-none text-black"
+                value={form.telefono}
+                onChange={handleChange}
+              />
+            </div>
             <div className="flex items-center gap-4">
               <span className="text-black bg-[#f5f5f5] px-3 py-2 rounded-lg">¿Dispone de visa?</span>
               <button

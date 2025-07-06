@@ -1,4 +1,5 @@
 import React from 'react';
+import Link from 'next/link';
 
 export default function Footer() {
   return (
@@ -6,15 +7,15 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-5 gap-8 text-sm items-start">
         {/* Columna 1: Logo principal y Quienes Somos */}
         <div className="flex flex-col items-center md:items-start">
-          <img src="/logoglobal.png" alt="Global Express Recruiting" className="h-16 md:h-20 mb-4" />
+          <img src="/logotransparente.png" alt="Global Express Recruiting" className="h-16 md:h-20 mb-4" />
           <h3 className="font-semibold mb-2">Quiénes Somos</h3>
           <ul className="space-y-1">
-            <li>Sobre nosotros</li>
-            <li>Nuestro equipo</li>
-            <li>Zona empleados</li>
-            <li>Nuestras Sedes</li>
-            <li>Trabaja con nosotros</li>
-            <li>Términos y condiciones</li>
+            <li><Link href="/quienes-somos/sobre-nosotros" className="hover:underline">Sobre nosotros</Link></li>
+            <li><Link href="/quienes-somos/nuestro-equipo" className="hover:underline">Nuestro equipo</Link></li>
+            <li><Link href="/zona-empleados" className="hover:underline">Zona empleados</Link></li>
+            <li><Link href="/quienes-somos/sedes" className="hover:underline">Nuestras Sedes</Link></li>
+            <li><Link href="/quienes-somos/trabaje" className="hover:underline">Trabaja con nosotros</Link></li>
+            <li><Link href="/terminos-condiciones" className="hover:underline">Términos y condiciones</Link></li>
           </ul>
         </div>
 
@@ -23,12 +24,12 @@ export default function Footer() {
           <img src="/us-department-of-state.png" alt="Departamento de Estado" className="h-12 md:h-16 object-contain mb-2" />
           <h3 className="font-semibold mb-2">Programas y Visas</h3>
           <ul className="space-y-1">
-            <li>Visa E-2</li>
-            <li>Visa EB-2 NIW</li>
-            <li>Visa EB-5</li>
-            <li>Sky Masters</li>
-            <li>Global Academic</li>
-            <li>Visa EB-3</li>
+            <li><Link href="/programas/visa-e2" className="hover:underline">Visa E-2</Link></li>
+            <li><Link href="/programas/visa-eb2-niw" className="hover:underline">Visa EB-2 NIW</Link></li>
+            <li><Link href="/programas/visa-eb5" className="hover:underline">Visa EB-5</Link></li>
+            <li><Link href="/programas/sky-masters" className="hover:underline">Sky Masters</Link></li>
+            <li><Link href="/programas/global-academic" className="hover:underline">Global Academic</Link></li>
+            <li><Link href="/programas/visa-eb3" className="hover:underline">Visa EB-3</Link></li>
           </ul>
         </div>
 

@@ -5,6 +5,7 @@ import AeronauticSection from '@/components/AeronauticSection';
 import AcompanamientoContinuo from '@/components/AcompanamientoContinuo';
 import FamiliasMigrantesSection from '../../../components/FamiliasMigrantesSection';
 import FormacionSliderSection from '../../../components/FormacionSliderSection';
+import { FaPhone } from 'react-icons/fa';
 
 export default function SkyMasters() {
   return (
@@ -152,10 +153,10 @@ function FormValidacionSkyMasters() {
         value={form.email}
         onChange={handleChange}
       />
-      {/* Teléfono con bandera */}
+      {/* Teléfono con ícono */}
       <div className="flex items-center bg-white rounded p-3 gap-2">
-        <img src="https://flagcdn.com/co.svg" alt="Colombia" className="w-7 h-5" />
-        <span className="text-gray-700 font-semibold">+57</span>
+        <FaPhone className="text-gray-400 mr-2" />
+        <span className="text-gray-700 font-semibold mr-2">+57</span>
         <input
           type="tel"
           name="telefono"

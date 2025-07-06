@@ -1,5 +1,6 @@
 'use client';
 import React, { useState, ChangeEvent, FormEvent } from 'react';
+import { FaPhone } from 'react-icons/fa';
 
 export default function FormF1Section() {
   const [form, setForm] = useState({
@@ -84,10 +85,8 @@ export default function FormF1Section() {
           />
           {/* Teléfono con selector visual */}
           <div className="flex items-center bg-white rounded-lg px-4 py-3">
-            <span className="mr-2 flex items-center gap-1">
-              <img src="https://flagcdn.com/co.svg" alt="Colombia" className="w-6 h-4 rounded-sm" />
-              <span className="text-[#222] font-semibold">+57</span>
-            </span>
+            <FaPhone className="text-gray-400 mr-2" />
+            <span className="text-[#222] font-semibold mr-2">+57</span>
             <input
               type="tel"
               name="telefono"

@@ -2,6 +2,7 @@
 import React from 'react';
 import AcompanamientoContinuo from '@/components/AcompanamientoContinuo';
 import FamiliasMigrantesSection from '@/components/FamiliasMigrantesSection';
+import { FaPhone } from 'react-icons/fa';
 
 export default function VisaEB2NIW() {
   return (
@@ -60,8 +61,8 @@ export default function VisaEB2NIW() {
           </div>
           <input type="email" placeholder="Correo electrónico" className="p-4 rounded-xl bg-white border-none outline-none text-black text-lg" />
           <div className="flex items-center gap-2 bg-white rounded-xl p-2">
-            <span className="text-2xl">🇨🇴</span>
-            <span className="text-lg font-semibold text-gray-700">+57</span>
+            <FaPhone className="text-gray-400 mr-2" />
+            <span className="text-lg font-semibold text-gray-700 mr-2">+57</span>
             <input type="tel" placeholder="Teléfono" className="flex-1 p-2 rounded-xl bg-white border-none outline-none text-black text-lg" />
           </div>
           <div className="flex items-center gap-4">

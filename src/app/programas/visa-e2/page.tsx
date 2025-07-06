@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import FamiliasMigrantesSection from '../../../components/FamiliasMigrantesSection';
 import FormacionSliderSection from '../../../components/FormacionSliderSection';
 import IconoCard from '../../../components/IconoCard';
+import { FaPhone } from 'react-icons/fa';
 
 export default function VisaE2() {
   const [form, setForm] = useState({
@@ -143,8 +144,8 @@ export default function VisaE2() {
             onChange={handleChange}
           />
           <div className="flex items-center gap-2 bg-white p-3 rounded">
-            <img src="/icons/co.svg" alt="Bandera Colombia" className="w-6 h-4" />
-            <span className="text-gray-600">+57</span>
+            <FaPhone className="text-gray-400 mr-2" />
+            <span className="text-gray-700 font-semibold mr-2">+57</span>
             <input
               type="tel"
               name="telefono"

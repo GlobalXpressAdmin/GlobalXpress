@@ -7,7 +7,6 @@ import { ChevronDownIcon, UserIcon } from '@heroicons/react/24/solid';
 const quienesSomos = [
   { name: 'Sobre nosotros', href: '/quienes-somos/sobre-nosotros' },
   { name: 'Nuestro equipo', href: '/quienes-somos/nuestro-equipo' },
-  { name: 'Zona colaboradores', href: '/quienes-somos/zona-colaboradores' },
   { name: 'Nuestras Sedes', href: '/quienes-somos/sedes' },
   { name: 'Trabaje con nosotros', href: '/quienes-somos/trabaje' },
 ];

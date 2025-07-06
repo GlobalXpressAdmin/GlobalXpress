@@ -28,9 +28,6 @@ export default function Hero() {
         <p className="text-white text-lg mb-8">
           Seguridad, estabilidad y respaldo legal<br />para su nuevo comienzo.
         </p>
-        <button className="bg-white text-[#1161A9] font-semibold px-6 py-2 rounded-lg shadow hover:bg-gray-100 transition-colors w-fit">
-          Aplicar Ahora
-        </button>
       </div>
     </section>
   );
