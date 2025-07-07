@@ -46,11 +46,11 @@ export default function VisaE2() {
 
         {/* Contenido a la derecha */}
         <div className="md:w-1/2 w-full flex flex-col justify-center p-8">
-          <h2 className="text-3xl md:text-4xl font-bold text-blue-900 mb-4 leading-tight">
+          <h2 className="text-3xl md:text-4xl font-bold text-blue-900 mb-4 -mt-10 leading-tight">
             Programa de Inversión – <span className="text-[#0070b8]">Visa E-2</span>
           </h2>
 
-          <p className="text-gray-800 font-semibold mb-4">
+          <p className="text-gray-800 font-semibold mb-4 mt-6">
             Invierta, gestione y viva legalmente en Estados Unidos.
           </p>
 

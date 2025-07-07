@@ -9,7 +9,7 @@ import { FaPhone } from 'react-icons/fa';
 
 export default function SkyMasters() {
   return (
-    <main>
+    <main className="pt-10">
       {/* Hero dividido en dos columnas, imagen a la izquierda */}
       <section className="w-full flex flex-col md:flex-row bg-white min-h-[320px] md:min-h-[480px]">
         {/* Imagen izquierda */}

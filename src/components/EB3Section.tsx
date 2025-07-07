@@ -29,8 +29,8 @@ export default function EB3Section() {
           />
         </div>
         {/* Contenido a la derecha */}
-        <div className="md:w-1/2 w-full flex flex-col justify-center p-8 md:p-12">
-          <h2 className="text-3xl md:text-4xl font-bold text-[#003b5c] mb-4 leading-tight">
+        <div className="md:w-1/2 w-full flex flex-col justify-center p-8 md:p-12 pt-20">
+          <h2 className="text-3xl md:text-4xl font-bold text-[#003b5c] mb-4 leading-tight mt-[0.5cm]">
             Obtenga la residencia permanente en <br />
             <span className="text-[#003b5c]">EE. UU. con patrocinio laboral aprobado</span>
           </h2>
@@ -44,7 +44,7 @@ export default function EB3Section() {
             Postúlese ahora
           </button>
           {/* Línea y bloque derecho */}
-          <div className="mt-8 border-t-4 border-cyan-400 pt-4 text-right">
+          <div className="mt-2 border-t-4 border-cyan-400 pt-4 text-right">
             <p className="text-gray-800">
               y acceda a <span className="font-bold">una oportunidad laboral</span>
             </p>

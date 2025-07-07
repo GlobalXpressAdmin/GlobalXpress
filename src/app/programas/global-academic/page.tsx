@@ -22,7 +22,7 @@ export default function GlobalAcademic() {
         </div>
         {/* Contenido a la derecha, más ancho */}
         <div className="w-full lg:w-[60%] flex flex-col justify-center px-8 py-12 lg:py-0 lg:pl-16 lg:pr-24 bg-white">
-          <h1 className="text-4xl md:text-6xl font-extrabold text-[#005c82] mb-2" style={{fontFamily: 'Montserrat, Arial, sans-serif'}}>
+          <h1 className="text-4xl md:text-6xl font-extrabold text-[#005c82] mb-2 mt-[1.8cm]" style={{fontFamily: 'Montserrat, Arial, sans-serif'}}>
             Programa F-1 - Global Academic
           </h1>
           <h2 className="text-xl md:text-2xl font-bold text-black mb-4" style={{fontFamily: 'Montserrat, Arial, sans-serif'}}>

@@ -34,7 +34,7 @@ export default function VisaEB5() {
 
   return (
     <>
-      <main>
+      <main className="pt-16">
         <section className="w-full flex flex-col md:flex-row bg-white">
           {/* Imagen a la izquierda */}
           <div className="md:w-1/2 w-full">
@@ -47,7 +47,7 @@ export default function VisaEB5() {
 
           {/* Texto a la derecha */}
           <div className="md:w-1/2 w-full flex flex-col justify-center p-8">
-            <h2 className="text-3xl md:text-4xl font-bold text-blue-900 mb-4 leading-tight">
+            <h2 className="text-3xl md:text-4xl font-bold text-blue-900 mb-2 -mt-4 leading-tight">
               Programa de Inversión – <span className="text-[#005ca9]">Visa EB-5</span>
             </h2>
 
