@@ -1,0 +1,33 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model usuarios_global {
+  id               String    @id @default(uuid()) @db.Uuid
+  creado_en        DateTime? @default(now()) @db.Timestamptz(6)
+  actualizado_en   DateTime? @default(now()) @db.Timestamptz(6)
+  nombre           String?
+  email            String    @unique
+  password         String?
+  image            String?
+  telefono         String?
+  genero           String?
+  fecha_nacimiento DateTime? @db.Date
+  nacionalidad     String?
+  passwordResets   PasswordReset[]
+}
+
+model PasswordReset {
+  id         String   @id @default(uuid()) @db.Uuid
+  userId     String   @db.Uuid
+  user       usuarios_global @relation(fields: [userId], references: [id])
+  token      String   @unique
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+}

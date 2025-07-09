@@ -1,0 +1,12 @@
+{
+  "Navbar": {
+    "quienesSomos": "About us",
+    "programas": "Programs",
+    "contacto": "Contact",
+    "ingresoCliente": "Client Login",
+    "quienesSomosMenu": {
+      "sobreNosotros": "About us",
+      "nuestroEquipo": "Our team"
+    }
+  }
+} 

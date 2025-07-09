@@ -7,8 +7,6 @@ import { ChevronDownIcon, UserIcon } from '@heroicons/react/24/solid';
 const quienesSomos = [
   { name: 'Sobre nosotros', href: '/quienes-somos/sobre-nosotros' },
   { name: 'Nuestro equipo', href: '/quienes-somos/nuestro-equipo' },
-  { name: 'Nuestras Sedes', href: '/quienes-somos/sedes' },
-  { name: 'Trabaje con nosotros', href: '/quienes-somos/trabaje' },
 ];
 
 const programas = [
@@ -87,13 +85,6 @@ const Navbar = () => {
             className="px-4 py-2 text-white hover:text-[#00E6F6] text-base font-normal border-b-2 border-transparent transition-all"
           >
             Contacto
-          </Link>
-          {/* Pagos */}
-          <Link
-            href="/pagos"
-            className="px-4 py-2 text-white hover:text-[#00E6F6] text-base font-normal border-b-2 border-transparent transition-all"
-          >
-            Pagos
           </Link>
         </div>
         {/* Botón Ingreso cliente y selector de idioma */}

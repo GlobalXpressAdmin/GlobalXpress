@@ -13,8 +13,6 @@ export default function Footer() {
             <li><Link href="/quienes-somos/sobre-nosotros" className="hover:underline">Sobre nosotros</Link></li>
             <li><Link href="/quienes-somos/nuestro-equipo" className="hover:underline">Nuestro equipo</Link></li>
             <li><Link href="/zona-empleados" className="hover:underline">Zona empleados</Link></li>
-            <li><Link href="/quienes-somos/sedes" className="hover:underline">Nuestras Sedes</Link></li>
-            <li><Link href="/quienes-somos/trabaje" className="hover:underline">Trabaja con nosotros</Link></li>
             <li><Link href="/terminos-condiciones" className="hover:underline">Términos y condiciones</Link></li>
           </ul>
         </div>
