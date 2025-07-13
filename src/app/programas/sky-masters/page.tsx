@@ -6,6 +6,8 @@ import AcompanamientoContinuo from '@/components/AcompanamientoContinuo';
 import FamiliasMigrantesSection from '../../../components/FamiliasMigrantesSection';
 import FormacionSliderSection from '../../../components/FormacionSliderSection';
 import { FaPhone } from 'react-icons/fa';
+import PhoneInputPro from '../../../components/PhoneInputPro';
+import LegalModal from '@/components/LegalModal';
 
 export default function SkyMasters() {
   return (
@@ -31,7 +33,18 @@ export default function SkyMasters() {
             Conectamos a pilotos formados en el extranjero con aerolíneas estadounidenses.<br/>
             Gestionamos procesos de elegibilidad migratoria y certificación para facilitar su transición laboral bajo visa de trabajo.
           </p>
-          <button className="bg-blue-900 text-white font-semibold px-6 py-2 rounded hover:bg-blue-800 transition w-fit mb-4">Postúlese ahora</button>
+          <button
+            className="bg-blue-900 text-white font-semibold px-6 py-2 rounded hover:bg-blue-800 transition w-fit mb-4"
+            onClick={() => {
+              const formSection = document.getElementById('formulario-sky-masters');
+              if (formSection) {
+                const y = formSection.getBoundingClientRect().top + window.pageYOffset - 100;
+                window.scrollTo({ top: y, behavior: 'smooth' });
+              }
+            }}
+          >
+            Postúlese ahora
+          </button>
           <div className="mt-4 border-t-4 border-cyan-400 pt-2 text-right">
             <p className="text-gray-800 text-sm md:text-base">
               Solicite una <span className="font-bold">evaluación profesional.</span>
@@ -47,7 +60,7 @@ export default function SkyMasters() {
       {/* Sección Aeronáutica (carrusel) */}
       <AeronauticSection />
       {/* Sección de validación profesional */}
-      <section className="w-full bg-[#e9eaeb] py-12 px-2 md:px-0">
+      <section id="formulario-sky-masters" className="w-full bg-[#e9eaeb] py-12 px-2 md:px-0">
         <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
           {/* Lado izquierdo: título y descripción */}
           <div className="flex flex-col justify-center items-start px-4 md:px-0">
@@ -96,6 +109,9 @@ function FormValidacionSkyMasters() {
   });
   const [enviado, setEnviado] = useState(false);
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+  const [intentoEnvio, setIntentoEnvio] = useState(false);
+  const [showLegal, setShowLegal] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value, type } = e.target;
@@ -110,15 +126,32 @@ function FormValidacionSkyMasters() {
     setForm(prev => ({ ...prev, visa: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError('');
-    if (!form.nombre || !form.apellido || !form.email || !form.telefono || !form.visa || !form.mensaje || !form.terminos) {
+    setSuccess('');
+    setIntentoEnvio(true);
+    if (!form.nombre || !form.apellido || !form.email || !form.telefono || !form.visa || !form.terminos) {
       setError('Por favor complete todos los campos y acepte los términos.');
       return;
     }
-    setEnviado(true);
-    // Aquí puedes enviar los datos a tu API o servicio
+    try {
+      const res = await fetch('/api/formularios-programa', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...form, programa: 'SKY_MASTERS' }),
+      });
+      const data = await res.json();
+      if (data.ok) {
+        setSuccess('¡Formulario enviado correctamente!');
+        setForm({ nombre: '', apellido: '', email: '', telefono: '', visa: '', mensaje: '', terminos: false });
+        setIntentoEnvio(false);
+      } else {
+        setError(data.error || 'Error al enviar el formulario.');
+      }
+    } catch (err) {
+      setError('Error de conexión.');
+    }
   };
 
   if (enviado) {
@@ -155,15 +188,14 @@ function FormValidacionSkyMasters() {
       />
       {/* Teléfono con ícono */}
       <div className="flex items-center bg-white rounded p-3 gap-2">
-        <FaPhone className="text-gray-400 mr-2" />
-        <span className="text-gray-700 font-semibold mr-2">+57</span>
-        <input
-          type="tel"
-          name="telefono"
-          placeholder="Teléfono"
-          className="flex-1 bg-transparent outline-none text-black"
+        <PhoneInputPro
           value={form.telefono}
-          onChange={handleChange}
+          onChange={telefono => setForm(prev => ({ ...prev, telefono }))}
+          required
+          bgClass="!bg-[#ededed]"
+          labelClass="block text-gray-500 text-sm mb-1 ml-1 font-semibold"
+          helpTextClass="block text-xs text-gray-400 mt-2 ml-1"
+          showAsterisk={false}
         />
       </div>
       {/* ¿Dispone de visa? */}
@@ -192,28 +224,33 @@ function FormValidacionSkyMasters() {
         onChange={handleChange}
       />
       <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-4">
-        <a href="#" className="text-[#005c82] font-bold underline">Términos y Condiciones</a>
+        <a href="#" className="text-[#005c82] font-bold underline" onClick={e => { e.preventDefault(); setShowLegal(true); }}>Términos y Condiciones</a>
         <div className="flex items-center gap-2">
           <input
             type="checkbox"
             name="terminos"
             id="terminos"
-            className="w-6 h-6 rounded-full border-2 border-black"
+            className={`w-6 h-6 rounded-full border-2 ${intentoEnvio && !form.terminos ? 'border-red-500' : 'border-black'}`}
             checked={form.terminos}
             onChange={handleChange}
           />
           <label htmlFor="terminos" className="text-black text-sm">
             Confirmo que he leído y acepto los términos del proceso Programa Sky Masters– Pilotos Internacionales
           </label>
+          {intentoEnvio && !form.terminos && (
+            <span className="text-red-600 text-xs font-bold ml-2">* Obligatorio para enviar</span>
+          )}
         </div>
       </div>
       {error && <div className="text-red-600 text-sm font-semibold">{error}</div>}
+      {success && <div className="text-green-600 text-sm font-semibold">{success}</div>}
       <button
         type="submit"
         className="bg-[#005c82] text-white font-bold py-3 rounded-full mt-2 text-lg hover:bg-[#003d56] transition-all"
       >
         Enviar formulario
       </button>
+      <LegalModal open={showLegal} onClose={() => setShowLegal(false)} />
     </form>
   );
 } 

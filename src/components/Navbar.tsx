@@ -3,6 +3,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Menu } from '@headlessui/react';
 import { ChevronDownIcon, UserIcon } from '@heroicons/react/24/solid';
+import { useSession, signOut } from 'next-auth/react';
+import { useEffect, useState } from 'react';
 
 const quienesSomos = [
   { name: 'Sobre nosotros', href: '/quienes-somos/sobre-nosotros' },
@@ -19,6 +21,56 @@ const programas = [
 ];
 
 const Navbar = () => {
+  const { data: session, status } = useSession();
+  const [nombre, setNombre] = useState<string | null>(null);
+  const [email, setEmail] = useState<string | null>(null);
+  const [image, setImage] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [refreshImage, setRefreshImage] = useState(0);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      (window as any).refreshNavbarProfile = () => setRefreshImage(r => r + 1);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (session?.user?.email) {
+      setEmail(session.user.email);
+      const fetchPerfil = async () => {
+        const userEmail = session.user?.email;
+        console.log('[Navbar] Fetching perfil para email:', userEmail);
+        try {
+          const res = await fetch('/api/usuario/perfil', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: userEmail })
+          });
+          const data = await res.json();
+          console.log('[Navbar] Respuesta de perfil:', data);
+          if (data.ok && data.usuario) {
+            setNombre(data.usuario.nombre || null);
+            setImage(data.usuario.image || null);
+          } else {
+            setNombre(null);
+            setImage(null);
+          }
+        } catch (err) {
+          setNombre(null);
+          setImage(null);
+        } finally {
+          setLoading(false);
+        }
+      };
+      fetchPerfil();
+    } else {
+      setLoading(false);
+    }
+  }, [session, refreshImage]);
+
+  // Log final antes del render
+  console.log('Navbar - perfil final antes del render:', { nombre, image, email, loading });
+
   return (
     <nav className="shadow-sm font-sans fixed top-0 left-0 w-full z-50" style={{ background: '#1161A9', fontFamily: 'Inter, sans-serif' }}>
       <div className="max-w-screen-2xl mx-auto px-6 flex items-center h-16 min-h-0">
@@ -87,15 +139,68 @@ const Navbar = () => {
             Contacto
           </Link>
         </div>
-        {/* Botón Ingreso cliente y selector de idioma */}
+        {/* Usuario autenticado o botón de ingreso */}
         <div className="flex items-center space-x-4 ml-10">
-          <Link
-            href="/ingreso-cliente"
-            className="flex items-center gap-2 border border-[#00E6F6] text-[#00E6F6] px-5 py-2 rounded-full text-base font-semibold bg-transparent hover:bg-[#00E6F6]/10 transition-colors"
-          >
-            <UserIcon className="h-5 w-5" />
-            Ingreso cliente
-          </Link>
+          {status === 'authenticated' && !loading ? (
+            <Menu as="div" className="relative inline-block text-left">
+              <Menu.Button className="flex items-center gap-2 px-4 py-2 bg-white rounded-full shadow hover:shadow-lg transition-all border border-blue-100">
+                {image ? (
+                  <Image src={image} alt="Avatar" width={40} height={40} className="rounded-full object-cover h-10 w-10" />
+                ) : (
+                  <div className="h-10 w-10 rounded-full bg-blue-600 flex items-center justify-center text-lg font-bold text-white">
+                    {nombre ? nombre.charAt(0).toUpperCase() : 'U'}
+                  </div>
+                )}
+                <div className="flex flex-col items-start">
+                  <span className="font-semibold text-gray-900 text-base leading-5">
+                    {nombre ? nombre : <span className="text-red-500">[Sin nombre]</span>}
+                  </span>
+                  <span className="text-xs text-gray-500 max-w-[120px] truncate">{email}</span>
+                </div>
+                <ChevronDownIcon className="ml-2 h-5 w-5 text-gray-400" />
+              </Menu.Button>
+              <Menu.Items className="absolute right-0 mt-2 w-56 origin-top-right bg-white border border-gray-200 rounded-md shadow-lg focus:outline-none z-50">
+                <Menu.Item>
+                  {({ active }) => (
+                    <Link
+                      href="/area-personal/perfil"
+                      className={`flex items-center gap-2 px-4 py-2 text-base ${active ? 'bg-blue-50 text-blue-700' : 'text-gray-800'}`}
+                    >
+                      <UserIcon className="h-5 w-5" /> Mi Perfil
+                    </Link>
+                  )}
+                </Menu.Item>
+                <Menu.Item>
+                  {({ active }) => (
+                    <Link
+                      href="/area-personal/configuracion"
+                      className={`flex items-center gap-2 px-4 py-2 text-base ${active ? 'bg-blue-50 text-blue-700' : 'text-gray-800'}`}
+                    >
+                      <span className="h-5 w-5 inline-block">⚙️</span> Configuración
+                    </Link>
+                  )}
+                </Menu.Item>
+                <Menu.Item>
+                  {({ active }) => (
+                    <button
+                      onClick={() => signOut({ callbackUrl: '/' })}
+                      className={`flex items-center gap-2 px-4 py-2 text-base w-full text-left ${active ? 'bg-blue-50 text-blue-700' : 'text-gray-800'}`}
+                    >
+                      <span className="h-5 w-5 inline-block">🚪</span> Cerrar Sesión
+                    </button>
+                  )}
+                </Menu.Item>
+              </Menu.Items>
+            </Menu>
+          ) : (
+            <Link
+              href="/ingreso-cliente"
+              className="flex items-center gap-2 border border-[#00E6F6] text-[#00E6F6] px-5 py-2 rounded-full text-base font-semibold bg-transparent hover:bg-[#00E6F6]/10 transition-colors"
+            >
+              <UserIcon className="h-5 w-5" />
+              Ingreso cliente
+            </Link>
+          )}
           {/* Selector de idioma */}
           <Menu as="div" className="relative inline-block text-left">
             <Menu.Button className="inline-flex items-center px-3 py-2 text-white hover:text-yellow-300 text-base font-medium focus:outline-none rounded-md bg-[#1161A9]">

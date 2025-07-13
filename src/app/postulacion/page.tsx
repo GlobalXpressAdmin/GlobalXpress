@@ -3,6 +3,8 @@ import { useSearchParams } from "next/navigation";
 import vacantes from "../../components/vacantesData";
 import React, { useState } from "react";
 import { FaPhone } from 'react-icons/fa';
+import PhoneInputPro from '../../components/PhoneInputPro';
+import { useRouter } from 'next/navigation';
 
 export default function Postulacion() {
   const searchParams = useSearchParams();
@@ -65,8 +67,9 @@ export default function Postulacion() {
   );
 }
 
-// Componente de formulario multipaso
+// Implementación multipaso profesional de MultiStepForm según las imágenes y requerimientos del usuario.
 function MultiStepForm() {
+  const router = useRouter();
   const [step, setStep] = useState(1);
   const [form, setForm] = useState({
     nombre: '',
@@ -77,225 +80,343 @@ function MultiStepForm() {
     ciudad: '',
     visa: '',
     direccion: '',
-    conoceEEUU: null as boolean | null,
-    trabajoSinAutorizacion: null as boolean | null,
-    antecedentesMigratorios: null as boolean | null,
-    antecedentesMigratoriosDetalle: '',
-    arrestado: null as boolean | null,
-    arrestadoDetalle: '',
-    saldoMinimo: null as boolean | null,
-    quiereFinanciamiento: null as boolean | null,
+    conoceEEUU: false,
+    trabajoSinAutorizacion: false,
+    antecedentesMigratorios: false,
+    arrestado: false,
+    saldoMinimo: false,
+    quiereFinanciamiento: false,
+    docIdentidad: null,
+    docCV: null,
     confirmaRecursos: false,
     aceptaTerminos: false,
     aceptaComunicaciones: false,
     aceptaDatos: false,
   });
   const [progreso, setProgreso] = useState(20);
+  const [errorTel, setErrorTel] = useState('');
+  const [errorCampos, setErrorCampos] = useState('');
+  const [aceptaDatos, setAceptaDatos] = useState(false);
+  const [errorNombre, setErrorNombre] = useState('');
+  const [errorCorreo, setErrorCorreo] = useState('');
+  const [errorTelefono, setErrorTelefono] = useState('');
+  const [errorGeneral, setErrorGeneral] = useState('');
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value, type } = e.target;
-    const checked = type === 'checkbox' ? (e.target as HTMLInputElement).checked : undefined;
-    setForm(prev => ({
-      ...prev,
-      [name]: type === 'checkbox' ? checked : value
-    }));
+    const target = e.target;
+    const { name, value, type } = target;
+    if (type === 'checkbox' && target instanceof HTMLInputElement) {
+      setForm(prev => ({ ...prev, [name]: target.checked }));
+    } else if (type === 'file' && target instanceof HTMLInputElement) {
+      setForm(prev => ({ ...prev, [name]: target.files && target.files[0] ? target.files[0] : null }));
+    } else {
+      setForm(prev => ({ ...prev, [name]: value }));
+    }
   };
 
-  const nextStep = () => {
-    setStep(s => Math.min(s + 1, 4));
-    setProgreso(p => Math.min(p + 20, 100));
+  const progressByStep = [0, 20, 40, 60, 80, 100];
+
+  const nextStep = async () => {
+    let hayError = false;
+    // Validación paso 1
+    if (step === 1) {
+      setErrorNombre('');
+      setErrorCorreo('');
+      setErrorTelefono('');
+      setErrorGeneral('');
+      if (!form.nombre) {
+        setErrorNombre('El nombre es obligatorio.');
+        hayError = true;
+      }
+      if (!form.correo) {
+        setErrorCorreo('El correo electrónico es obligatorio.');
+        hayError = true;
+      }
+      if (!form.telefono) {
+        setErrorTelefono('El teléfono es obligatorio.');
+        hayError = true;
+      }
+      if (hayError) {
+        setErrorGeneral('Por favor, complete los campos obligatorios.');
+        return;
+      }
+    }
+    // Validación de aceptación de datos en el último paso
+    if (step === 5) {
+      setErrorGeneral('');
+      if (!form.confirmaRecursos) {
+        setErrorGeneral('Debe confirmar que cuenta con los recursos para el proceso.');
+        return;
+      }
+      if (!form.aceptaTerminos) {
+        setErrorGeneral('Debe aceptar los términos del proceso EB-3.');
+        return;
+      }
+      if (!form.aceptaComunicaciones) {
+        setErrorGeneral('Debe aceptar recibir otras comunicaciones de Global Express Recruiting Colombia.');
+        return;
+      }
+      if (!form.aceptaDatos) {
+        setErrorGeneral('Debe aceptar que Global Express Recruiting Colombia almacene y trate sus datos personales.');
+        return;
+      }
+      // Aquí se envían los datos finales
+      const datosEnviar = {
+        ...form,
+        conoceEEUU: form.conoceEEUU ? 'SI' : 'NO',
+        trabajoSinAutorizacion: form.trabajoSinAutorizacion ? 'SI' : 'NO',
+        antecedentesMigratorios: form.antecedentesMigratorios ? 'SI' : 'NO',
+        arrestado: form.arrestado ? 'SI' : 'NO',
+        saldoMinimo: form.saldoMinimo ? 'SI' : 'NO',
+        quiereFinanciamiento: form.quiereFinanciamiento ? 'SI' : 'NO',
+        confirmaRecursos: form.confirmaRecursos ? 'SI' : 'NO',
+        aceptaTerminos: form.aceptaTerminos ? 'SI' : 'NO',
+        aceptaComunicaciones: form.aceptaComunicaciones ? 'SI' : 'NO',
+        aceptaDatos: form.aceptaDatos ? 'SI' : 'NO',
+      };
+      
+      // Enviar datos al backend
+      try {
+        const response = await fetch('/api/postulaciones', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(datosEnviar),
+        });
+        
+        const result = await response.json();
+        
+        if (result.ok) {
+          // Éxito - avanzar al paso final
+          setStep(s => Math.min(s + 1, 6));
+          setProgreso(progressByStep[Math.min(step, 5)]);
+        } else {
+          setErrorGeneral(result.error || 'Error al enviar la postulación.');
+        }
+      } catch (error) {
+        setErrorGeneral('Error de conexión al enviar la postulación.');
+      }
+      return;
+    }
+    setStep(s => Math.min(s + 1, 6));
+    setProgreso(progressByStep[Math.min(step, 5)]);
   };
   const prevStep = () => {
     setStep(s => Math.max(s - 1, 1));
-    setProgreso(p => Math.max(p - 20, 20));
+    setProgreso(progressByStep[Math.max(step - 2, 0)]);
+  };
+  const reiniciarFormulario = () => {
+    setForm({
+      nombre: '',
+      apellidos: '',
+      correo: '',
+      telefono: '',
+      pais: '',
+      ciudad: '',
+      visa: '',
+      direccion: '',
+      conoceEEUU: false,
+      trabajoSinAutorizacion: false,
+      antecedentesMigratorios: false,
+      arrestado: false,
+      saldoMinimo: false,
+      quiereFinanciamiento: false,
+      docIdentidad: null,
+      docCV: null,
+      confirmaRecursos: false,
+      aceptaTerminos: false,
+      aceptaComunicaciones: false,
+      aceptaDatos: false,
+    });
+    setStep(1);
+    setProgreso(progressByStep[0]);
+    setErrorCampos('');
+    setAceptaDatos(false);
   };
 
   return (
-    <div className="bg-[#f5f5f5] rounded shadow p-8 mt-8 max-w-4xl mx-auto">
+    <div className="bg-white rounded-2xl shadow-2xl p-10 mt-10 max-w-2xl mx-auto border border-blue-100 flex flex-col items-center w-full">
       {step === 1 && (
-        <div>
-          <h3 className="text-2xl font-bold mb-2 text-[#054B74]">Paso 1: Datos Personales</h3>
-          <p className="mb-4 text-[#223]">Ingrese sus datos personales tal como aparecen en su pasaporte. Esta información será utilizada para validar su postulación.<br/>Los campos marcados con * son obligatorios.</p>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-            <div>
-              <label className="font-semibold">Nombre*</label>
-              <input name="nombre" value={form.nombre} onChange={handleChange} className="w-full border rounded px-3 py-2" />
-            </div>
-            <div>
-              <label className="font-semibold">Apellidos*</label>
-              <input name="apellidos" value={form.apellidos} onChange={handleChange} className="w-full border rounded px-3 py-2" />
-            </div>
-          </div>
-          <div className="mb-4">
-            <label className="font-semibold">Correo*</label>
-            <input name="correo" value={form.correo} onChange={handleChange} className="w-full border rounded px-3 py-2" />
-          </div>
-          <div className="mb-4 flex gap-2">
-            <select name="pais" value={form.pais} onChange={handleChange} className="border rounded px-3 py-2">
-              <option value="">País*</option>
-              <option value="CO">Colombia</option>
-              <option value="MX">México</option>
-              <option value="PE">Perú</option>
-              <option value="EC">Ecuador</option>
-              <option value="AR">Argentina</option>
-              <option value="CL">Chile</option>
-            </select>
-            <div className="flex items-center border rounded px-3 py-2 flex-1 bg-white">
-              <FaPhone className="text-gray-400 mr-2" />
-              <span className="text-gray-700 font-semibold mr-2">+57</span>
-              <input name="telefono" value={form.telefono} onChange={handleChange} className="flex-1 outline-none border-none bg-transparent" placeholder="Teléfono*" />
-            </div>
-          </div>
-          <div className="mb-4">
-            <label className="font-semibold">¿Cuál ciudad?*</label>
-            <input name="ciudad" value={form.ciudad} onChange={handleChange} className="w-full border rounded px-3 py-2" />
-          </div>
-          <div className="mb-4">
-            <label className="font-semibold">¿Dispone de visa?</label>
-            <select name="visa" value={form.visa} onChange={handleChange} className="w-full border rounded px-3 py-2">
-              <option value="">Seleccione</option>
-              <option value="SI">Sí</option>
-              <option value="NO">No</option>
-            </select>
-          </div>
-          <div className="mb-4">
-            <label className="font-semibold">Dirección completa*</label>
-            <input name="direccion" value={form.direccion} onChange={handleChange} className="w-full border rounded px-3 py-2" />
-          </div>
-          <div className="mb-4">
-            <div className="w-full bg-gray-200 rounded h-2 mb-2">
-              <div className="bg-[#054B74] h-2 rounded" style={{width: `${progreso}%`}}></div>
-            </div>
-            <span className="text-sm font-semibold">{progreso}%</span>
-          </div>
-          <div className="flex justify-end">
-            <button type="button" className="bg-[#054B74] text-white px-6 py-2 rounded font-bold" onClick={nextStep}>Siguiente</button>
-          </div>
-        </div>
-      )}
-      {step === 2 && (
-        <div>
-          <h3 className="text-2xl font-bold mb-2 text-[#054B74]">Paso 2: Historial Migratorio</h3>
-          <p className="mb-4 text-[#223]">Responda las siguientes preguntas con honestidad. Esta información es clave para evaluar su elegibilidad en el programa EB-3.</p>
-          <div className="mb-4 flex flex-col gap-4">
-            <div className="flex items-center gap-4">
-              <label className="font-semibold flex-1">¿Conoce los Estados Unidos?</label>
-              <select name="conoceEEUU" value={form.conoceEEUU === true ? 'SI' : form.conoceEEUU === false ? 'NO' : ''} onChange={e => setForm(prev => ({ ...prev, conoceEEUU: e.target.value === 'SI' ? true : e.target.value === 'NO' ? false : null }))} className="border rounded px-3 py-2">
-                <option value="">Seleccione</option>
-                <option value="SI">Sí</option>
-                <option value="NO">No</option>
-              </select>
-            </div>
-            <div className="flex items-center gap-4">
-              <label className="font-semibold flex-1">¿Ha trabajado en EE. UU. sin autorización?</label>
-              <select name="trabajoSinAutorizacion" value={form.trabajoSinAutorizacion === true ? 'SI' : form.trabajoSinAutorizacion === false ? 'NO' : ''} onChange={e => setForm(prev => ({ ...prev, trabajoSinAutorizacion: e.target.value === 'SI' ? true : e.target.value === 'NO' ? false : null }))} className="border rounded px-3 py-2">
-                <option value="">Seleccione</option>
-                <option value="SI">Sí</option>
-                <option value="NO">No</option>
-              </select>
-            </div>
-            <div className="flex items-center gap-4">
-              <label className="font-semibold flex-1">¿Tiene antecedentes migratorios?</label>
-              <select name="antecedentesMigratorios" value={form.antecedentesMigratorios === true ? 'SI' : form.antecedentesMigratorios === false ? 'NO' : ''} onChange={e => setForm(prev => ({ ...prev, antecedentesMigratorios: e.target.value === 'SI' ? true : e.target.value === 'NO' ? false : null, antecedentesMigratoriosDetalle: '' }))} className="border rounded px-3 py-2">
-                <option value="">Seleccione</option>
-                <option value="SI">Sí</option>
-                <option value="NO">No</option>
-              </select>
-            </div>
-            {form.antecedentesMigratorios === true && (
-              <div className="flex items-center gap-4 mt-2">
-                <label className="font-semibold flex-1" />
-                <input type="text" name="antecedentesMigratoriosDetalle" value={form.antecedentesMigratoriosDetalle} onChange={handleChange} className="border rounded px-3 py-2 flex-1" placeholder="Describa los antecedentes migratorios..." />
+        <>
+          <h2 className="text-2xl md:text-3xl font-bold text-blue-900 mb-2 text-left w-full">Paso 1: Datos Personales</h2>
+          <p className="text-gray-600 mb-6 text-left w-full">Ingrese sus datos personales tal como aparecen en su pasaporte. Esta información será utilizada para validar su postulación.</p>
+          <div className="w-full flex flex-col gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="relative">
+                <input name="nombre" value={form.nombre} onChange={handleChange} className="peer w-full px-4 pt-6 pb-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 bg-blue-50 placeholder-transparent text-base" placeholder="Nombre" />
+                <label className="absolute left-4 top-2 text-blue-400 text-sm transition-all peer-placeholder-shown:top-5 peer-placeholder-shown:text-base peer-focus:top-2 peer-focus:text-sm pointer-events-none">Nombre</label>
+                {errorNombre && <div className="text-red-600 text-xs mt-1 ml-1">{errorNombre}</div>}
               </div>
-            )}
-            <div className="flex items-center gap-4 mt-4">
-              <label className="font-semibold flex-1">¿Ha sido arrestado o acusado de un delito?</label>
-              <select name="arrestado" value={form.arrestado === true ? 'SI' : form.arrestado === false ? 'NO' : ''} onChange={e => setForm(prev => ({ ...prev, arrestado: e.target.value === 'SI' ? true : e.target.value === 'NO' ? false : null, arrestadoDetalle: '' }))} className="border rounded px-3 py-2">
-                <option value="">Seleccione</option>
-                <option value="SI">Sí</option>
-                <option value="NO">No</option>
-              </select>
-            </div>
-            {form.arrestado === true && (
-              <div className="flex items-center gap-4 mt-2">
-                <label className="font-semibold flex-1" />
-                <input type="text" name="arrestadoDetalle" value={form.arrestadoDetalle} onChange={handleChange} className="border rounded px-3 py-2 flex-1" placeholder="Describa la situación..." />
+              <div className="relative">
+                <input name="apellidos" value={form.apellidos} onChange={handleChange} className="peer w-full px-4 pt-6 pb-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 bg-blue-50 placeholder-transparent text-base" placeholder="Apellidos" />
+                <label className="absolute left-4 top-2 text-blue-400 text-sm transition-all peer-placeholder-shown:top-5 peer-placeholder-shown:text-base peer-focus:top-2 peer-focus:text-sm pointer-events-none">Apellidos</label>
               </div>
-            )}
-          </div>
-          <div className="mb-4">
-            <div className="w-full bg-gray-200 rounded h-2 mb-2">
-              <div className="bg-[#054B74] h-2 rounded" style={{width: `${progreso + 20}%`}}></div>
             </div>
-            <span className="text-sm font-semibold">{progreso + 20}%</span>
-          </div>
-          <div className="flex justify-between">
-            <button type="button" className="bg-gray-300 text-[#054B74] px-6 py-2 rounded font-bold" onClick={prevStep}>Anterior</button>
-            <button type="button" className="bg-[#054B74] text-white px-6 py-2 rounded font-bold" onClick={nextStep}>Siguiente</button>
-          </div>
-        </div>
-      )}
-      {step === 3 && (
-        <div>
-          <h3 className="text-2xl font-bold mb-2 text-[#054B74]">Paso 3: Capacidad Financiera</h3>
-          <p className="mb-4 text-[#223]">Confirme si cuenta con los recursos económicos para completar el proceso de migración.</p>
-          <div className="mb-4 flex flex-col gap-4">
-            <div className="flex items-center gap-4">
-              <label className="font-semibold flex-1">¿Cuenta con el saldo mínimo para todo el proceso EB-3?</label>
-              <select name="saldoMinimo" value={form.saldoMinimo === true ? 'SI' : form.saldoMinimo === false ? 'NO' : ''} onChange={e => setForm(prev => ({ ...prev, saldoMinimo: e.target.value === 'SI' ? true : e.target.value === 'NO' ? false : null }))} className="border rounded px-3 py-2">
-                <option value="">Seleccione</option>
+            <div className="relative">
+              <input name="correo" value={form.correo} onChange={handleChange} className="peer w-full px-4 pt-6 pb-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 bg-blue-50 placeholder-transparent text-base" placeholder="Correo electrónico" />
+              <label className="absolute left-4 top-2 text-blue-400 text-sm transition-all peer-placeholder-shown:top-5 peer-placeholder-shown:text-base peer-focus:top-2 peer-focus:text-sm pointer-events-none">Correo electrónico</label>
+              {errorCorreo && <div className="text-red-600 text-xs mt-1 ml-1">{errorCorreo}</div>}
+            </div>
+            <div className="relative">
+              <label className="block text-blue-500 text-sm mb-1 ml-1 font-semibold">Número de teléfono</label>
+              <PhoneInputPro
+                value={form.telefono}
+                onChange={telefono => setForm(prev => ({ ...prev, telefono }))}
+                required
+                error={errorTel}
+                className="w-full"
+                showLabel={false}
+                bgClass="!bg-blue-50"
+              />
+              {errorTelefono && <div className="text-red-600 text-xs mt-1 ml-1">{errorTelefono}</div>}
+            </div>
+            <div className="relative">
+              <input name="pais" value={form.pais} onChange={handleChange} className="peer w-full px-4 pt-6 pb-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 bg-blue-50 placeholder-transparent text-base" placeholder="País" />
+              <label className="absolute left-4 top-2 text-blue-400 text-sm transition-all peer-placeholder-shown:top-5 peer-placeholder-shown:text-base peer-focus:top-2 peer-focus:text-sm pointer-events-none">País</label>
+            </div>
+            <div className="relative">
+              <input name="ciudad" value={form.ciudad} onChange={handleChange} className="peer w-full px-4 pt-6 pb-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 bg-blue-50 placeholder-transparent text-base" placeholder="¿Cuál ciudad?" />
+              <label className="absolute left-4 top-2 text-blue-400 text-sm transition-all peer-placeholder-shown:top-5 peer-placeholder-shown:text-base peer-focus:top-2 peer-focus:text-sm pointer-events-none">¿Cuál ciudad?</label>
+            </div>
+            <div className="relative">
+              <select name="visa" value={form.visa} onChange={handleChange} className="border rounded-lg px-4 py-3 bg-blue-50 text-base focus:ring-2 focus:ring-blue-400 w-full">
+                <option value="">¿Dispone de visa?</option>
                 <option value="SI">Sí</option>
                 <option value="NO">No</option>
               </select>
             </div>
-            <div className="flex items-center gap-4">
-              <label className="font-semibold flex-1">¿Quisiera conocer nuestros métodos de financiamiento?</label>
-              <select name="quiereFinanciamiento" value={form.quiereFinanciamiento === true ? 'SI' : form.quiereFinanciamiento === false ? 'NO' : ''} onChange={e => setForm(prev => ({ ...prev, quiereFinanciamiento: e.target.value === 'SI' ? true : e.target.value === 'NO' ? false : null }))} className="border rounded px-3 py-2">
-                <option value="">Seleccione</option>
-                <option value="SI">Sí</option>
-                <option value="NO">No</option>
-              </select>
+            <div className="relative">
+              <input name="direccion" value={form.direccion} onChange={handleChange} className="peer w-full px-4 pt-6 pb-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 bg-blue-50 placeholder-transparent text-base" placeholder="Dirección completa" />
+              <label className="absolute left-4 top-2 text-blue-400 text-sm transition-all peer-placeholder-shown:top-5 peer-placeholder-shown:text-base peer-focus:top-2 peer-focus:text-sm pointer-events-none">Dirección completa</label>
             </div>
-            {form.quiereFinanciamiento === true && (
-              <div className="flex items-center gap-4 mt-2">
-                <label className="font-semibold flex-1" />
-                <button type="button" className="bg-[#054B74] text-white px-6 py-2 rounded font-bold">Planes de financiamiento</button>
-              </div>
-            )}
-          </div>
-          <div className="mb-4">
-            <div className="w-full bg-gray-200 rounded h-2 mb-2">
-              <div className="bg-[#054B74] h-2 rounded" style={{width: `${progreso + 40}%`}}></div>
+            {errorGeneral && <div className="text-red-600 font-semibold mb-4 text-center w-full">{errorGeneral}</div>}
+            <div className="flex items-center justify-between w-full mt-4">
+              <span className="text-base font-semibold text-blue-900">{progressByStep[step - 1]}%</span>
+              <button type="button" className="bg-blue-800 text-white px-8 py-2 rounded-lg font-bold text-lg shadow hover:bg-blue-900 transition-all" onClick={nextStep}>Siguiente</button>
             </div>
-            <span className="text-sm font-semibold">{progreso + 40}%</span>
+            <div className="w-full h-2 bg-gray-200 rounded-full mt-2">
+              <div className="h-2 bg-blue-800 rounded-full" style={{ width: `${progressByStep[step - 1]}%` }}></div>
+            </div>
           </div>
-          <div className="flex justify-between">
-            <button type="button" className="bg-gray-300 text-[#054B74] px-6 py-2 rounded font-bold" onClick={prevStep}>Anterior</button>
-            <button type="button" className="bg-[#054B74] text-white px-6 py-2 rounded font-bold" onClick={nextStep}>Siguiente</button>
-          </div>
-        </div>
+        </>
       )}
-      {step === 4 && (
-        <div>
-          <h3 className="text-2xl font-bold mb-2 text-[#054B74]">Paso 4: Confirmación y Envío</h3>
-          <p className="mb-4 text-[#223]">Una vez enviada, su aplicación será revisada por nuestros especialistas.</p>
-          <div className="mb-4 flex flex-col gap-2">
-            <label className="flex items-center gap-2"><input type="checkbox" name="confirmaRecursos" checked={form.confirmaRecursos} onChange={handleChange}/>El usuario confirma que cuenta con los recursos para el proceso*</label>
-            <label className="flex items-center gap-2"><input type="checkbox" name="aceptaTerminos" checked={form.aceptaTerminos} onChange={handleChange}/>Confirmo que he leído y acepto los términos del proceso EB-3*</label>
-            <label className="flex items-center gap-2"><input type="checkbox" name="aceptaComunicaciones" checked={form.aceptaComunicaciones} onChange={handleChange}/>Acepto recibir otras comunicaciones de Global Express Recruiting Colombia*</label>
-            <label className="flex items-center gap-2"><input type="checkbox" name="aceptaDatos" checked={form.aceptaDatos} onChange={handleChange}/>Acepto que Global Express Recruiting Colombia almacene y trate mis datos personales*</label>
-          </div>
-          <div className="mb-4">
-            <div className="w-full bg-gray-200 rounded h-2 mb-2">
-              <div className="bg-[#054B74] h-2 rounded" style={{width: `100%`}}></div>
+      {step > 1 && step < 6 && step !== 5 && (
+        <>
+          <h2 className="text-2xl md:text-3xl font-bold text-blue-900 mb-2 text-left w-full">Paso {step}: {step === 2 ? 'Historial Migratorio' : step === 3 ? 'Capacidad Financiera' : 'Subida de Documentos'}</h2>
+          <p className="text-gray-600 mb-6 text-left w-full">Responda las siguientes preguntas con honestidad. Esta información es clave para evaluar su elegibilidad en el programa EB-3.</p>
+          <div className="flex flex-col gap-4 w-full">
+            {step === 2 && (
+              <>
+                <label className="flex items-center gap-3 text-lg text-gray-800">
+                  <input type="checkbox" name="conoceEEUU" checked={form.conoceEEUU} onChange={handleChange} className="accent-blue-700 w-5 h-5" />
+                  ¿Conoce los Estados Unidos?
+                </label>
+                <label className="flex items-center gap-3 text-lg text-gray-800">
+                  <input type="checkbox" name="trabajoSinAutorizacion" checked={form.trabajoSinAutorizacion} onChange={handleChange} className="accent-blue-700 w-5 h-5" />
+                  ¿Ha trabajado en EE. UU. sin autorización?
+                </label>
+                <label className="flex items-center gap-3 text-lg text-gray-800">
+                  <input type="checkbox" name="antecedentesMigratorios" checked={form.antecedentesMigratorios} onChange={handleChange} className="accent-blue-700 w-5 h-5" />
+                  ¿Tiene antecedentes migratorios?
+                </label>
+                <label className="flex items-center gap-3 text-lg text-gray-800">
+                  <input type="checkbox" name="arrestado" checked={form.arrestado} onChange={handleChange} className="accent-blue-700 w-5 h-5" />
+                  ¿Ha sido arrestado o acusado de un delito?
+                </label>
+              </>
+            )}
+            {step === 3 && (
+              <>
+                <label className="flex items-center gap-3 text-lg text-gray-800">
+                  <input type="checkbox" name="saldoMinimo" checked={form.saldoMinimo} onChange={handleChange} className="accent-blue-700 w-5 h-5" />
+                  ¿Cuenta con el saldo mínimo para todo el proceso EB-3?
+                </label>
+                <label className="flex items-center gap-3 text-lg text-gray-800">
+                  <input type="checkbox" name="quiereFinanciamiento" checked={form.quiereFinanciamiento} onChange={handleChange} className="accent-blue-700 w-5 h-5" />
+                  ¿Quisiera conocer nuestros métodos de financiamiento?
+                </label>
+              </>
+            )}
+            {step === 4 && (
+              <>
+                <label className="text-lg text-gray-800 font-semibold">Documento Nacional de Identidad (Pasaporte o DNI, documento PDF)</label>
+                <input type="file" name="docIdentidad" accept="application/pdf" onChange={handleChange} className="block w-full text-base text-gray-700 border border-blue-200 rounded-lg cursor-pointer bg-blue-50 focus:outline-none" />
+                <label className="text-lg text-gray-800 font-semibold">Historial de trabajo & Estudios (Currículum o CV, documento PDF)</label>
+                <input type="file" name="docCV" accept="application/pdf" onChange={handleChange} className="block w-full text-base text-gray-700 border border-blue-200 rounded-lg cursor-pointer bg-blue-50 focus:outline-none" />
+                <span className="text-xs text-gray-500 mt-2">* Una vez suba sus datos, personal capacitado y con experiencia revisará cada uno de sus documentos.</span>
+                {errorCampos && <div className="text-red-600 font-semibold mb-2">{errorCampos}</div>}
+              </>
+            )}
+            <div className="flex items-center justify-between w-full mt-4">
+              <button type="button" className="bg-blue-800 text-white px-8 py-2 rounded-lg font-bold text-lg shadow hover:bg-blue-900 transition-all" onClick={prevStep}>Anterior</button>
+              <span className="text-base font-semibold text-blue-900">{progressByStep[step - 1]}%</span>
+              <button type="button" className="bg-blue-800 text-white px-8 py-2 rounded-lg font-bold text-lg shadow hover:bg-blue-900 transition-all" onClick={nextStep}>Siguiente</button>
             </div>
-            <span className="text-sm font-semibold">100%</span>
+            <div className="w-full h-2 bg-gray-200 rounded-full mt-2">
+              <div className="h-2 bg-blue-800 rounded-full" style={{ width: `${progressByStep[step - 1]}%` }}></div>
+            </div>
           </div>
-          <div className="flex justify-between">
-            <button type="button" className="bg-gray-300 text-[#054B74] px-6 py-2 rounded font-bold" onClick={prevStep}>Anterior</button>
-            <button type="button" className="bg-[#054B74] text-white px-6 py-2 rounded font-bold opacity-60 cursor-not-allowed" disabled>Enviar</button>
+        </>
+      )}
+      {step === 5 && (
+        <>
+          <h2 className="text-2xl md:text-3xl font-bold text-blue-900 mb-2 text-left w-full">Paso 5: Confirmación y Envío</h2>
+          <p className="text-gray-600 mb-6 text-left w-full">Una vez enviada, su aplicación será revisada por nuestros especialistas.</p>
+          <div className="flex flex-col gap-4 w-full">
+            <label className="flex items-center gap-3 text-base text-gray-800 font-medium">
+              <input type="checkbox" name="confirmaRecursos" checked={form.confirmaRecursos || false} onChange={handleChange} className="accent-blue-700 w-5 h-5" />
+              El usuario confirma que cuenta con los recursos para el proceso<span className="text-red-500 ml-1">*</span>
+            </label>
+            <label className="flex items-center gap-3 text-base text-gray-800 font-medium">
+              <input type="checkbox" name="aceptaTerminos" checked={form.aceptaTerminos || false} onChange={handleChange} className="accent-blue-700 w-5 h-5" />
+              Confirmo que he leído y acepto los términos del proceso EB-3<span className="text-red-500 ml-1">*</span>
+            </label>
+            <div className="text-gray-800 text-base font-semibold mt-2 mb-2">
+              Global Express Recruiting Colombia se compromete a proteger y respetar tu privacidad, y solo usaremos tu información personal para administrar tu cuenta y proporcionar los productos y servicios que nos solicitaste. De vez en cuando, nos gustaría ponernos en contacto contigo acerca de nuestros productos y servicios, así como sobre otros contenidos que puedan interesarte. Si aceptas que nos comuniquemos contigo para este fin, marca la casilla a continuación para indicar cómo deseas que nos comuniquemos:
+            </div>
+            <label className="flex items-center gap-3 text-base text-gray-800 font-medium">
+              <input type="checkbox" name="aceptaComunicaciones" checked={form.aceptaComunicaciones || false} onChange={handleChange} className="accent-blue-700 w-5 h-5" />
+              Acepto recibir otras comunicaciones de Global Express Recruiting Colombia.<span className="text-red-500 ml-1">*</span>
+            </label>
+            <div className="text-gray-800 text-base font-semibold mt-2 mb-2">
+              Para poder darte acceso al contenido solicitado, debemos almacenar y tratar tus datos personales. Si aceptas que almacenemos tus datos para este fin, marca la casilla que aparece abajo.
+            </div>
+            <label className="flex items-center gap-3 text-base text-gray-800 font-medium">
+              <input type="checkbox" name="aceptaDatos" checked={form.aceptaDatos || false} onChange={handleChange} className="accent-blue-700 w-5 h-5" />
+              Acepto que Global Express Recruiting Colombia almacene y trate mis datos personales.<span className="text-red-500 ml-1">*</span>
+            </label>
+            <div className="text-gray-600 text-sm mt-2">
+              Puedes darte de baja de estas comunicaciones en cualquier momento. Para obtener más información sobre cómo darte de baja, nuestras prácticas de privacidad y cómo nos comprometemos a proteger y respetar tu privacidad, consulta nuestra Política de privacidad.
+            </div>
+            {errorGeneral && <div className="text-red-600 font-semibold mb-2">{errorGeneral}</div>}
+            <div className="flex w-full justify-between items-center mt-8">
+              <button type="button" className="bg-blue-800 text-white px-8 py-2 rounded-lg font-bold text-lg shadow hover:bg-blue-900 transition-all" onClick={prevStep}>Anterior</button>
+              <button type="button" className="bg-blue-800 text-white px-8 py-2 rounded-lg font-bold text-lg shadow hover:bg-blue-900 transition-all" onClick={nextStep}>Enviar</button>
+            </div>
+            <div className="w-full flex justify-center items-center mt-4">
+              <span className="text-base font-semibold text-blue-900">80%</span>
+            </div>
+            <div className="w-full h-2 bg-gray-200 rounded-full mt-2">
+              <div className="h-2 bg-blue-800 rounded-full" style={{ width: `${progressByStep[step - 1]}%` }}></div>
+            </div>
           </div>
-        </div>
+        </>
+      )}
+      {step === 6 && (
+        <>
+          <h2 className="text-2xl md:text-3xl font-bold text-blue-900 mb-2 text-left w-full">¡Postulación enviada!</h2>
+          <p className="text-gray-600 mb-6 text-left w-full">¡Gracias por completar tu postulación! Nuestro equipo revisará tu información y se pondrá en contacto contigo.</p>
+          <div className="flex items-center justify-center w-full mt-4">
+            <button
+              type="button"
+              className="bg-blue-800 text-white px-8 py-2 rounded-lg font-bold text-lg shadow hover:bg-blue-900 transition-all"
+              onClick={() => router.push('/todas-vacantes')}
+            >
+              Enviar otra postulación
+            </button>
+          </div>
+        </>
       )}
     </div>
   );

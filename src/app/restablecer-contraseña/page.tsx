@@ -1,6 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { useSearchParams } from "next/navigation";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 export default function RestablecerContrasena() {
   const searchParams = useSearchParams();
@@ -10,6 +11,8 @@ export default function RestablecerContrasena() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -59,28 +62,34 @@ export default function RestablecerContrasena() {
           <form className="space-y-6" onSubmit={handleSubmit} autoComplete="off">
             <div className="relative">
               <input
-                type="password"
+                type={showPassword ? "text" : "password"}
                 name="password"
                 value={password}
                 onChange={e => setPassword(e.target.value)}
                 required
-                className="peer w-full px-4 pt-6 pb-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 bg-blue-50 placeholder-transparent"
+                className="peer w-full px-4 pt-6 pb-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 bg-blue-50 placeholder-transparent pr-12"
                 placeholder="Nueva contraseña"
               />
+              <button type="button" className="absolute right-4 top-1/2 -translate-y-1/2 text-blue-400 text-lg focus:outline-none" tabIndex={-1} onClick={() => setShowPassword(v => !v)}>
+                {showPassword ? <FaEyeSlash /> : <FaEye />}
+              </button>
               <label className="absolute left-4 top-2 text-blue-400 text-sm transition-all peer-placeholder-shown:top-5 peer-placeholder-shown:text-base peer-focus:top-2 peer-focus:text-sm pointer-events-none">
                 Nueva contraseña
               </label>
             </div>
             <div className="relative">
               <input
-                type="password"
+                type={showConfirm ? "text" : "password"}
                 name="confirm"
                 value={confirm}
                 onChange={e => setConfirm(e.target.value)}
                 required
-                className="peer w-full px-4 pt-6 pb-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 bg-blue-50 placeholder-transparent"
+                className="peer w-full px-4 pt-6 pb-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 bg-blue-50 placeholder-transparent pr-12"
                 placeholder="Confirmar contraseña"
               />
+              <button type="button" className="absolute right-4 top-1/2 -translate-y-1/2 text-blue-400 text-lg focus:outline-none" tabIndex={-1} onClick={() => setShowConfirm(v => !v)}>
+                {showConfirm ? <FaEyeSlash /> : <FaEye />}
+              </button>
               <label className="absolute left-4 top-2 text-blue-400 text-sm transition-all peer-placeholder-shown:top-5 peer-placeholder-shown:text-base peer-focus:top-2 peer-focus:text-sm pointer-events-none">
                 Confirmar contraseña
               </label>

@@ -332,12 +332,9 @@ export default function NuestroEquipo() {
             Nuestros expertos están listos para guiarte en tu camino hacia el éxito en Estados Unidos
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button className="bg-[#00E6F6] text-[#0D4A7A] px-8 py-3 rounded-full font-bold hover:bg-[#00E6F6]/90 transition-colors">
-              Solicitar Consulta
-            </button>
-            <button className="border-2 border-[#00E6F6] text-[#00E6F6] px-8 py-3 rounded-full font-bold hover:bg-[#00E6F6] hover:text-[#0D4A7A] transition-colors">
+            <a href="/todas-vacantes" className="border-2 border-[#00E6F6] text-[#00E6F6] px-8 py-3 rounded-full font-bold hover:bg-[#00E6F6] hover:text-[#0D4A7A] transition-colors">
               Ver Programas
-            </button>
+            </a>
           </div>
         </div>
       </section>

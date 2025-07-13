@@ -4,6 +4,8 @@ import FamiliasMigrantesSection from '../../../components/FamiliasMigrantesSecti
 import FormacionSliderSection from '../../../components/FormacionSliderSection';
 import IconoCard from '../../../components/IconoCard';
 import { FaPhone } from 'react-icons/fa';
+import PhoneInputPro from '../../../components/PhoneInputPro';
+import LegalModal from '@/components/LegalModal';
 
 export default function VisaEB5() {
   const [form, setForm] = useState({
@@ -30,6 +32,39 @@ export default function VisaEB5() {
 
   const handleVisa = (valor: string) => {
     setForm((prev) => ({ ...prev, visa: valor }));
+  };
+
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+  const [intentoEnvio, setIntentoEnvio] = useState(false);
+  const [showLegal, setShowLegal] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setError('');
+    setSuccess('');
+    setIntentoEnvio(true);
+    if (!form.nombre || !form.apellido || !form.email || !form.telefono || !form.visa || !form.terminos) {
+      setError('Por favor complete todos los campos y acepte los términos.');
+      return;
+    }
+    try {
+      const res = await fetch('/api/formularios-programa', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...form, programa: 'EB5' }),
+      });
+      const data = await res.json();
+      if (data.ok) {
+        setSuccess('¡Formulario enviado correctamente!');
+        setForm({ nombre: '', apellido: '', email: '', telefono: '', visa: '', mensaje: '', terminos: false });
+        setIntentoEnvio(false);
+      } else {
+        setError(data.error || 'Error al enviar el formulario.');
+      }
+    } catch (err) {
+      setError('Error de conexión.');
+    }
   };
 
   return (
@@ -62,7 +97,16 @@ export default function VisaEB5() {
               Un proceso migratorio estratégico, conforme a la ley y con respaldo empresarial.
             </p>
 
-            <button className="bg-blue-900 text-white px-6 py-2 rounded hover:bg-blue-800 transition w-fit">
+            <button
+              className="bg-blue-900 text-white px-6 py-2 rounded hover:bg-blue-800 transition w-fit"
+              onClick={() => {
+                const formSection = document.getElementById('formulario-eb5');
+                if (formSection) {
+                  const y = formSection.getBoundingClientRect().top + window.pageYOffset - 100;
+                  window.scrollTo({ top: y, behavior: 'smooth' });
+                }
+              }}
+            >
               Postúlese ahora
             </button>
 
@@ -108,7 +152,7 @@ export default function VisaEB5() {
             </div>
           </div>
         </section>
-        <section className="w-full bg-[#ededed] py-16 px-4 flex flex-col md:flex-row justify-center items-center gap-12 mt-12">
+        <section id="formulario-eb5" className="w-full bg-[#ededed] py-16 px-4 flex flex-col md:flex-row justify-center items-center gap-12 mt-12">
           {/* Texto informativo */}
           <div className="max-w-md text-left">
             <h2 className="text-4xl md:text-5xl font-extrabold text-[#1161A9] mb-4 leading-tight">
@@ -119,7 +163,7 @@ export default function VisaEB5() {
             </p>
           </div>
           {/* Formulario controlado */}
-          <form className="bg-[#ededed] rounded-lg flex-1 max-w-xl flex flex-col gap-4" onSubmit={e => e.preventDefault()}>
+          <form className="bg-[#ededed] rounded-lg flex-1 max-w-xl flex flex-col gap-4" onSubmit={handleSubmit}>
             <div className="flex gap-4">
               <input
                 type="text"
@@ -147,15 +191,14 @@ export default function VisaEB5() {
               onChange={handleChange}
             />
             <div className="flex items-center bg-white rounded p-3 gap-2">
-              <FaPhone className="text-gray-400 mr-2" />
-              <span className="text-gray-700 font-semibold mr-2">+57</span>
-              <input
-                type="tel"
-                name="telefono"
-                placeholder="Teléfono"
-                className="flex-1 bg-transparent outline-none text-black"
+              <PhoneInputPro
                 value={form.telefono}
-                onChange={handleChange}
+                onChange={telefono => setForm(prev => ({ ...prev, telefono }))}
+                required
+                bgClass="!bg-white"
+                labelClass="block text-gray-500 text-sm mb-1 ml-1 font-semibold"
+                helpTextClass="block text-xs text-gray-400 mt-2 ml-1"
+                showAsterisk={false}
               />
             </div>
             <div className="flex items-center gap-4">
@@ -183,17 +226,23 @@ export default function VisaEB5() {
               onChange={handleChange}
             />
             <div className="flex items-center gap-2 mt-2">
-              <a href="#" className="text-[#1161A9] font-semibold underline">Términos y Condiciones</a>
+              <a href="#" className="text-[#1161A9] font-semibold underline" onClick={e => { e.preventDefault(); setShowLegal(true); }}>Términos y Condiciones</a>
               <input
                 type="checkbox"
                 name="terminos"
-                className="w-5 h-5 rounded-full border-2 border-[#222]"
+                className={`w-5 h-5 rounded-full border-2 ${intentoEnvio && !form.terminos ? 'border-red-500' : 'border-[#222]'}`}
                 checked={form.terminos}
                 onChange={handleChange}
               />
               <span className="text-black">Confirmo que he leído y acepto los términos del proceso Programa de Inversión Visa EB-5</span>
+              {intentoEnvio && !form.terminos && (
+                <span className="text-red-600 text-xs font-bold ml-2">* Obligatorio para enviar</span>
+              )}
             </div>
-            <button type="button" className="bg-[#004876] text-white font-bold py-3 rounded-full mt-4 text-lg">Enviar formulario</button>
+            <LegalModal open={showLegal} onClose={() => setShowLegal(false)} />
+            <button type="submit" className="bg-[#004876] text-white font-bold py-3 rounded-full mt-4 text-lg">Enviar formulario</button>
+            {error && <div className="text-red-600 text-sm font-bold mt-1">{error}</div>}
+            {success && <div className="text-green-600 text-sm font-bold mt-1">{success}</div>}
           </form>
         </section>
         {/* Mensaje superior en fondo blanco */}

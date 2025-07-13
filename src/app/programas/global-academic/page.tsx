@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 import Image from 'next/image';
 import FormacionSliderSection from '@/components/FormacionSliderSection';
@@ -31,7 +33,16 @@ export default function GlobalAcademic() {
           <p className="text-base md:text-lg text-gray-800 mb-6" style={{fontFamily: 'Montserrat, Arial, sans-serif'}}>
             Facilitamos el proceso de admisión y visado F-1 para estudiantes internacionales que buscan acceder a programas académicos formales en Estados Unidos. Nuestro acompañamiento asegura cumplimiento normativo, asesoría educativa y una experiencia migratoria planificada.
           </p>
-          <button className="bg-[#005c82] text-white font-semibold px-8 py-3 rounded-lg text-lg shadow hover:bg-[#003b5c] transition-all w-fit mb-8">
+          <button
+            className="bg-[#005c82] text-white font-semibold px-8 py-3 rounded-lg text-lg shadow hover:bg-[#003b5c] transition-all w-fit mb-8"
+            onClick={() => {
+              const formSection = document.getElementById('formulario-global-academic');
+              if (formSection) {
+                const y = formSection.getBoundingClientRect().top + window.pageYOffset - 100;
+                window.scrollTo({ top: y, behavior: 'smooth' });
+              }
+            }}
+          >
             Postúlese ahora
           </button>
           <div className="w-full h-1 bg-cyan-300 rounded mb-8" />
@@ -50,7 +61,7 @@ export default function GlobalAcademic() {
         </div>
       </section>
       <FormacionSliderSection />
-      <FormF1Section />
+      <FormF1Section id="formulario-global-academic" />
       <AcompanamientoContinuo />
       <FamiliasMigrantesSection />
     </>

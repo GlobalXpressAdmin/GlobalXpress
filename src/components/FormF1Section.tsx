@@ -1,8 +1,10 @@
 'use client';
 import React, { useState, ChangeEvent, FormEvent } from 'react';
 import { FaPhone } from 'react-icons/fa';
+import PhoneInputPro from './PhoneInputPro';
+import LegalModal from './LegalModal';
 
-export default function FormF1Section() {
+export default function FormF1Section({ id }: { id?: string }) {
   const [form, setForm] = useState({
     nombre: '',
     apellido: '',
@@ -14,6 +16,9 @@ export default function FormF1Section() {
   });
   const [enviado, setEnviado] = useState(false);
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+  const [intentoEnvio, setIntentoEnvio] = useState(false);
+  const [showLegal, setShowLegal] = useState(false);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value, type } = e.target;
@@ -31,20 +36,36 @@ export default function FormF1Section() {
     setForm((prev) => ({ ...prev, visa: valor }));
   };
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!form.nombre || !form.apellido || !form.email || !form.telefono || !form.visa || !form.terminos) {
       setError('Por favor complete todos los campos y acepte los términos.');
+      setIntentoEnvio(true);
       return;
     }
     setError('');
-    setEnviado(true);
-    console.log(form);
-    setTimeout(() => setEnviado(false), 3000);
+    setSuccess('');
+    setIntentoEnvio(false);
+    try {
+      const res = await fetch('/api/formularios-programa', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...form, programa: 'GLOBAL_ACADEMIC' }),
+      });
+      const data = await res.json();
+      if (data.ok) {
+        setSuccess('¡Formulario enviado correctamente!');
+        setForm({ nombre: '', apellido: '', email: '', telefono: '', visa: '', mensaje: '', terminos: false });
+      } else {
+        setError(data.error || 'Error al enviar el formulario.');
+      }
+    } catch (err) {
+      setError('Error de conexión.');
+    }
   };
 
   return (
-    <section className="w-full bg-[#ededed] py-16 px-2 md:px-0">
+    <section id={id} className="w-full bg-[#ededed] py-16 px-2 md:px-0">
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-start justify-between gap-12">
         {/* Texto a la izquierda */}
         <div className="flex-1 max-w-xl mb-10 md:mb-0">
@@ -83,17 +104,17 @@ export default function FormF1Section() {
             value={form.email}
             onChange={handleChange}
           />
-          {/* Teléfono con selector visual */}
-          <div className="flex items-center bg-white rounded-lg px-4 py-3">
-            <FaPhone className="text-gray-400 mr-2" />
-            <span className="text-[#222] font-semibold mr-2">+57</span>
-            <input
-              type="tel"
-              name="telefono"
-              placeholder="Teléfono"
-              className="flex-1 bg-transparent outline-none border-none text-lg"
+          {/* Teléfono profesional sin icono ni prefijo */}
+          <div className="w-full">
+            <PhoneInputPro
               value={form.telefono}
-              onChange={handleChange}
+              onChange={telefono => setForm(prev => ({ ...prev, telefono }))}
+              required
+              className="w-full"
+              bgClass="!bg-white"
+              labelClass="block text-gray-500 text-sm mb-1 ml-1 font-semibold"
+              helpTextClass="block text-xs text-gray-400 mt-2 ml-1"
+              showAsterisk={false}
             />
           </div>
           {/* Visa toggle */}
@@ -123,20 +144,21 @@ export default function FormF1Section() {
           />
           {/* Términos y condiciones */}
           <div className="flex items-center gap-2 mt-2">
-            <a href="#" className="text-[#006494] font-bold underline text-base" target="_blank" rel="noopener noreferrer">
-              Términos y Condiciones
-            </a>
+            <a href="#" className="text-[#006494] font-bold underline text-base" target="_blank" rel="noopener noreferrer" onClick={e => { e.preventDefault(); setShowLegal(true); }}>Términos y Condiciones</a>
             <input
               type="checkbox"
               name="terminos"
               checked={form.terminos}
               onChange={handleChange}
-              className="w-5 h-5 accent-[#006494]"
+              className={`w-5 h-5 accent-[#006494] border-2 ${intentoEnvio && !form.terminos ? 'border-red-500' : 'border-[#006494]'}`}
             />
             <span className="text-[#222] text-base">Confirmo que he leído y acepto los términos del Programa F-1 Global Academic</span>
+            {intentoEnvio && !form.terminos && (
+              <span className="text-red-600 text-xs font-bold ml-2">* Obligatorio para enviar</span>
+            )}
           </div>
           {error && <div className="text-red-600 text-sm font-bold mt-1">{error}</div>}
-          {enviado && <div className="text-green-600 text-sm font-bold mt-1">¡Formulario enviado correctamente!</div>}
+          {success && <div className="text-green-600 text-sm font-bold mt-1">{success}</div>}
           <button
             type="submit"
             className="mt-4 bg-[#006494] text-white font-bold text-lg rounded-full py-3 w-full hover:bg-[#005c82] transition-all"
@@ -145,6 +167,7 @@ export default function FormF1Section() {
           </button>
         </form>
       </div>
+      <LegalModal open={showLegal} onClose={() => setShowLegal(false)} />
     </section>
   );
 } 

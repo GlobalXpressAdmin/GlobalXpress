@@ -27,6 +27,8 @@ export default function Registro() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
+  const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d@$!%*?&]{8,}$/;
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
@@ -35,11 +37,33 @@ export default function Registro() {
       setError("Por favor, completa todos los campos obligatorios.");
       return;
     }
+    if (!passwordRegex.test(form.password)) {
+      setError("La contraseña debe tener al menos 8 caracteres, una mayúscula, una minúscula y un número.");
+      return;
+    }
     if (form.password !== form.confirmPassword) {
       setError("Las contraseñas no coinciden.");
       return;
     }
     setLoading(true);
+    // Separar indicativo y número
+    let indicativo = '';
+    let telefonoSolo = '';
+    if (form.telefono.startsWith('+')) {
+      const match = form.telefono.match(/^(\+\d{1,4})(.*)$/);
+      if (match) {
+        indicativo = match[1];
+        telefonoSolo = match[2].replace(/\D/g, '');
+      } else {
+        telefonoSolo = form.telefono.replace(/\D/g, '');
+      }
+    } else if (form.telefono.length > 6) {
+      // Si viene sin +, asume los primeros dígitos como indicativo
+      indicativo = '+' + form.telefono.slice(0, form.telefono.length - 10);
+      telefonoSolo = form.telefono.slice(-10);
+    } else {
+      telefonoSolo = form.telefono;
+    }
     const res = await fetch("/api/auth/register", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -47,7 +71,8 @@ export default function Registro() {
         nombre: form.nombre,
         email: form.email,
         password: form.password,
-        telefono: form.telefono,
+        indicativo,
+        telefono: telefonoSolo,
         genero: form.genero,
         fecha_nacimiento: form.fecha_nacimiento,
         nacionalidad: form.nacionalidad,

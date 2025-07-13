@@ -9,25 +9,109 @@ datasource db {
 }
 
 model usuarios_global {
-  id               String    @id @default(uuid()) @db.Uuid
-  creado_en        DateTime? @default(now()) @db.Timestamptz(6)
-  actualizado_en   DateTime? @default(now()) @db.Timestamptz(6)
+  id               String               @id @default(uuid()) @db.Uuid
+  creado_en        DateTime?            @default(now()) @db.Timestamptz(6)
+  actualizado_en   DateTime?            @default(now()) @db.Timestamptz(6)
   nombre           String?
-  email            String    @unique
+  email            String               @unique
   password         String?
-  image            String?
-  telefono         String?
+  image            String?              // URL o base64 de la imagen de perfil
+  indicativo       String?              // Nuevo: indicativo internacional, ej: +57
+  telefono         String?              // Nuevo: solo el número, sin indicativo
   genero           String?
-  fecha_nacimiento DateTime? @db.Date
+  fecha_nacimiento DateTime?            @db.Date
   nacionalidad     String?
   passwordResets   PasswordReset[]
+  postulaciones    PostulacionTrabajo[]
+  // El campo telefono anterior se ha separado en indicativo y telefono
 }
 
 model PasswordReset {
-  id         String   @id @default(uuid()) @db.Uuid
-  userId     String   @db.Uuid
-  user       usuarios_global @relation(fields: [userId], references: [id])
-  token      String   @unique
-  expiresAt  DateTime
-  createdAt  DateTime @default(now())
+  id        String          @id @default(uuid()) @db.Uuid
+  userId    String          @db.Uuid
+  token     String          @unique
+  expiresAt DateTime
+  createdAt DateTime        @default(now())
+  user      usuarios_global @relation(fields: [userId], references: [id])
+}
+
+model FormularioPrograma {
+  id         Int          @id @default(autoincrement())
+  nombre     String
+  apellido   String
+  email      String
+  telefono   String
+  visa       EstadoVisa
+  mensaje    String?
+  terminos   Boolean
+  programa   ProgramaTipo
+  fechaEnvio DateTime     @default(now())
+}
+
+model PostulacionTrabajo {
+  id                  String            @id @default(uuid()) @db.Uuid
+  creado_en           DateTime          @default(now()) @db.Timestamptz(6)
+  actualizado_en      DateTime          @default(now()) @db.Timestamptz(6)
+  
+  // Datos personales (Step 1)
+  nombre              String
+  apellido            String
+  email               String
+  telefono            String
+  pais                String
+  ciudad              String
+  direccion           String
+  visa                String // "SI" o "NO"
+  
+  // Experiencia y antecedentes (Steps 2-3)
+  conoceEEUU          String // "SI" o "NO"
+  trabajoSinAutorizacion String // "SI" o "NO"
+  antecedentesMigratorios String // "SI" o "NO"
+  arrestado           String // "SI" o "NO"
+  saldoMinimo         String // "SI" o "NO"
+  quiereFinanciamiento String // "SI" o "NO"
+  
+  // Consentimientos (Step 5)
+  confirmaRecursos    String // "SI" o "NO"
+  aceptaTerminos      String // "SI" o "NO"
+  aceptaComunicaciones String // "SI" o "NO"
+  aceptaDatos         String // "SI" o "NO"
+  
+  // Estado de la postulación
+  estado_postulacion  EstadoPostulacion @default(PENDIENTE)
+  programa            ProgramaEmpleo
+  notas_admin         String?
+  
+  // Relación con usuario (opcional)
+  usuario_id          String?           @db.Uuid
+  usuario             usuarios_global?  @relation(fields: [usuario_id], references: [id])
+}
+
+enum EstadoVisa {
+  SI
+  NO
+}
+
+enum ProgramaTipo {
+  EB5
+  E2
+  SKY_MASTERS
+  EB2_NIW
+  GLOBAL_ACADEMIC
+  DUAL_PLACEMENT
+}
+
+enum EstadoPostulacion {
+  PENDIENTE
+  EN_REVISION
+  APROBADA
+  RECHAZADA
+  EN_PROCESO
+}
+
+enum ProgramaEmpleo {
+  EB3
+  DUAL_PLACEMENT
+  SKY_MASTERS
+  GLOBAL_ACADEMIC
 }

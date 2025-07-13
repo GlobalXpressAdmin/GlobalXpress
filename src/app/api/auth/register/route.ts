@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '../../auth/[...nextauth]/route';
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcryptjs';
 import { sendBienvenidaEmail } from '../../../../lib/sendBienvenidaEmail';
@@ -8,9 +10,13 @@ const prisma = new PrismaClient();
 export async function POST(req: NextRequest) {
   try {
     const data = await req.json();
-    const { nombre, email, password, telefono, genero, fecha_nacimiento, nacionalidad } = data;
+    const { nombre, email, password, indicativo, telefono, genero, fecha_nacimiento, nacionalidad } = data;
     if (!nombre || !email || !password || !telefono) {
       return NextResponse.json({ ok: false, error: 'Faltan campos obligatorios.' }, { status: 400 });
+    }
+    // Validar requisitos de contraseña
+    if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d@$!%*?&]{8,}$/.test(password)) {
+      return NextResponse.json({ ok: false, error: 'La contraseña debe tener al menos 8 caracteres, una mayúscula, una minúscula y un número.' }, { status: 400 });
     }
     // Verifica que el email no exista
     const existing = await prisma.usuarios_global.findUnique({ where: { email } });
@@ -25,6 +31,7 @@ export async function POST(req: NextRequest) {
         nombre,
         email,
         password: hashedPassword,
+        indicativo, // Nuevo campo para el indicativo
         telefono,
         genero,
         fecha_nacimiento: fecha_nacimiento ? new Date(fecha_nacimiento) : undefined,

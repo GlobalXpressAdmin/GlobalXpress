@@ -9,7 +9,7 @@ import bcrypt from "bcryptjs";
 
 const prisma = new PrismaClient();
 
-const handler = NextAuth({
+export const authOptions = {
   providers: [
     CredentialsProvider({
       name: "Credenciales",
@@ -30,7 +30,7 @@ const handler = NextAuth({
           return {
             id: user.id,
             email: user.email,
-            nombre: user.nombre,
+            nombre: user.nombre || undefined,
           };
         } catch (error) {
           console.error("Error en authorize:", error);
@@ -44,13 +44,13 @@ const handler = NextAuth({
     }),
   ],
   session: {
-    strategy: "jwt",
+    strategy: "jwt" as const,
   },
   pages: {
     signIn: "/ingreso-cliente",
   },
   callbacks: {
-    async jwt({ token, user, account, profile }) {
+    async jwt({ token, user, account, profile }: any) {
       // Lógica para Google
       if (account?.provider === 'google') {
         // Buscar usuario en la base de datos
@@ -61,7 +61,6 @@ const handler = NextAuth({
             data: {
               email: token.email,
               nombre: profile?.name || '',
-              // Google no provee contraseña, se deja vacía o null
               password: '',
               telefono: '',
               genero: '',
@@ -69,8 +68,13 @@ const handler = NextAuth({
               nacionalidad: '',
             },
           });
-          // Enviar correo de bienvenida
           await sendBienvenidaEmail(token.email || '', profile?.name || '');
+        } else if (!dbUser.nombre && profile?.name) {
+          // Si ya existe pero no tiene nombre, actualizarlo
+          dbUser = await prisma.usuarios_global.update({
+            where: { email: token.email },
+            data: { nombre: profile.name }
+          });
         }
         token.id = dbUser.id;
         token.nombre = dbUser.nombre;
@@ -83,7 +87,7 @@ const handler = NextAuth({
       }
       return token;
     },
-    async session({ session, token }) {
+    async session({ session, token }: any) {
       if (token) {
         if (!session.user) session.user = {};
         session.user.id = token.id;
@@ -92,11 +96,13 @@ const handler = NextAuth({
       }
       return session;
     },
-    async redirect({ url, baseUrl }) {
+    async redirect({ url, baseUrl }: any) {
       // Redirigir siempre a /area-personal tras login exitoso
       return `${baseUrl}/area-personal`;
     },
   },
-});
+};
+
+const handler = NextAuth(authOptions);
 
 export { handler as GET, handler as POST }; 

@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import Navbar from "../components/Navbar";
+import ConditionalNavbar from "../components/ConditionalNavbar";
 import './fonts.css';
 import Footer from "../components/Footer";
 import WhatsappButton from '../components/WhatsappButton';
+import Providers from "../components/Providers";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -31,12 +32,14 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <Navbar />
-        <main>
-          {children}
-          <WhatsappButton />
-        </main>
-        <Footer />
+        <Providers>
+          <ConditionalNavbar />
+          <main>
+            {children}
+            <WhatsappButton />
+          </main>
+          <Footer />
+        </Providers>
       </body>
     </html>
   );

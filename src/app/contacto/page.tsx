@@ -165,7 +165,15 @@ export default function Contacto() {
             </div>
           </div>
           <div className="w-full flex justify-center mt-8">
-            <a href="mailto:atencion.cliente@globalexpressrecruiting.com" className="inline-block bg-[#00E6F6] text-white font-bold px-10 py-4 rounded-full shadow-lg hover:bg-[#00bcd4] transition-colors text-lg">
+            <a 
+              href="https://mail.google.com/mail/?view=cm&fs=1&to=atencion.cliente@globalexpressrecruiting.com&su=Consulta%20Global%20Express%20Recruiting&body=Estimados%20señores%20de%20Global%20Express%20Recruiting%2C%0A%0AMe%20dirijo%20a%20ustedes%20para%20solicitar%20información%20sobre%20sus%20servicios%20de%20migración%20laboral.%0A%0AMis%20datos%20son%3A%0A-%20Nombre%3A%0A-%20Teléfono%3A%0A-%20País%20de%20origen%3A%0A%0AMi%20consulta%20es%3A%0A%0A%0A%0AAgradezco%20su%20atención.%0A%0ASaludos%20cordiales%2C" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="inline-block bg-[#00E6F6] text-white font-bold px-10 py-4 rounded-full shadow-lg hover:bg-[#00bcd4] transition-colors text-lg flex items-center gap-2"
+            >
+              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+              </svg>
               Enviar correo
             </a>
           </div>

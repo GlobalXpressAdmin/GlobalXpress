@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 
 export default function EligibilitySection() {
   return (
@@ -25,9 +26,11 @@ export default function EligibilitySection() {
             Postúlese hoy y dé el primer paso hacia su nueva vida.
           </p>
           <div className="flex flex-col items-start">
-            <button className="bg-white text-[#005c82] font-semibold px-8 py-3 rounded-lg text-lg shadow hover:bg-gray-100 transition-all">
-              APLICAR AHORA
-            </button>
+            <Link href="/todas-vacantes">
+              <button className="bg-white text-[#005c82] font-semibold px-8 py-3 rounded-lg text-lg shadow hover:bg-gray-100 transition-all">
+                APLICAR AHORA
+              </button>
+            </Link>
           </div>
         </div>
         {/* Puntos decorativos a la derecha */}

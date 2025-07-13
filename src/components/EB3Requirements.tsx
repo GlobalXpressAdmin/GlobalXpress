@@ -49,9 +49,9 @@ export default function EB3Requirements() {
         {/* Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
           {requirements.map((req, idx) => (
-            <div key={idx} className="relative border-2 border-[#00d6f7] rounded-xl p-6 bg-white flex flex-col items-start min-h-[220px]">
+            <div key={idx} className={`relative border-2 border-[#00d6f7] rounded-xl p-6 pt-16 bg-white flex flex-col items-start min-h-[220px] ${idx >= 4 ? 'mt-12' : ''}`}>
               {/* Check grande */}
-              <svg width="56" height="56" viewBox="0 0 56 56" fill="none" className="absolute -top-8 left-1/2 -translate-x-1/2">
+              <svg width="56" height="56" viewBox="0 0 56 56" fill="none" className="absolute -top-10 left-1/2 -translate-x-1/2">
                 <path d="M14 30l8 8 20-20" stroke="#00d6f7" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
               <h3 className="font-bold text-lg mb-2 mt-6 text-black">{req.title}</h3>

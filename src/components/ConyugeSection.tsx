@@ -1,3 +1,6 @@
+import React from 'react';
+import Link from 'next/link';
+
 export default function ConyugeSection() {
   return (
     <section className="w-full bg-white py-12 px-6 flex flex-col md:flex-row items-center justify-center gap-10 md:gap-20">
@@ -28,12 +31,12 @@ export default function ConyugeSection() {
         </h3>
 
         {/* Botón */}
-        <a
-          href="#programa-dual"
+        <Link
+          href="/programas/dual-placement"
           className="inline-block mt-6 bg-[#003865] text-white px-6 py-3 rounded-md text-sm font-semibold hover:bg-[#002e56] transition"
         >
           IR AL PROGRAMA
-        </a>
+        </Link>
       </div>
     </section>
   );

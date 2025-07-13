@@ -4,6 +4,7 @@ import { Navigation, Pagination } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
+import Link from 'next/link';
 
 function Card({ icon, text }: { icon: React.ReactNode; text: string }) {
   return (
@@ -40,9 +41,11 @@ export default function EB3Section() {
           <p className="text-gray-700 mb-2">
             Un proceso migratorio seguro, estructurado y conforme a la ley.
           </p>
-          <button className="bg-[#003b5c] text-white px-6 py-2 rounded hover:bg-[#005c82] transition w-fit mt-4 mb-8">
-            Postúlese ahora
-          </button>
+          <Link href="/todas-vacantes">
+            <button className="bg-[#003b5c] text-white px-6 py-2 rounded hover:bg-[#005c82] transition w-fit mt-4 mb-8">
+              Postúlese ahora
+            </button>
+          </Link>
           {/* Línea y bloque derecho */}
           <div className="mt-2 border-t-4 border-cyan-400 pt-4 text-right">
             <p className="text-gray-800">
