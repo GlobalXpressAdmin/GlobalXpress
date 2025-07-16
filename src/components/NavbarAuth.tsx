@@ -99,7 +99,6 @@ const NavbarAuth = () => {
     { name: 'Mis Postulaciones', href: '/area-personal/postulaciones', icon: DocumentTextIcon },
     { name: 'Pagos', href: '/area-personal/pagos', icon: CreditCardIcon },
     { name: 'Comunicación', href: '/area-personal/comunicacion', icon: ChatBubbleLeftRightIcon },
-    { name: 'Documentos', href: '/area-personal/documentos', icon: FolderIcon },
   ];
 
   const utilityItems = [
@@ -107,6 +106,59 @@ const NavbarAuth = () => {
     { name: 'Soporte', href: '/area-personal/soporte', icon: QuestionMarkCircleIcon },
     { name: 'Configuración', href: '/area-personal/configuracion', icon: Cog6ToothIcon },
   ];
+
+  const [isNotifDropdownOpen, setIsNotifDropdownOpen] = useState(false);
+  const notifDropdownRef = useRef<HTMLDivElement>(null);
+  const [notificaciones, setNotificaciones] = useState<any[]>([]);
+  const [loadingNotifs, setLoadingNotifs] = useState(false);
+  const [errorNotifs, setErrorNotifs] = useState('');
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  // Cerrar dropdown de notificaciones al hacer click fuera
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        notifDropdownRef.current &&
+        !notifDropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsNotifDropdownOpen(false);
+      }
+    };
+    if (isNotifDropdownOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    } else {
+      document.removeEventListener('mousedown', handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isNotifDropdownOpen]);
+
+  // Fetch notificaciones
+  useEffect(() => {
+    async function fetchNotifs() {
+      if (!session?.user?.email) return;
+      setLoadingNotifs(true);
+      setErrorNotifs('');
+      try {
+        const res = await fetch(`/api/notificaciones?email=${session.user.email}`);
+        const data = await res.json();
+        if (data.ok && data.notificaciones) {
+          setNotificaciones(data.notificaciones);
+          setUnreadCount(data.notificaciones.filter((n:any) => !n.leida).length);
+        } else {
+          setNotificaciones([]);
+          setUnreadCount(0);
+        }
+      } catch (e) {
+        setErrorNotifs('Error al cargar notificaciones.');
+        setNotificaciones([]);
+        setUnreadCount(0);
+      }
+      setLoadingNotifs(false);
+    }
+    if (isNotifDropdownOpen) fetchNotifs();
+  }, [isNotifDropdownOpen, session?.user?.email]);
 
   return (
     <>
@@ -147,15 +199,60 @@ const NavbarAuth = () => {
             <div className="hidden lg:flex lg:items-center lg:space-x-4">
               
               {/* Notificaciones */}
-              <Link
-                href="/area-personal/notificaciones"
-                className="relative p-2 text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-md transition-colors duration-200"
-              >
-                <BellIcon className="h-5 w-5" />
-                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                  3
-                </span>
-              </Link>
+              <div className="relative" ref={notifDropdownRef}>
+                <button
+                  onClick={e => {
+                    e.stopPropagation();
+                    setIsNotifDropdownOpen(open => !open);
+                  }}
+                  className="relative p-2 text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-md transition-colors duration-200 focus:outline-none"
+                  aria-haspopup="true"
+                  aria-expanded={isNotifDropdownOpen ? 'true' : 'false'}
+                >
+                  <BellIcon className="h-5 w-5" />
+                  {unreadCount > 0 && (
+                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center animate-pulse">
+                      {unreadCount}
+                    </span>
+                  )}
+                </button>
+                {isNotifDropdownOpen && (
+                  <div className="absolute right-0 mt-2 w-96 bg-white border border-gray-100 rounded-xl shadow-2xl z-50 animate-fadein" onClick={e => e.stopPropagation()}>
+                    <div className="px-6 pt-5 pb-3 border-b border-gray-100 flex items-center justify-between">
+                      <span className="font-semibold text-gray-900 text-base">Notificaciones</span>
+                      {loadingNotifs && <span className="text-xs text-gray-400 ml-2">Cargando...</span>}
+                    </div>
+                    <div className="max-h-96 overflow-y-auto p-4">
+                      {errorNotifs ? (
+                        <div className="text-center text-red-500 py-8">{errorNotifs}</div>
+                      ) : notificaciones.length === 0 ? (
+                        <div className="text-center text-gray-400 py-8">No tienes notificaciones.</div>
+                      ) : (
+                        <div className="space-y-4">
+                          {notificaciones.slice(0,5).map((notif:any) => (
+                            <div key={notif.id} className={`flex items-start space-x-3 animate-fadein ${!notif.leida ? 'bg-blue-50 border-l-4 border-blue-400' : ''} rounded-lg px-3 py-2 transition-all`}> 
+                              <div className={`flex-shrink-0 w-2 h-2 rounded-full mt-2 ${!notif.leida ? 'bg-blue-500' : 'bg-gray-300'}`}></div>
+                              <div className="flex-1 min-w-0">
+                                <p className="text-sm text-gray-900 font-medium">{notif.titulo}</p>
+                                <p className="text-sm text-gray-600">{notif.mensaje}</p>
+                                <p className="text-xs text-gray-400 mt-1">{new Date(notif.creada_en).toLocaleString('es-ES', { dateStyle: 'medium', timeStyle: 'short' })}</p>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                    <div className="border-t border-gray-100 px-6 py-3 text-right">
+                      <button
+                        className="text-sm font-medium text-blue-600 hover:text-blue-500 transition-colors duration-200"
+                        onClick={() => setIsNotifDropdownOpen(false)}
+                      >
+                        Ver todas las notificaciones
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
 
               {/* Perfil del usuario */}
               <div className="relative" ref={profileDropdownRef}>

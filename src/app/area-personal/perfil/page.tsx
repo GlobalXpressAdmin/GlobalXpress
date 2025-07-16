@@ -50,6 +50,29 @@ export default function PerfilPage() {
   ];
   const INDICATIVOS_CODES = INDICATIVOS.map(i => i.code);
 
+  const camposObligatorios = [
+    { key: 'nombre', label: 'Nombre completo' },
+    { key: 'telefono', label: 'Teléfono' },
+    { key: 'nacionalidad', label: 'Nacionalidad' },
+    { key: 'fechaNacimiento', label: 'Fecha de nacimiento' },
+    { key: 'genero', label: 'Género' },
+  ];
+  const totalCampos = camposObligatorios.length;
+  const camposCompletos = [
+    formData.nombre,
+    formData.telefono,
+    formData.nacionalidad,
+    formData.fechaNacimiento,
+    formData.genero
+  ].filter(Boolean);
+  const completitud = Math.round((camposCompletos.length / totalCampos) * 100);
+  const camposFaltantes = [];
+  if (!formData.nombre) camposFaltantes.push('Nombre completo');
+  if (!formData.telefono) camposFaltantes.push('Teléfono');
+  if (!formData.nacionalidad) camposFaltantes.push('Nacionalidad');
+  if (!formData.fechaNacimiento) camposFaltantes.push('Fecha de nacimiento');
+  if (!formData.genero) camposFaltantes.push('Género');
+
   useEffect(() => {
     if (status === 'unauthenticated') {
       router.push('/ingreso-cliente');
@@ -330,6 +353,17 @@ export default function PerfilPage() {
         {/* Mensaje de éxito o error */}
         {successMsg && <div className="bg-green-50 border border-green-200 text-green-700 rounded-lg px-4 py-2 text-center text-sm animate-fadein">{successMsg}</div>}
         {errorMsg && <div className="bg-red-50 border border-red-200 text-red-700 rounded-lg px-4 py-2 text-center text-sm animate-fadein">{errorMsg}</div>}
+
+        {/* Barra de progreso de completitud de perfil */}
+        <div className="w-full bg-gray-100 rounded-full h-4 mb-4">
+          <div className="bg-blue-500 h-4 rounded-full transition-all duration-500" style={{ width: `${completitud}%` }}></div>
+        </div>
+        <p className="text-sm text-gray-500 mb-2">Tu perfil está {completitud}% completo.</p>
+        {completitud < 100 && (
+          <div className="bg-yellow-50 border border-yellow-200 text-yellow-800 rounded-lg px-4 py-2 text-center text-sm animate-fadein mb-4">
+            <span className="font-semibold">¡Completa tu perfil!</span> Faltan los siguientes campos: {camposFaltantes.join(', ')}
+          </div>
+        )}
 
         {/* Card de datos personales */}
         <form onSubmit={handleSubmit} className="flex flex-col gap-6">

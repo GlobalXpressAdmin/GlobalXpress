@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '../../../../lib/prisma';
+import { PrismaClient } from '@prisma/client';
 
 export async function GET(req: NextRequest) {
   try {
@@ -37,6 +38,32 @@ export async function GET(req: NextRequest) {
     // Si hay usuarios, devolver el primero como prueba
     if (usuarios.length > 0) {
       const usuario = usuarios[0];
+      // Al obtener el perfil:
+      const faltantes = [];
+      if (!usuario.nombre) faltantes.push('nombre');
+      if (!usuario.telefono) faltantes.push('telefono');
+      if (!usuario.nacionalidad) faltantes.push('nacionalidad');
+      if (!usuario.fecha_nacimiento) faltantes.push('fecha_nacimiento');
+      if (!usuario.genero) faltantes.push('genero');
+      if (faltantes.length > 0) {
+        const yaExiste = await prisma.notificacion.findFirst({
+          where: {
+            usuario_id: usuario.id,
+            tipo: 'RECORDATORIO_PERFIL',
+            leida: false
+          }
+        });
+        if (!yaExiste) {
+          await prisma.notificacion.create({
+            data: {
+              usuario_id: usuario.id,
+              titulo: 'Completa tu perfil para una mejor experiencia',
+              mensaje: 'Faltan datos importantes en tu perfil. Completa tu información para acceder a todas las funcionalidades y recibir una experiencia personalizada.',
+              tipo: 'RECORDATORIO_PERFIL'
+            }
+          });
+        }
+      }
       return NextResponse.json({ 
         ok: true, 
         usuario: {
@@ -96,6 +123,56 @@ export async function POST(req: NextRequest) {
           usuariosDisponibles: todosUsuarios
         }
       }, { status: 404 });
+    }
+
+    // Lógica profesional de notificación de perfil incompleto
+    const faltantes = [];
+    if (!usuario.nombre) faltantes.push('nombre');
+    if (!usuario.telefono) faltantes.push('telefono');
+    if (!usuario.nacionalidad) faltantes.push('nacionalidad');
+    if (!usuario.fecha_nacimiento) faltantes.push('fecha_nacimiento');
+    if (!usuario.genero) faltantes.push('genero');
+
+    const notiExistente = await prisma.notificacion.findFirst({
+      where: {
+        usuario_id: usuario.id,
+        tipo: 'RECORDATORIO_PERFIL',
+      }
+    });
+
+    if (faltantes.length > 0) {
+      if (notiExistente) {
+        // Si ya existe, actualizarla (marcar como no leída y actualizar fecha)
+        await prisma.notificacion.update({
+          where: { id: notiExistente.id },
+          data: {
+            leida: false,
+            creada_en: new Date(),
+            titulo: 'Completa tu perfil para una mejor experiencia',
+            mensaje: 'Faltan datos importantes en tu perfil. Completa tu información para acceder a todas las funcionalidades y recibir una experiencia personalizada.'
+          }
+        });
+      } else {
+        // Si no existe, crearla
+        await prisma.notificacion.create({
+          data: {
+            usuario_id: usuario.id,
+            titulo: 'Completa tu perfil para una mejor experiencia',
+            mensaje: 'Faltan datos importantes en tu perfil. Completa tu información para acceder a todas las funcionalidades y recibir una experiencia personalizada.',
+            tipo: 'RECORDATORIO_PERFIL'
+          }
+        });
+      }
+    } else if (notiExistente) {
+      // Si el perfil está completo y existen notificaciones RECORDATORIO_PERFIL, marcarlas todas como leídas
+      await prisma.notificacion.updateMany({
+        where: {
+          usuario_id: usuario.id,
+          tipo: 'RECORDATORIO_PERFIL',
+          leida: false
+        },
+        data: { leida: true }
+      });
     }
 
     return NextResponse.json({ 

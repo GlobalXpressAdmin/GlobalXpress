@@ -59,7 +59,7 @@ export default function Postulacion() {
             <div className="bg-gray-100 flex items-center px-6 py-4 text-lg border-t border-white">{vacante.workers || 'No especificado'}</div>
           </div>
           {/* Formulario multipaso debajo de la descripción */}
-          <MultiStepForm />
+          <MultiStepForm vacante={vacante} />
         </div>
       )}
       {/* Aquí irá el contenido de la página de postulación */}
@@ -68,7 +68,7 @@ export default function Postulacion() {
 }
 
 // Implementación multipaso profesional de MultiStepForm según las imágenes y requerimientos del usuario.
-function MultiStepForm() {
+function MultiStepForm({ vacante }: { vacante: any }) {
   const router = useRouter();
   const [step, setStep] = useState(1);
   const [form, setForm] = useState({
@@ -173,6 +173,14 @@ function MultiStepForm() {
         aceptaTerminos: form.aceptaTerminos ? 'SI' : 'NO',
         aceptaComunicaciones: form.aceptaComunicaciones ? 'SI' : 'NO',
         aceptaDatos: form.aceptaDatos ? 'SI' : 'NO',
+        // Datos de la vacante:
+        empresa: vacante.empresa,
+        cargo: vacante.cargo,
+        salario: vacante.salario,
+        descripcion: vacante.descripcion,
+        emailVacante: vacante.email,
+        workers: vacante.workers,
+        link: vacante.link,
       };
       
       // Enviar datos al backend

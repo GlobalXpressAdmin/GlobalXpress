@@ -22,6 +22,10 @@ export default function AreaPersonal() {
   const router = useRouter();
   const [nombrePostulacion, setNombrePostulacion] = useState<string | null>(null);
   const [loadingNombre, setLoadingNombre] = useState(false);
+  const [stats, setStats] = useState({ postulaciones: 0, mensajesNuevos: 0 });
+  const [postulacionesRecientes, setPostulacionesRecientes] = useState<any[]>([]);
+  const [loadingStats, setLoadingStats] = useState(true);
+  const [errorStats, setErrorStats] = useState('');
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -51,6 +55,36 @@ export default function AreaPersonal() {
     }
   }, [session?.user]);
 
+  useEffect(() => {
+    async function fetchStats() {
+      if (!session?.user?.email) return;
+      setLoadingStats(true);
+      setErrorStats('');
+      try {
+        // Fetch postulaciones
+        const resPost = await fetch(`/api/postulaciones?email=${session.user.email}`);
+        const dataPost = await resPost.json();
+        let postulaciones = [];
+        if (dataPost.ok && dataPost.postulaciones) {
+          postulaciones = dataPost.postulaciones;
+        }
+        // Fetch mensajes
+        const resMsg = await fetch(`/api/comunicacion?email=${session.user.email}`);
+        const dataMsg = await resMsg.json();
+        let mensajesNuevos = 0;
+        if (dataMsg.ok && dataMsg.comunicaciones) {
+          mensajesNuevos = dataMsg.comunicaciones.filter((c:any) => c.estado === 'PENDIENTE').length;
+        }
+        setStats({ postulaciones: postulaciones.length, mensajesNuevos });
+        setPostulacionesRecientes(postulaciones.slice(0, 3));
+      } catch (e) {
+        setErrorStats('Error al cargar los datos.');
+      }
+      setLoadingStats(false);
+    }
+    fetchStats();
+  }, [session?.user?.email]);
+
   if (status === 'loading' || loadingNombre) {
     return (
       <div className="min-h-screen bg-[#F7F9FC] flex items-center justify-center">
@@ -64,57 +98,13 @@ export default function AreaPersonal() {
   }
 
   // Datos de ejemplo - estos vendrían de la base de datos
-  const stats = {
-    postulaciones: 3,
-    pagosPendientes: 1,
-    mensajesNuevos: 2,
-    documentosPendientes: 1,
-  };
-
-  const postulacionesRecientes = [
-    {
-      id: 1,
-      programa: 'Visa EB-3',
-      estado: 'En Revisión',
-      fecha: '2024-01-15',
-      icon: ClockIcon,
-      color: 'text-yellow-600',
-      bgColor: 'bg-yellow-50',
-    },
-    {
-      id: 2,
-      programa: 'Sky Masters',
-      estado: 'Aprobada',
-      fecha: '2024-01-10',
-      icon: CheckCircleIcon,
-      color: 'text-green-600',
-      bgColor: 'bg-green-50',
-    },
-    {
-      id: 3,
-      programa: 'Global Academic',
-      estado: 'Pendiente',
-      fecha: '2024-01-08',
-      icon: ExclamationTriangleIcon,
-      color: 'text-orange-600',
-      bgColor: 'bg-orange-50',
-    },
-  ];
-
   const accionesRapidas = [
     {
       title: 'Nueva Postulación',
       description: 'Aplicar a un nuevo programa',
-      href: '/postulacion',
+      href: '/todas-vacantes',
       icon: DocumentTextIcon,
       color: 'bg-blue-500 hover:bg-blue-600',
-    },
-    {
-      title: 'Realizar Pago',
-      description: 'Pagar facturas pendientes',
-      href: '/area-personal/pagos',
-      icon: CreditCardIcon,
-      color: 'bg-green-500 hover:bg-green-600',
     },
     {
       title: 'Contactar Asesor',
@@ -122,13 +112,6 @@ export default function AreaPersonal() {
       href: '/area-personal/comunicacion',
       icon: ChatBubbleLeftRightIcon,
       color: 'bg-purple-500 hover:bg-purple-600',
-    },
-    {
-      title: 'Ver Documentos',
-      description: 'Gestionar documentación',
-      href: '/area-personal/documentos',
-      icon: UserGroupIcon,
-      color: 'bg-orange-500 hover:bg-orange-600',
     },
   ];
 
@@ -142,25 +125,11 @@ export default function AreaPersonal() {
       border: 'border-blue-100',
     },
     {
-      label: 'Pagos Pendientes',
-      value: stats.pagosPendientes,
-      icon: <CreditCardIcon className="h-7 w-7 text-green-500" />,
-      bg: 'bg-green-50',
-      border: 'border-green-100',
-    },
-    {
-      label: 'Mensajes Nuevos',
+      label: 'Mensajes Enviados a Soporte',
       value: stats.mensajesNuevos,
       icon: <ChatBubbleLeftRightIcon className="h-7 w-7 text-purple-500" />,
       bg: 'bg-purple-50',
       border: 'border-purple-100',
-    },
-    {
-      label: 'Documentos Pendientes',
-      value: stats.documentosPendientes,
-      icon: <UserGroupIcon className="h-7 w-7 text-orange-500" />,
-      bg: 'bg-orange-50',
-      border: 'border-orange-100',
     },
   ];
 
@@ -183,16 +152,22 @@ export default function AreaPersonal() {
 
       {/* Cards de resumen */}
       <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-14 px-4 animate-fadein relative z-10">
-        {resumenCards.map((card, i) => (
-          <div key={card.label} className={`flex items-center gap-4 p-6 rounded-2xl shadow-xl border border-gray-100 bg-white/70 backdrop-blur-md transition-transform duration-200 hover:scale-[1.03] hover:shadow-2xl relative overflow-hidden`} style={{ minHeight: '110px' }}>
-            <div className={`absolute left-0 top-0 h-full w-2 rounded-l-2xl ${card.border} ${i === 0 ? 'bg-blue-500' : i === 1 ? 'bg-green-500' : i === 2 ? 'bg-purple-500' : 'bg-orange-500'}`}></div>
-            <div className="flex-shrink-0 ml-2">{card.icon}</div>
-            <div className="ml-2">
-              <p className="text-sm font-medium text-gray-500">{card.label}</p>
-              <p className="text-2xl font-extrabold text-gray-900">{card.value}</p>
+        {loadingStats ? (
+          <div className="col-span-2 text-center text-gray-400 py-8">Cargando datos...</div>
+        ) : errorStats ? (
+          <div className="col-span-2 text-center text-red-500 py-8">{errorStats}</div>
+        ) : (
+          resumenCards.map((card, i) => (
+            <div key={card.label} className={`flex items-center gap-4 p-6 rounded-2xl shadow-xl border border-gray-100 bg-white/70 backdrop-blur-md transition-transform duration-200 hover:scale-[1.03] hover:shadow-2xl relative overflow-hidden`} style={{ minHeight: '110px' }}>
+              <div className={`absolute left-0 top-0 h-full w-2 rounded-l-2xl ${card.border} ${i === 0 ? 'bg-blue-500' : 'bg-purple-500'}`}></div>
+              <div className="flex-shrink-0 ml-2">{card.icon}</div>
+              <div className="ml-2">
+                <p className="text-sm font-medium text-gray-500">{card.label}</p>
+                <p className="text-2xl font-extrabold text-gray-900">{card.value}</p>
+              </div>
             </div>
-          </div>
-        ))}
+          ))
+        )}
       </div>
 
       {/* Divisor suave */}
@@ -246,21 +221,23 @@ export default function AreaPersonal() {
               <p className="text-sm text-gray-600">Estado de tus últimas aplicaciones</p>
             </div>
             <div className="p-8 flex-1 flex flex-col justify-between">
-              {postulacionesRecientes.length === 0 ? (
+              {loadingStats ? (
+                <div className="text-center text-gray-400 py-8">Cargando postulaciones...</div>
+              ) : postulacionesRecientes.length === 0 ? (
                 <div className="text-center text-gray-400 py-8">No tienes postulaciones recientes.</div>
               ) : (
                 <div className="space-y-5">
                   {postulacionesRecientes.map((postulacion) => (
                     <div key={postulacion.id} className="flex items-center space-x-3 animate-fadein">
-                      <div className={`flex-shrink-0 w-8 h-8 rounded-full ${postulacion.bgColor} flex items-center justify-center`}>
-                        <postulacion.icon className={`h-4 w-4 ${postulacion.color}`} />
+                      <div className="flex-shrink-0 w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center">
+                        <DocumentTextIcon className="h-4 w-4 text-blue-500" />
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium text-gray-900 truncate">
-                          {postulacion.programa}
+                          {postulacion.programa || postulacion.empresa || 'Programa'}
                         </p>
                         <p className="text-sm text-gray-500">
-                          {postulacion.estado} • {postulacion.fecha}
+                          {postulacion.estado_postulacion || 'Estado'} • {postulacion.creado_en ? new Date(postulacion.creado_en).toLocaleDateString() : ''}
                         </p>
                       </div>
                     </div>
@@ -281,56 +258,7 @@ export default function AreaPersonal() {
       </div>
 
       {/* Notificaciones recientes */}
-      <div className="max-w-7xl mx-auto px-4 animate-fadein relative z-10 mt-12">
-        <div className="bg-white rounded-2xl shadow-lg border border-gray-100">
-          <div className="px-8 py-6 border-b border-gray-100">
-            <h2 className="text-lg font-semibold text-gray-900">Notificaciones Recientes</h2>
-          </div>
-          <div className="p-8">
-            {false ? (
-              <div className="text-center text-gray-400 py-8">No tienes notificaciones recientes.</div>
-            ) : (
-              <div className="space-y-5">
-                <div className="flex items-start space-x-3 animate-fadein">
-                  <div className="flex-shrink-0 w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
-                  <div>
-                    <p className="text-sm text-gray-900">
-                      Tu postulación para <strong>Visa EB-3</strong> ha sido recibida y está en revisión.
-                    </p>
-                    <p className="text-xs text-gray-500 mt-1">Hace 2 horas</p>
-                  </div>
-                </div>
-                <div className="flex items-start space-x-3 animate-fadein">
-                  <div className="flex-shrink-0 w-2 h-2 bg-green-500 rounded-full mt-2"></div>
-                  <div>
-                    <p className="text-sm text-gray-900">
-                      Tu postulación para <strong>Sky Masters</strong> ha sido aprobada.
-                    </p>
-                    <p className="text-xs text-gray-500 mt-1">Hace 1 día</p>
-                  </div>
-                </div>
-                <div className="flex items-start space-x-3 animate-fadein">
-                  <div className="flex-shrink-0 w-2 h-2 bg-orange-500 rounded-full mt-2"></div>
-                  <div>
-                    <p className="text-sm text-gray-900">
-                      Tienes un pago pendiente por <strong>$500</strong> para continuar con tu proceso.
-                    </p>
-                    <p className="text-xs text-gray-500 mt-1">Hace 2 días</p>
-                  </div>
-                </div>
-              </div>
-            )}
-            <div className="mt-6">
-              <a
-                href="/area-personal/notificaciones"
-                className="text-sm font-medium text-blue-600 hover:text-blue-500 transition-colors duration-200"
-              >
-                Ver todas las notificaciones →
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
+      {/* Se elimina el bloque de notificaciones recientes para evitar duplicidad visual y dejar la gestión en la barra superior. */}
     </div>
   );
 } 
