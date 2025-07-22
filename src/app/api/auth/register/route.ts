@@ -1,11 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '../../auth/[...nextauth]/route';
-import { PrismaClient } from '@prisma/client';
+import { authOptions } from '../../auth/[...nextauth]/authOptions';
+import { prisma } from '../../../../lib/prisma';
 import bcrypt from 'bcryptjs';
 import { sendBienvenidaEmail } from '../../../../lib/sendBienvenidaEmail';
-
-const prisma = new PrismaClient();
 
 export async function POST(req: NextRequest) {
   try {
