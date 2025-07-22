@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '../../../lib/prisma';
-import { Prisma } from '@prisma/client';
 
 export async function POST(req: NextRequest) {
   try {
@@ -167,7 +166,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ ok: false, error: `Faltan campos obligatorios: ${missing.join(', ')}` }, { status: 400 });
     }
 
-    // Type assertion profesional para cumplir con Prisma y TypeScript
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const postulacion = await prisma.postulacionTrabajo.create({
       data: cleanData as any,
     });
