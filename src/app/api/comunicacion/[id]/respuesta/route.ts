@@ -1,10 +1,10 @@
 // Mejorada: usa 'Request' estándar y validaciones robustas
 import { prisma } from '../../../../../lib/prisma';
 
-export async function POST(request: Request, context?: { params?: { id: string } }) {
-  const params = context?.params;
+export async function POST(request: Request, context: { params: { id: string } }) {
+  const { id } = context.params;
   try {
-    if (!params?.id) {
+    if (!id) {
       return new Response(JSON.stringify({ ok: false, error: 'Falta el ID de la comunicación.' }), { status: 400 });
     }
     let data: { mensaje?: string; autor?: string };
@@ -20,19 +20,19 @@ export async function POST(request: Request, context?: { params?: { id: string }
     // Crear la respuesta
     const respuesta = await prisma.respuestaComunicacion.create({
       data: {
-        comunicacion_id: params.id,
+        comunicacion_id: id,
         autor,
         mensaje,
       },
     });
     // Actualizar estado de la comunicación
     await prisma.comunicacion.update({
-      where: { id: params.id },
+      where: { id },
       data: { estado: 'RESPONDIDO' },
     });
     // Obtener la comunicación para acceder al usuario
     const comunicacion = await prisma.comunicacion.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: { usuario: true },
     });
     if (comunicacion && autor === 'ADMIN') {
@@ -42,7 +42,7 @@ export async function POST(request: Request, context?: { params?: { id: string }
       try {
         const notiExistente = await prisma.notificacion.findFirst({
           where: {
-            referencia: params.id,
+            referencia: id,
             tipo: 'RESPUESTA_SOPORTE',
             mensaje: mensajeNotif,
           }
@@ -64,7 +64,7 @@ export async function POST(request: Request, context?: { params?: { id: string }
               titulo,
               mensaje: mensajeNotif,
               tipo: 'RESPUESTA_SOPORTE',
-              referencia: params.id
+              referencia: id
             }
           });
         }
