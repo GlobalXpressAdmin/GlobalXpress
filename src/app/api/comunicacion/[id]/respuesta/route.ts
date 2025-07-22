@@ -18,11 +18,14 @@ export async function POST(request: NextRequest, context: any) {
     if (!mensaje) {
       return NextResponse.json({ ok: false, error: 'Falta el mensaje de respuesta.' }, { status: 400 });
     }
+    // Validar el autor contra el enum de Prisma
+    const RolAutor = prisma.$Enums.RolAutor;
+    const autorValido = Object.values(RolAutor).includes(autor as any) ? autor : RolAutor.ADMIN;
     // Crear la respuesta
     const respuesta = await prisma.respuestaComunicacion.create({
       data: {
         comunicacion_id: id,
-        autor,
+        autor: autorValido,
         mensaje,
       },
     });
@@ -36,7 +39,7 @@ export async function POST(request: NextRequest, context: any) {
       where: { id },
       include: { usuario: true },
     });
-    if (comunicacion && autor === 'ADMIN') {
+    if (comunicacion && autorValido === RolAutor.ADMIN) {
       // Crear notificación automática profesional de respuesta de soporte
       const titulo = 'Respuesta de soporte';
       const mensajeNotif = 'El equipo de soporte ha respondido a tu mensaje. Revisa tu conversación para ver la respuesta.';
