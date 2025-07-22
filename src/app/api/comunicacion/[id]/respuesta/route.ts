@@ -1,8 +1,8 @@
 // Mejorada: usa 'Request' estándar y validaciones robustas
 import { prisma } from '../../../../../lib/prisma';
 
-export async function POST(request: Request, context: { params: { id: string } }) {
-  const { params } = context;
+export async function POST(request: Request, context?: any) {
+  const params = context?.params;
   try {
     if (!params?.id) {
       return new Response(JSON.stringify({ ok: false, error: 'Falta el ID de la comunicación.' }), { status: 400 });
