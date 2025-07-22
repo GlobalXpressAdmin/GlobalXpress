@@ -83,7 +83,7 @@ export const authOptions = {
           });
         }
         token.id = dbUser.id;
-        token.nombre = dbUser.nombre;
+        token.nombre = dbUser.nombre ?? undefined;
       }
       // Lógica para credenciales
       if (user) {
