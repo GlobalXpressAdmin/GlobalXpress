@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '../../../lib/prisma';
-import { Prisma } from '../../../generated/prisma';
 
 export async function POST(req: NextRequest) {
   try {
@@ -130,7 +129,7 @@ export async function POST(req: NextRequest) {
     // Filtra los campos undefined
     const cleanData = Object.fromEntries(
       Object.entries(postulacionData).filter((entry) => entry[1] !== undefined)
-    ) as any;
+    ) as Record<string, unknown>;
 
     // Valida que todos los campos requeridos estén presentes
     const missing = requiredFields.filter(field => !(field in cleanData));
