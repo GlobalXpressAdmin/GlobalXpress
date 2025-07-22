@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '../../../lib/prisma';
+import { Prisma } from '@prisma/client';
 
 export async function POST(req: NextRequest) {
   try {
@@ -126,10 +127,39 @@ export async function POST(req: NextRequest) {
       // Agrega aquí todos los campos que NO son opcionales en tu modelo
     ];
 
-    // Filtra los campos undefined
-    const cleanData = Object.fromEntries(
-      Object.entries(postulacionData).filter((entry) => entry[1] !== undefined)
-    ) as Record<string, unknown>;
+    // Construir cleanData con todos los campos requeridos y opcionales
+    const cleanData = {
+      nombre: postulacionData.nombre,
+      apellido: postulacionData.apellido,
+      email: postulacionData.email,
+      telefono: postulacionData.telefono,
+      pais: postulacionData.pais,
+      ciudad: postulacionData.ciudad,
+      direccion: postulacionData.direccion,
+      visa: postulacionData.visa,
+      empresa: postulacionData.empresa,
+      cargo: postulacionData.cargo,
+      conoceEEUU: postulacionData.conoceEEUU,
+      trabajoSinAutorizacion: postulacionData.trabajoSinAutorizacion,
+      antecedentesMigratorios: postulacionData.antecedentesMigratorios,
+      arrestado: postulacionData.arrestado,
+      saldoMinimo: postulacionData.saldoMinimo,
+      quiereFinanciamiento: postulacionData.quiereFinanciamiento,
+      confirmaRecursos: postulacionData.confirmaRecursos,
+      aceptaTerminos: postulacionData.aceptaTerminos,
+      aceptaComunicaciones: postulacionData.aceptaComunicaciones,
+      aceptaDatos: postulacionData.aceptaDatos,
+      estado_postulacion: postulacionData.estado_postulacion,
+      programa: postulacionData.programa,
+      // Opcionales:
+      ...(postulacionData.salario !== undefined && { salario: postulacionData.salario }),
+      ...(postulacionData.descripcion !== undefined && { descripcion: postulacionData.descripcion }),
+      ...(postulacionData.emailVacante !== undefined && { emailVacante: postulacionData.emailVacante }),
+      ...(postulacionData.workers !== undefined && { workers: postulacionData.workers }),
+      ...(postulacionData.link !== undefined && { link: postulacionData.link }),
+      ...(postulacionData.notas_admin !== undefined && { notas_admin: postulacionData.notas_admin }),
+      ...(postulacionData.usuario_id !== undefined && { usuario_id: postulacionData.usuario_id }),
+    };
 
     // Valida que todos los campos requeridos estén presentes
     const missing = requiredFields.filter(field => !(field in cleanData));
@@ -139,7 +169,7 @@ export async function POST(req: NextRequest) {
 
     // Type assertion profesional para cumplir con Prisma y TypeScript
     const postulacion = await prisma.postulacionTrabajo.create({
-      data: cleanData,
+      data: cleanData as any,
     });
 
     return NextResponse.json({ 
