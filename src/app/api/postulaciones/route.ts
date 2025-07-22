@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '../../../lib/prisma';
-import { Prisma } from '@prisma/client';
+import { ProgramaEmpleo } from '@prisma/client';
 
 // Definir el tipo de entrada esperado según el modelo de Prisma
 interface PostulacionInput {
@@ -149,7 +149,7 @@ export async function POST(req: NextRequest) {
         aceptaTerminos: String(postulacionData.aceptaTerminos),
         aceptaComunicaciones: String(postulacionData.aceptaComunicaciones),
         aceptaDatos: String(postulacionData.aceptaDatos),
-        programa: postulacionData.programa,
+        programa: postulacionData.programa as ProgramaEmpleo,
         estado_postulacion: 'PENDIENTE' as const,
         ...(usuario_id && { usuario_id }) // Solo incluir usuario_id si existe
       },
