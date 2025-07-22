@@ -10,11 +10,7 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  api: {
-    bodyParser: {
-      sizeLimit: '10mb',
-    },
-  },
+  // La opción 'api' ha sido eliminada porque no es válida en next.config.ts
 };
 
 export default nextConfig;
