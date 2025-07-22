@@ -148,7 +148,7 @@ export async function POST(req: NextRequest) {
         aceptaTerminos: String(postulacionData.aceptaTerminos),
         aceptaComunicaciones: String(postulacionData.aceptaComunicaciones),
         aceptaDatos: String(postulacionData.aceptaDatos),
-        programa: postulacionData.programa as string, // Cast seguro
+        programa: postulacionData.programa,
         estado_postulacion: 'PENDIENTE' as const,
         ...(usuario_id && { usuario_id }) // Solo incluir usuario_id si existe
       },
