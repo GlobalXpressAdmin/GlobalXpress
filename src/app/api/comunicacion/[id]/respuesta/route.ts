@@ -15,8 +15,7 @@ const getRolAutorEnum = () => {
   }
 };
 
-export async function POST(request: NextRequest, { params }: { params: { id: string } }) {
-  const { id } = params;
+export async function POST(request: NextRequest, { id }: { id: string }) {
   const RolAutorEnum = getRolAutorEnum();
   try {
     if (!id) {
