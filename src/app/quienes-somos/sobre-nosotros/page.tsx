@@ -120,7 +120,7 @@ function CarruselTestimonios() {
         </button>
         {/* Caja de testimonio */}
         <div className="bg-white border border-gray-200 rounded-xl shadow p-8 max-w-md min-w-[300px] text-center">
-          <p className="text-gray-700 mb-6">"{testimonios[actual].texto}"</p>
+          <p className="text-gray-700 mb-6">&quot;{testimonios[actual].texto}&quot;</p>
           <div className="font-bold text-[#0D4A7A]">— {testimonios[actual].nombre}</div>
         </div>
         {/* Flecha derecha */}
