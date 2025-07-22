@@ -9,8 +9,6 @@ import {
 } from '@heroicons/react/24/outline';
 
 export default function NuestroEquipo() {
-  const [openIndex, setOpenIndex] = useState<number | null>(null);
-
   const equipo = {
     directivos: [
       {

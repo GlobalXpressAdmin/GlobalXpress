@@ -28,18 +28,6 @@ export default function VacantesCarousel() {
     },
   });
 
-  // Autoplay de uno en uno
-  useEffect(() => {
-    if (!instanceRef.current) return;
-    const interval = setInterval(() => {
-      const totalSlides = vacantes.length;
-      const currentAbs = instanceRef.current?.track.details.abs;
-      const nextIdx = ((currentAbs ?? 0) + 1) % totalSlides;
-      instanceRef.current?.moveToIdx(nextIdx);
-    }, 2000);
-    return () => clearInterval(interval);
-  }, [instanceRef]);
-
   const currentPage = Math.floor(currentSlide / perView);
 
   return (

@@ -33,15 +33,13 @@ export default function VisaEB5() {
     setForm((prev) => ({ ...prev, visa: valor }));
   };
 
-  const [success, setSuccess] = useState('');
-  const [error, setError] = useState('');
   const [intentoEnvio, setIntentoEnvio] = useState(false);
   const [showLegal, setShowLegal] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!form.nombre || !form.apellido || !form.email || !form.telefono || !form.visa || !form.terminos) {
-      setError('Por favor complete todos los campos y acepte los términos.');
+      // setError('Por favor complete todos los campos y acepte los términos.'); // This line was removed
       return;
     }
     try {
@@ -52,14 +50,14 @@ export default function VisaEB5() {
       });
       const data = await res.json();
       if (data.ok) {
-        setSuccess('¡Formulario enviado correctamente!');
+        // setSuccess('¡Formulario enviado correctamente!'); // This line was removed
         setForm({ nombre: '', apellido: '', email: '', telefono: '', visa: '', mensaje: '', terminos: false });
         setIntentoEnvio(false);
       } else {
-        setError(data.error || 'Error al enviar el formulario.');
+        // setError(data.error || 'Error al enviar el formulario.'); // This line was removed
       }
     } catch {
-      setError('Error de conexión.');
+      // setError('Error de conexión.'); // This line was removed
     }
   };
 
