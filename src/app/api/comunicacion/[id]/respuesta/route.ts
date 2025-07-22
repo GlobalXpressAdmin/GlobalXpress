@@ -1,21 +1,22 @@
 // Mejorada: usa 'Request' estándar y validaciones robustas
+import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '../../../../../lib/prisma';
 
-export async function POST(request: Request, context: { params: { id: string } }) {
-  const { id } = context.params;
+export async function POST(request: NextRequest, { params }: { params: { id: string } }) {
+  const { id } = params;
   try {
     if (!id) {
-      return new Response(JSON.stringify({ ok: false, error: 'Falta el ID de la comunicación.' }), { status: 400 });
+      return NextResponse.json({ ok: false, error: 'Falta el ID de la comunicación.' }, { status: 400 });
     }
     let data: { mensaje?: string; autor?: string };
     try {
       data = await request.json();
     } catch {
-      return new Response(JSON.stringify({ ok: false, error: 'El cuerpo de la petición no es JSON válido.' }), { status: 400 });
+      return NextResponse.json({ ok: false, error: 'El cuerpo de la petición no es JSON válido.' }, { status: 400 });
     }
     const { mensaje, autor = 'ADMIN' } = data || {};
     if (!mensaje) {
-      return new Response(JSON.stringify({ ok: false, error: 'Falta el mensaje de respuesta.' }), { status: 400 });
+      return NextResponse.json({ ok: false, error: 'Falta el mensaje de respuesta.' }, { status: 400 });
     }
     // Crear la respuesta
     const respuesta = await prisma.respuestaComunicacion.create({
@@ -72,9 +73,9 @@ export async function POST(request: Request, context: { params: { id: string } }
         console.error('Error al crear notificación:', error);
       }
     }
-    return new Response(JSON.stringify({ ok: true, respuesta }), { status: 200 });
+    return NextResponse.json({ ok: true, respuesta }, { status: 200 });
   } catch (error) {
     console.error('Error al crear respuesta:', error);
-    return new Response(JSON.stringify({ ok: false, error: 'Error interno del servidor.' }), { status: 500 });
+    return NextResponse.json({ ok: false, error: 'Error interno del servidor.' }, { status: 500 });
   }
 } 
