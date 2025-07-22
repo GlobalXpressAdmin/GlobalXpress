@@ -90,7 +90,7 @@ export default function MisPostulaciones() {
     setBusqueda(e.target.value);
   }
 
-  // Función de edición eliminada porque no hay lógica de edición implementada actualmente.
+  // Función de edición eliminada porque no hay lógica de edición implementada actualmente..
 
   function getAllProcesos() {
     // Unifica postulaciones y formularios, normalizando campos
