@@ -84,22 +84,18 @@ export default function PerfilPage() {
       if (session?.user?.email) {
         try {
           console.log('Email de la sesión:', session.user.email);
-          
           // Primero verificar la base de datos
           const resDB = await fetch('/api/debug/database');
           const dataDB = await resDB.json();
           console.log('Estado de la base de datos:', dataDB);
-          
           // Usar directamente el email de la sesión del cliente
           const res = await fetch('/api/usuario/perfil', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email: session.user.email })
           });
-          
           const data = await res.json();
           console.log('Respuesta del servidor:', data);
-          
           if (data.ok) {
             console.log('Datos del perfil cargados:', data.usuario);
             // Limpiar indicativo si no es válido o si tiene texto adicional
@@ -136,11 +132,10 @@ export default function PerfilPage() {
         setIsLoading(false);
       }
     };
-
     if (session) {
       cargarPerfil();
     }
-  }, [session]);
+  }, [session, INDICATIVOS_CODES]);
 
   if (status === 'loading' || isLoading) {
     return (

@@ -49,7 +49,7 @@ export default function MisPostulaciones() {
     } else if (status === 'unauthenticated') {
       router.push('/ingreso-cliente');
     }
-  }, [status]);
+  }, [status, fetchFormularios, fetchPostulaciones, router]);
 
   async function fetchPostulaciones() {
     setLoading(true);
