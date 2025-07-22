@@ -1,5 +1,6 @@
 import { Resend } from "resend";
 import * as React from "react";
+import Image from "next/image";
 
 interface PasswordResetEmailProps {
   nombre: string;
@@ -12,7 +13,7 @@ const PasswordResetEmail = ({ nombre, resetUrl }: PasswordResetEmailProps) => (
       <tbody>
         <tr>
           <td style={{ textAlign: 'center', padding: '32px 0 0 0' }}>
-            <img src="https://globalxpresscol.com/logo_negro.png" alt="GlobalXpress Logo" width="120" style={{ display: 'block', margin: '0 auto 12px auto' }} />
+            <Image src="https://globalxpresscol.com/logo_negro.png" alt="GlobalXpress Logo" width={120} height={40} style={{ display: 'block', margin: '0 auto 12px auto' }} />
           </td>
         </tr>
         <tr>
@@ -21,7 +22,7 @@ const PasswordResetEmail = ({ nombre, resetUrl }: PasswordResetEmailProps) => (
         <tr>
           <td style={{ padding: '32px 40px 0 40px', textAlign: 'center' }}>
             <h1 style={{ color: '#1e3a8a', fontSize: 24, margin: 0, fontWeight: 700, letterSpacing: 0.5 }}>Solicitud de restablecimiento de contraseña</h1>
-            <img src="https://cdn-icons-png.flaticon.com/512/2919/2919600.png" alt="Recuperar contraseña" width="48" style={{ margin: '18px auto 0 auto', display: 'block' }} />
+            <Image src="https://cdn-icons-png.flaticon.com/512/2919/2919600.png" alt="Recuperar contraseña" width={48} height={48} style={{ margin: '18px auto 0 auto', display: 'block' }} />
           </td>
         </tr>
         <tr>
@@ -52,7 +53,7 @@ const PasswordResetEmail = ({ nombre, resetUrl }: PasswordResetEmailProps) => (
         </tr>
         <tr>
           <td style={{ background: '#f4f6f8', borderRadius: '0 0 8px 8px', color: '#888', fontSize: 12, textAlign: 'center', padding: '16px 40px 12px 40px' }}>
-            <img src="https://globalxpresscol.com/logo_negro.png" alt="GlobalXpress Logo" width="40" style={{ display: 'block', margin: '0 auto 8px auto', opacity: 0.7 }} />
+            <Image src="https://globalxpresscol.com/logo_negro.png" alt="GlobalXpress Logo" width={40} height={40} style={{ display: 'block', margin: '0 auto 8px auto', opacity: 0.7 }} />
             <div>© {new Date().getFullYear()} GlobalXpress Colombia<br />
             <span style={{ opacity: 0.7 }}>Correo automático, no responder.</span></div>
           </td>
