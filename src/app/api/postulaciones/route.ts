@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '../../../lib/prisma';
+import { Prisma } from '../../../generated/prisma';
 
 export async function POST(req: NextRequest) {
   try {
@@ -127,9 +128,9 @@ export async function POST(req: NextRequest) {
     ];
 
     // Filtra los campos undefined
-    const cleanData = Object.fromEntries(
+    const cleanData: Prisma.PostulacionTrabajoCreateInput = Object.fromEntries(
       Object.entries(postulacionData).filter((entry) => entry[1] !== undefined)
-    );
+    ) as Prisma.PostulacionTrabajoCreateInput;
 
     // Valida que todos los campos requeridos estén presentes
     const missing = requiredFields.filter(field => !(field in cleanData));
@@ -139,7 +140,7 @@ export async function POST(req: NextRequest) {
 
     // Type assertion profesional para cumplir con Prisma y TypeScript
     const postulacion = await prisma.postulacionTrabajo.create({
-      data: cleanData as unknown,
+      data: cleanData,
     });
 
     return NextResponse.json({ 
