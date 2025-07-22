@@ -1,16 +1,22 @@
-import { NextRequest, NextResponse } from 'next/server';
+// Mejorada: usa 'Request' estándar y validaciones robustas
 import { prisma } from '../../../../../lib/prisma';
 
-export async function POST(req: NextRequest, context: { params: { id: string } }) {
+export async function POST(request: Request, context: { params: { id: string } }) {
   const { params } = context;
   try {
-    const data = await req.json();
-    const { mensaje, autor = 'ADMIN' } = data;
-
-    if (!mensaje) {
-      return NextResponse.json({ ok: false, error: 'Falta el mensaje de respuesta.' }, { status: 400 });
+    if (!params?.id) {
+      return new Response(JSON.stringify({ ok: false, error: 'Falta el ID de la comunicación.' }), { status: 400 });
     }
-
+    let data;
+    try {
+      data = await request.json();
+    } catch {
+      return new Response(JSON.stringify({ ok: false, error: 'El cuerpo de la petición no es JSON válido.' }), { status: 400 });
+    }
+    const { mensaje, autor = 'ADMIN' } = data || {};
+    if (!mensaje) {
+      return new Response(JSON.stringify({ ok: false, error: 'Falta el mensaje de respuesta.' }), { status: 400 });
+    }
     // Crear la respuesta
     const respuesta = await prisma.respuestaComunicacion.create({
       data: {
@@ -19,19 +25,16 @@ export async function POST(req: NextRequest, context: { params: { id: string } }
         mensaje,
       },
     });
-
     // Actualizar estado de la comunicación
     await prisma.comunicacion.update({
       where: { id: params.id },
       data: { estado: 'RESPONDIDO' },
     });
-
     // Obtener la comunicación para acceder al usuario
     const comunicacion = await prisma.comunicacion.findUnique({
       where: { id: params.id },
       include: { usuario: true },
     });
-
     if (comunicacion && autor === 'ADMIN') {
       // Crear notificación automática profesional de respuesta de soporte
       const titulo = 'Respuesta de soporte';
@@ -69,10 +72,9 @@ export async function POST(req: NextRequest, context: { params: { id: string } }
         console.error('Error al crear notificación:', error);
       }
     }
-
-    return NextResponse.json({ ok: true, respuesta });
+    return new Response(JSON.stringify({ ok: true, respuesta }), { status: 200 });
   } catch (error) {
     console.error('Error al crear respuesta:', error);
-    return NextResponse.json({ ok: false, error: 'Error interno del servidor.' }, { status: 500 });
+    return new Response(JSON.stringify({ ok: false, error: 'Error interno del servidor.' }), { status: 500 });
   }
 } 
