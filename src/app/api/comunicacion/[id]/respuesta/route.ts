@@ -2,8 +2,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '../../../../../lib/prisma';
 
-export async function POST(request: NextRequest, { params }: { params: { id: string } }) {
-  const { id } = params;
+export async function POST(request: NextRequest, context: { params: { id: string } }) {
+  const { id } = context.params;
   try {
     if (!id) {
       return NextResponse.json({ ok: false, error: 'Falta el ID de la comunicación.' }, { status: 400 });
