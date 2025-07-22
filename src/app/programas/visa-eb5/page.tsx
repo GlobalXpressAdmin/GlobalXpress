@@ -34,6 +34,7 @@ export default function VisaEB5() {
   };
 
   const [success, setSuccess] = useState('');
+  const [error, setError] = useState('');
   const [intentoEnvio, setIntentoEnvio] = useState(false);
   const [showLegal, setShowLegal] = useState(false);
 
@@ -57,7 +58,7 @@ export default function VisaEB5() {
       } else {
         setError(data.error || 'Error al enviar el formulario.');
       }
-    } catch (err) {
+    } catch {
       setError('Error de conexión.');
     }
   };
@@ -236,8 +237,7 @@ export default function VisaEB5() {
             </div>
             <LegalModal open={showLegal} onClose={() => setShowLegal(false)} />
             <button type="submit" className="bg-[#004876] text-white font-bold py-3 rounded-full mt-4 text-lg">Enviar formulario</button>
-            {error && <div className="text-red-600 text-sm font-bold mt-1">{error}</div>}
-            {success && <div className="text-green-600 text-sm font-bold mt-1">{success}</div>}
+            {/* Los mensajes de error y éxito solo deben mostrarse dentro del formulario, no fuera del componente del formulario */}
           </form>
         </section>
         {/* Mensaje superior en fondo blanco */}

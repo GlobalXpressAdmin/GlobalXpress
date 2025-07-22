@@ -224,7 +224,7 @@ function DualPlacementForm({ showLegal, setShowLegal }: { showLegal: boolean; se
       } else {
         setError(data.error || 'Error al enviar el formulario.');
       }
-    } catch (err) {
+    } catch {
       setError('Error de conexión.');
     }
   };

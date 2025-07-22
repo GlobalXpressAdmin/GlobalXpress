@@ -57,7 +57,7 @@ export default function FormF1Section({ id }: { id?: string }) {
       } else {
         setError(data.error || 'Error al enviar el formulario.');
       }
-    } catch (err) {
+    } catch {
       setError('Error de conexión.');
     }
   };

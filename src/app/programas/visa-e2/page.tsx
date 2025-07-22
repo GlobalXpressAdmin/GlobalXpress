@@ -61,7 +61,7 @@ export default function VisaE2() {
       } else {
         setError(data.error || 'Error al enviar el formulario.');
       }
-    } catch (err) {
+    } catch {
       setError('Error de conexión.');
     }
   };

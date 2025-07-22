@@ -43,7 +43,7 @@ export default function RestablecerContrasena() {
       } else {
         setError(data.error || "Error al restablecer la contraseña.");
       }
-    } catch (err) {
+    } catch {
       setLoading(false);
       setError("Ocurrió un error. Intenta nuevamente.");
     }

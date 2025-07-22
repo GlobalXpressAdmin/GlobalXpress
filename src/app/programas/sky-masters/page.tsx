@@ -108,6 +108,8 @@ function FormValidacionSkyMasters() {
   });
   const [intentoEnvio, setIntentoEnvio] = useState(false);
   const [showLegal, setShowLegal] = useState(false);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value, type } = e.target;
@@ -145,7 +147,7 @@ function FormValidacionSkyMasters() {
       } else {
         setError(data.error || 'Error al enviar el formulario.');
       }
-    } catch (err) {
+    } catch {
       setError('Error de conexión.');
     }
   };

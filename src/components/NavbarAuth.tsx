@@ -41,7 +41,7 @@ const NavbarAuth = () => {
   // Refrescar desde otras partes
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      (window as any).refreshNavbarProfile = () => setRefreshImage(r => r + 1);
+      (window as { refreshNavbarProfile?: () => void }).refreshNavbarProfile = () => setRefreshImage(r => r + 1);
     }
   }, []);
 
@@ -63,7 +63,7 @@ const NavbarAuth = () => {
             setNombre('Usuario');
             setImage('');
           }
-        } catch (err: unknown) {
+        } catch {
           setNombre('Usuario');
           setImage('');
         } finally {
@@ -156,7 +156,7 @@ const NavbarAuth = () => {
           setNotificaciones([]);
           setUnreadCount(0);
         }
-      } catch (err: unknown) {
+      } catch {
         setErrorNotifs('Error al cargar notificaciones.');
         setNotificaciones([]);
         setUnreadCount(0);

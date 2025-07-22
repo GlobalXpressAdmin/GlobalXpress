@@ -43,7 +43,7 @@ export default function VisaEB2NIW() {
       } else {
         setError(data.error || 'Error al enviar el formulario.');
       }
-    } catch (err) {
+    } catch {
       setError('Error de conexión.');
     }
   };

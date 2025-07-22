@@ -9,7 +9,6 @@ import {
 } from '@heroicons/react/24/outline';
 
 export default function NuestroEquipo() {
-  const [activeTab, setActiveTab] = useState('directivos');
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   const equipo = {
