@@ -2,6 +2,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '../../../../../lib/prisma';
 
+// Intentar acceder al enum RolAutor desde el cliente Prisma generado
+let RolAutorEnum: any = undefined;
+try {
+  // Para Prisma >=6
+  RolAutorEnum = require('@prisma/client').Prisma?.RolAutor || require('@prisma/client').Prisma?.$Enums?.RolAutor;
+} catch {
+  // Fallback manual si no existe
+  RolAutorEnum = { USUARIO: 'USUARIO', ADMIN: 'ADMIN' };
+}
+
 export async function POST(request: NextRequest, context: any) {
   const { id } = context.params;
   try {
@@ -18,9 +28,8 @@ export async function POST(request: NextRequest, context: any) {
     if (!mensaje) {
       return NextResponse.json({ ok: false, error: 'Falta el mensaje de respuesta.' }, { status: 400 });
     }
-    // Validar el autor contra el enum de Prisma
-    const RolAutor = prisma.$Enums.RolAutor;
-    const autorValido = Object.values(RolAutor).includes(autor as any) ? autor : RolAutor.ADMIN;
+    // Validar el autor contra el enum de Prisma o fallback
+    const autorValido = Object.values(RolAutorEnum).includes(autor) ? autor : RolAutorEnum.ADMIN;
     // Crear la respuesta
     const respuesta = await prisma.respuestaComunicacion.create({
       data: {
@@ -39,7 +48,7 @@ export async function POST(request: NextRequest, context: any) {
       where: { id },
       include: { usuario: true },
     });
-    if (comunicacion && autorValido === RolAutor.ADMIN) {
+    if (comunicacion && autorValido === RolAutorEnum.ADMIN) {
       // Crear notificación automática profesional de respuesta de soporte
       const titulo = 'Respuesta de soporte';
       const mensajeNotif = 'El equipo de soporte ha respondido a tu mensaje. Revisa tu conversación para ver la respuesta.';
