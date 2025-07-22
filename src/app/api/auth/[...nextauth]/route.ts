@@ -3,13 +3,12 @@ export const runtime = 'nodejs';
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
-import { PrismaClient } from "@prisma/client";
+import { prisma } from '../../../../lib/prisma';
 import { sendBienvenidaEmail } from '../../../../lib/sendBienvenidaEmail';
 import bcrypt from "bcryptjs";
 
-const prisma = new PrismaClient();
-
-export const authOptions = {
+// 'authOptions' solo se usa internamente, no se exporta
+const authOptions = {
   providers: [
     CredentialsProvider({
       name: "Credenciales",
