@@ -3,7 +3,7 @@ import GoogleProvider from "next-auth/providers/google";
 import { prisma } from '../../../../lib/prisma';
 import { sendBienvenidaEmail } from '../../../../lib/sendBienvenidaEmail';
 import bcrypt from "bcryptjs";
-import { Session, User as AdapterUser } from "next-auth";
+import { Session, User as AdapterUser, Account, Profile } from "next-auth";
 import { JWT } from "next-auth/jwt";
 
 export const authOptions = {
@@ -47,17 +47,23 @@ export const authOptions = {
     signIn: "/ingreso-cliente",
   },
   callbacks: {
-    async jwt({ token, user, account, profile }: { token: Record<string, unknown>; user?: { id: string; email: string; nombre?: string }; account?: { provider?: string }; profile?: { name?: string } }) {
+    async jwt(params: {
+      token: JWT;
+      user?: AdapterUser;
+      account?: Account | null;
+      profile?: Profile;
+      trigger?: "update" | "signIn" | "signUp";
+      isNewUser?: boolean;
+      session?: Session;
+    }) {
+      const { token, user, account, profile } = params;
       // Lógica para Google
       if (account?.provider === 'google') {
-        // Validar que token.email es string
         if (typeof token.email !== 'string') {
           return token;
         }
-        // Buscar usuario en la base de datos
         let dbUser = await prisma.usuarios_global.findUnique({ where: { email: token.email } });
         if (!dbUser) {
-          // Crear usuario nuevo
           dbUser = await prisma.usuarios_global.create({
             data: {
               email: token.email,
@@ -71,7 +77,6 @@ export const authOptions = {
           });
           await sendBienvenidaEmail(token.email, profile?.name || '');
         } else if (!dbUser.nombre && profile?.name) {
-          // Si ya existe pero no tiene nombre, actualizarlo
           dbUser = await prisma.usuarios_global.update({
             where: { email: token.email },
             data: { nombre: profile.name }
@@ -99,7 +104,6 @@ export const authOptions = {
       return session;
     },
     async redirect({ baseUrl }: { baseUrl: string }) {
-      // Redirigir siempre a /area-personal tras login exitoso
       return `${baseUrl}/area-personal`;
     },
   },
