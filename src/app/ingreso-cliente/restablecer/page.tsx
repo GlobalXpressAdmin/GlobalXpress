@@ -7,7 +7,7 @@ export default function Restablecer() {
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
 
-  // Si hay token, mostrar el formulario de nueva contraseña
+  // Si hay token, mostrar el formulario de nueva contraseñaa
   if (token) {
     return <NuevaPasswordForm token={token} />;
   }
