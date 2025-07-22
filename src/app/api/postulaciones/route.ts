@@ -116,7 +116,7 @@ export async function POST(req: NextRequest) {
       aceptaTerminos,
       aceptaComunicaciones,
       aceptaDatos,
-      programa: programa as any, // Cast al enum
+      programa: programa as string, // Cast seguro
       estado_postulacion: 'PENDIENTE' as const,
       ...(usuario_id && { usuario_id }) // Solo incluir usuario_id si existe
     };

@@ -64,7 +64,7 @@ export default function AreaPersonal() {
         // Fetch postulaciones
         const resPost = await fetch(`/api/postulaciones?email=${session.user.email}`);
         const dataPost = await resPost.json();
-        let postulaciones = [];
+        let postulaciones: any[] = [];
         if (dataPost.ok && dataPost.postulaciones) {
           postulaciones = dataPost.postulaciones;
         }
@@ -73,7 +73,7 @@ export default function AreaPersonal() {
         const dataMsg = await resMsg.json();
         let mensajesNuevos = 0;
         if (dataMsg.ok && dataMsg.comunicaciones) {
-          mensajesNuevos = dataMsg.comunicaciones.filter((c:any) => c.estado === 'PENDIENTE').length;
+          mensajesNuevos = dataMsg.comunicaciones.filter((c: { estado: string }) => c.estado === 'PENDIENTE').length;
         }
         setStats({ postulaciones: postulaciones.length, mensajesNuevos });
         setPostulacionesRecientes(postulaciones.slice(0, 3));

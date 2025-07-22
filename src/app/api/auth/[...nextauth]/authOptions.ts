@@ -45,7 +45,7 @@ export const authOptions = {
     signIn: "/ingreso-cliente",
   },
   callbacks: {
-    async jwt({ token, user, account, profile }: any) {
+    async jwt({ token, user, account, profile }: { token: Record<string, unknown>; user?: { id: string; email: string; nombre?: string }; account?: { provider?: string }; profile?: { name?: string } }) {
       // Lógica para Google
       if (account?.provider === 'google') {
         // Buscar usuario en la base de datos
@@ -82,7 +82,7 @@ export const authOptions = {
       }
       return token;
     },
-    async session({ session, token }: any) {
+    async session({ session, token }: { session: Record<string, unknown>; token: Record<string, unknown> }) {
       if (token) {
         if (!session.user) session.user = {};
         session.user.id = token.id;
@@ -91,7 +91,7 @@ export const authOptions = {
       }
       return session;
     },
-    async redirect({ url, baseUrl }: any) {
+    async redirect({ baseUrl }: { baseUrl: string }) {
       // Redirigir siempre a /area-personal tras login exitoso
       return `${baseUrl}/area-personal`;
     },

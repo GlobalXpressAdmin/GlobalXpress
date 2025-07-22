@@ -1,13 +1,13 @@
 // Mejorada: usa 'Request' estándar y validaciones robustas
 import { prisma } from '../../../../../lib/prisma';
 
-export async function POST(request: Request, context?: any) {
+export async function POST(request: Request, context?: { params?: { id: string } }) {
   const params = context?.params;
   try {
     if (!params?.id) {
       return new Response(JSON.stringify({ ok: false, error: 'Falta el ID de la comunicación.' }), { status: 400 });
     }
-    let data;
+    let data: { mensaje?: string; autor?: string };
     try {
       data = await request.json();
     } catch {
@@ -21,7 +21,7 @@ export async function POST(request: Request, context?: any) {
     const respuesta = await prisma.respuestaComunicacion.create({
       data: {
         comunicacion_id: params.id,
-        autor: autor as any,
+        autor,
         mensaje,
       },
     });

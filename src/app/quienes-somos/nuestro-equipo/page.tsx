@@ -191,7 +191,7 @@ export default function NuestroEquipo() {
   ];
 
   // Componente individual para cada tarjeta de miembro
-  function TarjetaMiembro({ miembro }: { miembro: any }) {
+  function TarjetaMiembro({ miembro }: { miembro: { nombre: string; cargo: string; experiencia: string; especialidad: string; imagen: string; descripcion: string } }) {
     const [hover, setHover] = useState(false);
     return (
       <div

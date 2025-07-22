@@ -30,7 +30,7 @@ export default function MisPostulaciones() {
   const [error, setError] = useState('');
   const [editando, setEditando] = useState<string | null>(null); // id de postulación en edición
   const [formEdit, setFormEdit] = useState<Partial<Postulacion>>({});
-  const [modal, setModal] = useState<{ tipo: 'ver' | 'editar', postulacion: Postulacion | any } | null>(null); // Changed to any for formularios
+  const [modal, setModal] = useState<{ tipo: 'ver' | 'editar', postulacion: Postulacion | null } | null>(null);
   const [feedback, setFeedback] = useState<string | null>(null);
   const [formularios, setFormularios] = useState<any[]>([]);
 
@@ -115,10 +115,10 @@ export default function MisPostulaciones() {
 
   function filtrarPostulaciones() {
     let lista = postulaciones;
-    if (filtro) lista = lista.filter(p => p.estado_postulacion === filtro);
-    if (busqueda) lista = lista.filter(p =>
-      p.empresa?.toLowerCase().includes(busqueda.toLowerCase()) ||
-      p.cargo?.toLowerCase().includes(busqueda.toLowerCase())
+    if (filtro) lista = lista.filter((p) => p.estado_postulacion === filtro);
+    if (busqueda) lista = lista.filter((p) =>
+      (p.empresa?.toLowerCase().includes(busqueda.toLowerCase()) ||
+      p.cargo?.toLowerCase().includes(busqueda.toLowerCase()))
     );
     return lista;
   }

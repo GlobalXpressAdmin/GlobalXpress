@@ -146,7 +146,7 @@ const ComunicacionPage = () => {
               sx={{ width: '100%', bgcolor: 'background.paper', borderRadius: 2 }}
               subheader={<ListSubheader>Mensajes enviados</ListSubheader>}
             >
-              {historial.map((com: any) => (
+              {historial.map((com: { id: string; asunto: string; creado_en: string; mensaje: string; respuestas?: { id: string; autor: string; creado_en: string; mensaje: string }[] }) => (
                 <Box key={com.id} mb={2}>
                   <ListItem alignItems="flex-start" sx={{ background: '#f7f7fa', borderRadius: 2, mb: 1 }}>
                     <ListItemText
@@ -170,7 +170,7 @@ const ComunicacionPage = () => {
                               <Typography variant="subtitle2" color="primary" fontWeight={600} component="span">
                                 Respuestas del equipo:
                               </Typography>
-                              {com.respuestas.map((resp: any) => (
+                              {com.respuestas.map((resp: { id: string; autor: string; creado_en: string; mensaje: string }) => (
                                 <Paper key={resp.id} sx={{ p: 2, my: 1, background: '#e3f2fd' }} component="span">
                                   <Typography variant="body2" color="text.secondary" component="span">
                                     {resp.autor === 'ADMIN' ? 'Soporte' : 'Tú'} - {new Date(resp.creado_en).toLocaleString()}

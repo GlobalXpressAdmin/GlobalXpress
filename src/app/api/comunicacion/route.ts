@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '../../../lib/prisma';
-import { validate as validateUUID } from 'uuid';
 
 export async function POST(req: NextRequest) {
   try {
