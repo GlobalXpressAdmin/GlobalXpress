@@ -13,15 +13,15 @@ export default function VacantesCarousel() {
   const [sliderRef, instanceRef] = useKeenSlider({
     loop: true,
     slides: { perView: 3, spacing: 26 },
-    slideChanged(slider) {
-      setCurrentSlide(slider.track.details.rel);
+    slideChanged(s) {
+      setCurrentSlide(s.track.details.rel);
     },
-    created(slider) {
+    created() {
       const pv = 3;
       setPerView(pv);
       setPages(Math.ceil(vacantes.length / pv));
     },
-    updated(slider) {
+    updated() {
       const pv = 3;
       setPerView(pv);
       setPages(Math.ceil(vacantes.length / pv));
