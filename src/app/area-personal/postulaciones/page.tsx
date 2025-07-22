@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
@@ -42,16 +42,7 @@ export default function MisPostulaciones() {
   const [modal, setModal] = useState<{ tipo: 'ver' | 'editar', postulacion: Postulacion | Formulario | null } | null>(null);
   const [formularios, setFormularios] = useState<Formulario[]>([]);
 
-  useEffect(() => {
-    if (status === 'authenticated') {
-      fetchPostulaciones();
-      fetchFormularios();
-    } else if (status === 'unauthenticated') {
-      router.push('/ingreso-cliente');
-    }
-  }, [status, fetchFormularios, fetchPostulaciones, router]);
-
-  async function fetchPostulaciones() {
+  const fetchPostulaciones = useCallback(async () => {
     setLoading(true);
     setError('');
     try {
@@ -66,9 +57,9 @@ export default function MisPostulaciones() {
       setError('Error al cargar tus postulaciones.');
     }
     setLoading(false);
-  }
+  }, [session?.user?.email]);
 
-  async function fetchFormularios() {
+  const fetchFormularios = useCallback(async () => {
     try {
       const res = await fetch('/api/formularios-programa?email=' + session?.user?.email);
       const data = await res.json();
@@ -78,10 +69,18 @@ export default function MisPostulaciones() {
         setFormularios([]);
       }
     } catch {
-      // No mostrar error aquí, solo dejar vacío
       setFormularios([]);
     }
-  }
+  }, [session?.user?.email]);
+
+  useEffect(() => {
+    if (status === 'authenticated') {
+      fetchPostulaciones();
+      fetchFormularios();
+    } else if (status === 'unauthenticated') {
+      router.push('/ingreso-cliente');
+    }
+  }, [status, fetchFormularios, fetchPostulaciones, router]);
 
   function handleFiltro(e: React.ChangeEvent<HTMLSelectElement>) {
     setFiltro(e.target.value);
