@@ -48,6 +48,10 @@ export const authOptions = {
     async jwt({ token, user, account, profile }: { token: Record<string, unknown>; user?: { id: string; email: string; nombre?: string }; account?: { provider?: string }; profile?: { name?: string } }) {
       // Lógica para Google
       if (account?.provider === 'google') {
+        // Validar que token.email es string
+        if (typeof token.email !== 'string') {
+          return token;
+        }
         // Buscar usuario en la base de datos
         let dbUser = await prisma.usuarios_global.findUnique({ where: { email: token.email } });
         if (!dbUser) {
@@ -63,7 +67,7 @@ export const authOptions = {
               nacionalidad: '',
             },
           });
-          await sendBienvenidaEmail(token.email || '', profile?.name || '');
+          await sendBienvenidaEmail(token.email, profile?.name || '');
         } else if (!dbUser.nombre && profile?.name) {
           // Si ya existe pero no tiene nombre, actualizarlo
           dbUser = await prisma.usuarios_global.update({
@@ -84,10 +88,10 @@ export const authOptions = {
     },
     async session({ session, token }: { session: Record<string, unknown>; token: Record<string, unknown> }) {
       if (token) {
-        if (!session.user) session.user = {};
-        session.user.id = token.id;
-        session.user.email = token.email;
-        session.user.nombre = token.nombre;
+        if (!session.user) session.user = {} as { id?: string; email?: string; nombre?: string };
+        (session.user as { id?: string; email?: string; nombre?: string }).id = token.id as string;
+        (session.user as { id?: string; email?: string; nombre?: string }).email = token.email as string;
+        (session.user as { id?: string; email?: string; nombre?: string }).nombre = token.nombre as string;
       }
       return session;
     },
