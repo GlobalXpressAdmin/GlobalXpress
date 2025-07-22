@@ -145,9 +145,9 @@ export async function POST(req: NextRequest) {
         saldoMinimo: postulacionData.saldoMinimo,
         quiereFinanciamiento: postulacionData.quiereFinanciamiento,
         confirmaRecursos: postulacionData.confirmaRecursos,
-        aceptaTerminos: postulacionData.aceptaTerminos,
-        aceptaComunicaciones: postulacionData.aceptaComunicaciones,
-        aceptaDatos: postulacionData.aceptaDatos,
+        aceptaTerminos: String(postulacionData.aceptaTerminos),
+        aceptaComunicaciones: String(postulacionData.aceptaComunicaciones),
+        aceptaDatos: String(postulacionData.aceptaDatos),
         programa: postulacionData.programa as string, // Cast seguro
         estado_postulacion: 'PENDIENTE' as const,
         ...(usuario_id && { usuario_id }) // Solo incluir usuario_id si existe
