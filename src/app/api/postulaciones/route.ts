@@ -121,10 +121,25 @@ export async function POST(req: NextRequest) {
       ...(usuario_id && { usuario_id }) // Solo incluir usuario_id si existe
     };
 
-    // Filtra todos los campos undefined del objeto antes de enviarlo a Prisma
+    // Lista de campos obligatorios según el modelo Prisma
+    const requiredFields = [
+      'nombre', 'apellido', 'email', 'telefono', 'pais', 'ciudad', 'direccion', 'visa',
+      'empresa', 'cargo', 'estado_postulacion', 'programa'
+      // Agrega aquí todos los campos que NO son opcionales en tu modelo
+    ];
+
+    // Filtra los campos undefined
     const cleanData = Object.fromEntries(
       Object.entries(postulacionData).filter(([_, v]) => v !== undefined)
     );
+
+    // Valida que todos los campos requeridos estén presentes
+    const missing = requiredFields.filter(field => !(field in cleanData));
+    if (missing.length > 0) {
+      return NextResponse.json({ ok: false, error: `Faltan campos obligatorios: ${missing.join(', ')}` }, { status: 400 });
+    }
+
+    // Ahora sí, Prisma acepta el objeto
     const postulacion = await prisma.postulacionTrabajo.create({
       data: cleanData,
     });
