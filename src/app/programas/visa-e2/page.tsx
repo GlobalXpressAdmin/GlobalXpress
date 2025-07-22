@@ -3,7 +3,6 @@ import React, { useState } from 'react';
 import FamiliasMigrantesSection from '../../../components/FamiliasMigrantesSection';
 import FormacionSliderSection from '../../../components/FormacionSliderSection';
 import IconoCard from '../../../components/IconoCard';
-import { FaPhone } from 'react-icons/fa';
 import PhoneInputPro from '../../../components/PhoneInputPro';
 import LegalModal from '@/components/LegalModal';
 

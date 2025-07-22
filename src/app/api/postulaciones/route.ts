@@ -128,7 +128,7 @@ export async function POST(req: NextRequest) {
 
     // Filtra los campos undefined
     const cleanData = Object.fromEntries(
-      Object.entries(postulacionData).filter(([_, v]) => v !== undefined)
+      Object.entries(postulacionData).filter((entry) => entry[1] !== undefined)
     );
 
     // Valida que todos los campos requeridos estén presentes
@@ -139,7 +139,7 @@ export async function POST(req: NextRequest) {
 
     // Type assertion profesional para cumplir con Prisma y TypeScript
     const postulacion = await prisma.postulacionTrabajo.create({
-      data: cleanData as any,
+      data: cleanData as unknown,
     });
 
     return NextResponse.json({ 
@@ -152,8 +152,7 @@ export async function POST(req: NextRequest) {
         : 'Tu postulación ha sido enviada como visitante'
     });
 
-  } catch (error) {
-    console.error('Error al guardar postulación:', error);
+  } catch {
     return NextResponse.json({ 
       ok: false, 
       error: 'Error interno del servidor.' 
@@ -177,8 +176,7 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ ok: false, error: 'No se encontró postulación para ese email.' }, { status: 404 });
     }
     return NextResponse.json({ ok: true, postulaciones });
-  } catch (error) {
-    console.error('Error al buscar postulaciones:', error);
+  } catch {
     return NextResponse.json({ ok: false, error: 'Error interno del servidor.' }, { status: 500 });
   }
 }
@@ -250,13 +248,11 @@ export async function PATCH(req: NextRequest) {
           });
         }
       }
-    } catch (error) {
-      console.error('Error al crear notificación:', error);
+    } catch {
     }
 
     return NextResponse.json({ ok: true, postulacion });
-  } catch (error) {
-    console.error('Error al actualizar postulación:', error);
+  } catch {
     return NextResponse.json({ ok: false, error: 'Error interno del servidor.' }, { status: 500 });
   }
 } 

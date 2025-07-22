@@ -33,7 +33,6 @@ const ComunicacionPage = () => {
   const [success, setSuccess] = useState('');
 
   const usuario_email = session?.user?.email;
-  const usuario_nombre = session?.user?.nombre || 'Usuario';
 
   const fetchHistorial = async () => {
     if (!usuario_email) return;
@@ -47,7 +46,7 @@ const ComunicacionPage = () => {
       } else {
         setError(data.error || 'Error al cargar la conversación.');
       }
-    } catch (e) {
+    } catch {
       setError('Error de red al cargar la conversación.');
     } finally {
       setLoading(false);
@@ -59,8 +58,8 @@ const ComunicacionPage = () => {
     // eslint-disable-next-line
   }, [usuario_email]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
     setEnviando(true);
     setError('');
     setSuccess('');
@@ -79,7 +78,7 @@ const ComunicacionPage = () => {
       } else {
         setError(data.error || 'Error al enviar el mensaje.');
       }
-    } catch (e) {
+    } catch {
       setError('Error de red al enviar el mensaje.');
     } finally {
       setEnviando(false);

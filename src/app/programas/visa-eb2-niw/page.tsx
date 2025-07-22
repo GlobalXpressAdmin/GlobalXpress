@@ -2,7 +2,6 @@
 import React from 'react';
 import AcompanamientoContinuo from '@/components/AcompanamientoContinuo';
 import FamiliasMigrantesSection from '@/components/FamiliasMigrantesSection';
-import { FaPhone } from 'react-icons/fa';
 import PhoneInputPro from '../../../components/PhoneInputPro';
 import LegalModal from '@/components/LegalModal';
 

@@ -24,7 +24,6 @@ export default function Configuracion() {
   const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d@$!%*?&]{8,}$/;
 
   // Estado de validación de contraseña actual
-  const [validandoActual, setValidandoActual] = useState(false);
   const [actualValida, setActualValida] = useState<null | boolean>(null);
 
   // Nuevo estado para saber si el usuario tiene contraseña local
@@ -51,10 +50,7 @@ export default function Configuracion() {
 
   // Validar contraseña actual contra el backend
   const validarActual = async () => {
-    setValidandoActual(true);
-    setActualValida(null);
     if (!actual || !session?.user?.email) {
-      setValidandoActual(false);
       setActualValida(null);
       return;
     }
@@ -74,7 +70,6 @@ export default function Configuracion() {
     } catch {
       setActualValida(null);
     }
-    setValidandoActual(false);
   };
 
   const handlePasswordChange = async (e: React.FormEvent) => {

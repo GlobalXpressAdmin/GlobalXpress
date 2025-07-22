@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
   try {
     await transporter.sendMail(mailOptions);
     return NextResponse.json({ ok: true });
-  } catch (error) {
+  } catch {
     return NextResponse.json({ ok: false, error: 'No se pudo enviar el correo.' }, { status: 500 });
   }
 } 

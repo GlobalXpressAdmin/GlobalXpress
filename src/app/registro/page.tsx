@@ -4,7 +4,6 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import 'react-phone-input-2/lib/style.css';
 import PhoneInput from 'react-phone-input-2';
-import { FaUser, FaEnvelope, FaLock, FaPhone, FaGlobeAmericas, FaTransgender, FaCalendarAlt, FaFlag } from 'react-icons/fa';
 import Image from 'next/image';
 
 export default function Registro() {

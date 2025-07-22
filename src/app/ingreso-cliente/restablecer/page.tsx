@@ -7,29 +7,29 @@ export default function Restablecer() {
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
 
-  // Si hay token, mostrar el formulario de nueva contraseñaa
-  if (token) {
-    return <NuevaPasswordForm token={token} />;
-  }
-
   const [email, setEmail] = useState("");
   const [enviado, setEnviado] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  // Si hay token, mostrar el formulario de nueva contraseñaa
+  if (token) {
+    return <NuevaPasswordForm token={token} />;
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setLoading(true);
     try {
-      const res = await fetch("/api/auth/forgot-password", {
+      await fetch("/api/auth/forgot-password", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),
       });
       setLoading(false);
       setEnviado(true);
-    } catch (err) {
+    } catch {
       setLoading(false);
       setError("Ocurrió un error. Intenta nuevamente.");
     }
@@ -102,19 +102,19 @@ function NuevaPasswordForm({ token }: { token: string }) {
     }
     setLoading(true);
     try {
-      const res = await fetch("/api/auth/reset-password", {
+      const response = await fetch("/api/auth/reset-password", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ token, password }),
       });
       setLoading(false);
-      if (res.ok) {
+      if (response.ok) {
         setSuccess(true);
       } else {
-        const data = await res.json();
+        const data = await response.json();
         setError(data.error || "Error al restablecer la contraseña.");
       }
-    } catch (err) {
+    } catch {
       setLoading(false);
       setError("Ocurrió un error. Intenta nuevamente.");
     }

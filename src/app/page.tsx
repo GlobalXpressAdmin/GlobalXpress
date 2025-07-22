@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Hero from '../components/Hero';
 import Alternativas from '../components/Alternativas';
 import VacantesCarousel from '../components/VacantesCarousel';

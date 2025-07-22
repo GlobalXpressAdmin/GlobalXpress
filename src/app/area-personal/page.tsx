@@ -4,18 +4,16 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import {
   DocumentTextIcon,
-  CreditCardIcon,
   ChatBubbleLeftRightIcon,
-  CheckCircleIcon,
-  ClockIcon,
-  ExclamationTriangleIcon,
-  UserGroupIcon,
 } from '@heroicons/react/24/outline';
-import Image from 'next/image';
 
-function formatHora(fecha: Date) {
-  return fecha.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-}
+type Postulacion = {
+  id: string;
+  programa?: string;
+  empresa?: string;
+  estado_postulacion?: string;
+  creado_en?: string;
+};
 
 export default function AreaPersonal() {
   const { data: session, status } = useSession();
@@ -23,7 +21,7 @@ export default function AreaPersonal() {
   const [nombrePostulacion, setNombrePostulacion] = useState<string | null>(null);
   const [loadingNombre, setLoadingNombre] = useState(false);
   const [stats, setStats] = useState({ postulaciones: 0, mensajesNuevos: 0 });
-  const [postulacionesRecientes, setPostulacionesRecientes] = useState<any[]>([]);
+  const [postulacionesRecientes, setPostulacionesRecientes] = useState<Postulacion[]>([]);
   const [loadingStats, setLoadingStats] = useState(true);
   const [errorStats, setErrorStats] = useState('');
 
@@ -64,20 +62,20 @@ export default function AreaPersonal() {
         // Fetch postulaciones
         const resPost = await fetch(`/api/postulaciones?email=${session.user.email}`);
         const dataPost = await resPost.json();
-        let postulaciones: any[] = [];
+        let postulaciones: Postulacion[] = [];
         if (dataPost.ok && dataPost.postulaciones) {
           postulaciones = dataPost.postulaciones;
         }
         // Fetch mensajes
+        let mensajesNuevos = 0;
         const resMsg = await fetch(`/api/comunicacion?email=${session.user.email}`);
         const dataMsg = await resMsg.json();
-        let mensajesNuevos = 0;
         if (dataMsg.ok && dataMsg.comunicaciones) {
           mensajesNuevos = dataMsg.comunicaciones.filter((c: { estado: string }) => c.estado === 'PENDIENTE').length;
         }
         setStats({ postulaciones: postulaciones.length, mensajesNuevos });
         setPostulacionesRecientes(postulaciones.slice(0, 3));
-      } catch (e) {
+      } catch {
         setErrorStats('Error al cargar los datos.');
       }
       setLoadingStats(false);

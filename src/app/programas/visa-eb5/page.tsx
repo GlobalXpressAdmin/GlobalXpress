@@ -3,7 +3,6 @@ import React, { useState } from 'react';
 import FamiliasMigrantesSection from '../../../components/FamiliasMigrantesSection';
 import FormacionSliderSection from '../../../components/FormacionSliderSection';
 import IconoCard from '../../../components/IconoCard';
-import { FaPhone } from 'react-icons/fa';
 import PhoneInputPro from '../../../components/PhoneInputPro';
 import LegalModal from '@/components/LegalModal';
 
@@ -34,16 +33,12 @@ export default function VisaEB5() {
     setForm((prev) => ({ ...prev, visa: valor }));
   };
 
-  const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [intentoEnvio, setIntentoEnvio] = useState(false);
   const [showLegal, setShowLegal] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setError('');
-    setSuccess('');
-    setIntentoEnvio(true);
     if (!form.nombre || !form.apellido || !form.email || !form.telefono || !form.visa || !form.terminos) {
       setError('Por favor complete todos los campos y acepte los términos.');
       return;

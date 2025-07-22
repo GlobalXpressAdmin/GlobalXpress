@@ -1,6 +1,5 @@
 'use client';
 import React, { useState, ChangeEvent, FormEvent } from 'react';
-import { FaPhone } from 'react-icons/fa';
 import PhoneInputPro from './PhoneInputPro';
 import LegalModal from './LegalModal';
 
@@ -14,7 +13,6 @@ export default function FormF1Section({ id }: { id?: string }) {
     mensaje: '',
     terminos: false,
   });
-  const [enviado, setEnviado] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [intentoEnvio, setIntentoEnvio] = useState(false);

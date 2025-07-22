@@ -10,7 +10,6 @@ import {
   DocumentTextIcon, 
   CreditCardIcon, 
   ChatBubbleLeftRightIcon, 
-  FolderIcon, 
   UserIcon, 
   BellIcon, 
   QuestionMarkCircleIcon, 
@@ -18,6 +17,15 @@ import {
   ChevronDownIcon,
   ArrowRightOnRectangleIcon
 } from '@heroicons/react/24/outline';
+
+type Notificacion = {
+  id: string;
+  titulo: string;
+  mensaje: string;
+  leida: boolean;
+  creada_en: string;
+  // agrega aquí los campos que realmente usas en el render
+};
 
 const NavbarAuth = () => {
   const { data: session, status } = useSession();
@@ -28,7 +36,6 @@ const NavbarAuth = () => {
   // Estado para nombre e imagen reales
   const [nombre, setNombre] = useState<string>('');
   const [image, setImage] = useState<string>('');
-  const [loading, setLoading] = useState(true);
   const [refreshImage, setRefreshImage] = useState(0);
 
   // Refrescar desde otras partes
@@ -43,7 +50,6 @@ const NavbarAuth = () => {
     const fetchPerfil = async () => {
       if (session?.user?.email) {
         try {
-          setLoading(true);
           const res = await fetch('/api/usuario/perfil', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -57,11 +63,11 @@ const NavbarAuth = () => {
             setNombre('Usuario');
             setImage('');
           }
-        } catch (err) {
+        } catch (err: unknown) {
           setNombre('Usuario');
           setImage('');
         } finally {
-          setLoading(false);
+          // setLoading(false); // This line was removed as per the edit hint
         }
       }
     };
@@ -109,7 +115,7 @@ const NavbarAuth = () => {
 
   const [isNotifDropdownOpen, setIsNotifDropdownOpen] = useState(false);
   const notifDropdownRef = useRef<HTMLDivElement>(null);
-  const [notificaciones, setNotificaciones] = useState<any[]>([]);
+  const [notificaciones, setNotificaciones] = useState<Notificacion[]>([]);
   const [loadingNotifs, setLoadingNotifs] = useState(false);
   const [errorNotifs, setErrorNotifs] = useState('');
   const [unreadCount, setUnreadCount] = useState(0);
@@ -145,12 +151,12 @@ const NavbarAuth = () => {
         const data = await res.json();
         if (data.ok && data.notificaciones) {
           setNotificaciones(data.notificaciones);
-          setUnreadCount(data.notificaciones.filter((n:any) => !n.leida).length);
+          setUnreadCount(data.notificaciones.filter((n: Notificacion) => !n.leida).length);
         } else {
           setNotificaciones([]);
           setUnreadCount(0);
         }
-      } catch (e) {
+      } catch (err: unknown) {
         setErrorNotifs('Error al cargar notificaciones.');
         setNotificaciones([]);
         setUnreadCount(0);
@@ -229,7 +235,7 @@ const NavbarAuth = () => {
                         <div className="text-center text-gray-400 py-8">No tienes notificaciones.</div>
                       ) : (
                         <div className="space-y-4">
-                          {notificaciones.slice(0,5).map((notif:any) => (
+                          {notificaciones.slice(0,5).map((notif: Notificacion) => (
                             <div key={notif.id} className={`flex items-start space-x-3 animate-fadein ${!notif.leida ? 'bg-blue-50 border-l-4 border-blue-400' : ''} rounded-lg px-3 py-2 transition-all`}> 
                               <div className={`flex-shrink-0 w-2 h-2 rounded-full mt-2 ${!notif.leida ? 'bg-blue-500' : 'bg-gray-300'}`}></div>
                               <div className="flex-1 min-w-0">

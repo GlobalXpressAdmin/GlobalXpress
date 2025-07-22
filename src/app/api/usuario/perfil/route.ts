@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '../../../../lib/prisma';
-import { PrismaClient } from '@prisma/client';
 
 export async function GET(req: NextRequest) {
   try {
@@ -82,16 +81,16 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    let { email } = await req.json();
+    const { email } = await req.json();
     
     console.log('[API perfil] Email recibido:', email);
     if (!email) {
       return NextResponse.json({ ok: false, error: 'Email requerido' }, { status: 400 });
     }
-    email = email.trim().toLowerCase(); // Normaliza el email
+    const normalizedEmail = email.trim().toLowerCase(); // Normaliza el email
 
     const usuario = await prisma.usuarios_global.findUnique({
-      where: { email },
+      where: { email: normalizedEmail },
       select: {
         id: true,
         nombre: true,
@@ -190,12 +189,12 @@ export async function POST(req: NextRequest) {
 
 export async function PATCH(req: NextRequest) {
   try {
-    let { email, nombre, indicativo, telefono, nacionalidad, genero, fechaNacimiento, image } = await req.json();
+    const { email, nombre, indicativo, telefono, nacionalidad, genero, fechaNacimiento, image } = await req.json();
     console.log('PATCH recibido:', { email, indicativo });
     if (!email) {
       return NextResponse.json({ ok: false, error: 'Email requerido' }, { status: 400 });
     }
-    email = email.trim().toLowerCase(); // Normaliza el email
+    const normalizedEmail = email.trim().toLowerCase(); // Normaliza el email
     // Lista de indicativos válidos
     const INDICATIVOS_CODES = ['+1','+34','+52','+57','+51','+54','+56','+593','+55','+507'];
     // Limpiar indicativo si viene con texto adicional
@@ -217,7 +216,7 @@ export async function PATCH(req: NextRequest) {
     }
     // Actualizar usuario
     const usuarioActualizado = await prisma.usuarios_global.update({
-      where: { email },
+      where: { email: normalizedEmail },
       data: {
         nombre,
         indicativo: indicativoLimpio,

@@ -1,18 +1,18 @@
 'use client';
-import { signOut, useSession } from 'next-auth/react';
+import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState, useRef } from 'react';
 import Image from 'next/image';
 import { 
-  UserIcon, 
-  EnvelopeIcon, 
-  PhoneIcon, 
-  CalendarIcon,
-  MapPinIcon,
-  FlagIcon,
-  CameraIcon,
-  PencilIcon
+  CameraIcon
 } from '@heroicons/react/24/outline';
+
+type FieldErrors = {
+  nombre?: string;
+  telefono?: string;
+  indicativo?: string;
+  // agrega aquí los campos que validas
+};
 
 export default function PerfilPage() {
   const { data: session, status, update } = useSession();
@@ -29,11 +29,10 @@ export default function PerfilPage() {
     genero: '',
     image: '',
   });
-  const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [fieldErrors, setFieldErrors] = useState<any>({});
+  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
 
   const INDICATIVOS = [
     { code: '+1', country: 'EE.UU./Canadá' },
@@ -66,7 +65,7 @@ export default function PerfilPage() {
     formData.genero
   ].filter(Boolean);
   const completitud = Math.round((camposCompletos.length / totalCampos) * 100);
-  const camposFaltantes = [];
+  const camposFaltantes: string[] = [];
   if (!formData.nombre) camposFaltantes.push('Nombre completo');
   if (!formData.telefono) camposFaltantes.push('Teléfono');
   if (!formData.nacionalidad) camposFaltantes.push('Nacionalidad');
@@ -119,7 +118,6 @@ export default function PerfilPage() {
               genero: data.usuario.genero || '',
               image: data.usuario.image || '',
             });
-            setPreviewImage(data.usuario.image || null);
           } else {
             console.error('Error al cargar perfil:', data.error);
             if (data.debug) {
@@ -156,8 +154,8 @@ export default function PerfilPage() {
     return null;
   }
 
-  const validate = () => {
-    const errors: any = {};
+  const validate = (): FieldErrors => {
+    const errors: FieldErrors = {};
     if (!formData.nombre.trim()) errors.nombre = 'El nombre es obligatorio.';
     if (formData.telefono && !/^[0-9]{6,15}$/.test(formData.telefono)) errors.telefono = 'El número debe tener solo dígitos y entre 6 y 15 caracteres.';
     if (formData.telefono && !formData.indicativo) errors.indicativo = 'Selecciona el indicativo.';
@@ -230,7 +228,6 @@ export default function PerfilPage() {
             genero: dataPerfil.usuario.genero || '',
             image: dataPerfil.usuario.image || '',
           });
-          setPreviewImage(dataPerfil.usuario.image || null);
         }
       } else {
         setErrorMsg(data.error || 'Error al actualizar el perfil.');
@@ -259,7 +256,6 @@ export default function PerfilPage() {
   const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file && session?.user?.email) {
-      setPreviewImage(URL.createObjectURL(file));
       const formDataImg = new FormData();
       formDataImg.append('email', session.user.email);
       formDataImg.append('file', file);
@@ -276,8 +272,8 @@ export default function PerfilPage() {
           setSuccessMsg('Imagen de perfil actualizada.');
           
           // Refrescar la Navbar
-          if (typeof window !== 'undefined' && (window as any).refreshNavbarProfile) {
-            (window as any).refreshNavbarProfile();
+          if (typeof window !== 'undefined' && (window as { refreshNavbarProfile?: () => void }).refreshNavbarProfile) {
+            (window as { refreshNavbarProfile?: () => void }).refreshNavbarProfile?.();
           }
           
           // Recargar los datos del perfil para asegurar sincronización

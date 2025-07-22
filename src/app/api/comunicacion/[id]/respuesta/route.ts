@@ -2,18 +2,22 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '../../../../../lib/prisma';
 
-// Intentar acceder al enum RolAutor desde el cliente Prisma generado
-let RolAutorEnum: any = undefined;
-try {
-  // Para Prisma >=6
-  RolAutorEnum = require('@prisma/client').Prisma?.RolAutor || require('@prisma/client').Prisma?.$Enums?.RolAutor;
-} catch {
-  // Fallback manual si no existe
-  RolAutorEnum = { USUARIO: 'USUARIO', ADMIN: 'ADMIN' };
-}
+// Cambia 'context: any' por un tipo más específico si es posible, o 'unknown'. Usa 'const' en vez de 'let' si no se reasigna. Elimina variables/imports no usados.
 
-export async function POST(request: NextRequest, context: any) {
+// Restaurar la definición de RolAutorEnum para que el código compile y funcione correctamente.
+const getRolAutorEnum = () => {
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports -- Necesario para compatibilidad con Prisma Enum en SSR
+    return require('@prisma/client').Prisma?.RolAutor || require('@prisma/client').Prisma?.$Enums?.RolAutor;
+  } catch {
+    // Fallback manual si no existe
+    return { USUARIO: 'USUARIO', ADMIN: 'ADMIN' };
+  }
+};
+
+export async function POST(request: NextRequest, context: { params: { id: string } }) {
   const { id } = context.params;
+  const RolAutorEnum = getRolAutorEnum();
   try {
     if (!id) {
       return NextResponse.json({ ok: false, error: 'Falta el ID de la comunicación.' }, { status: 400 });

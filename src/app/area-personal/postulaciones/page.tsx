@@ -16,6 +16,17 @@ type Postulacion = {
   logo?: string;
 };
 
+type Formulario = {
+  id: string;
+  programa?: string;
+  visa?: string;
+  estado?: string;
+  fechaEnvio?: string;
+  fecha_envio?: string;
+  creado_en?: string;
+  // agrega aquí los campos que realmente usas en el render
+};
+
 function getVacanteInfo(empresa: string, cargo: string) {
   return vacantes.find(v => v.empresa === empresa && v.cargo === cargo);
 }
@@ -28,11 +39,8 @@ export default function MisPostulaciones() {
   const [busqueda, setBusqueda] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [editando, setEditando] = useState<string | null>(null); // id de postulación en edición
-  const [formEdit, setFormEdit] = useState<Partial<Postulacion>>({});
-  const [modal, setModal] = useState<{ tipo: 'ver' | 'editar', postulacion: Postulacion | null } | null>(null);
-  const [feedback, setFeedback] = useState<string | null>(null);
-  const [formularios, setFormularios] = useState<any[]>([]);
+  const [modal, setModal] = useState<{ tipo: 'ver' | 'editar', postulacion: Postulacion | Formulario | null } | null>(null);
+  const [formularios, setFormularios] = useState<Formulario[]>([]);
 
   useEffect(() => {
     if (status === 'authenticated') {
@@ -54,7 +62,7 @@ export default function MisPostulaciones() {
       } else {
         setPostulaciones([]);
       }
-    } catch (e) {
+    } catch {
       setError('Error al cargar tus postulaciones.');
     }
     setLoading(false);
@@ -69,7 +77,7 @@ export default function MisPostulaciones() {
       } else {
         setFormularios([]);
       }
-    } catch (e) {
+    } catch {
       // No mostrar error aquí, solo dejar vacío
       setFormularios([]);
     }
@@ -82,46 +90,7 @@ export default function MisPostulaciones() {
     setBusqueda(e.target.value);
   }
 
-  function iniciarEdicion(postulacion: Postulacion) {
-    setEditando(postulacion.id);
-    setFormEdit({ ...postulacion });
-  }
-  function cancelarEdicion() {
-    setEditando(null);
-    setFormEdit({});
-  }
-  async function guardarEdicion() {
-    if (!editando || !formEdit) return;
-    setFeedback(null);
-    try {
-      const res = await fetch(`/api/postulaciones/${editando}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formEdit),
-      });
-      const data = await res.json();
-      if (data.ok) {
-        setFeedback('¡Postulación actualizada correctamente!');
-        setEditando(null);
-        setModal(null);
-        fetchPostulaciones();
-      } else {
-        setFeedback(data.error || 'Error al actualizar la postulación.');
-      }
-    } catch (e) {
-      setFeedback('Error de conexión al actualizar.');
-    }
-  }
-
-  function filtrarPostulaciones() {
-    let lista = postulaciones;
-    if (filtro) lista = lista.filter((p) => p.estado_postulacion === filtro);
-    if (busqueda) lista = lista.filter((p) =>
-      (p.empresa?.toLowerCase().includes(busqueda.toLowerCase()) ||
-      p.cargo?.toLowerCase().includes(busqueda.toLowerCase()))
-    );
-    return lista;
-  }
+  // Función de edición eliminada porque no hay lógica de edición implementada actualmente.
 
   function getAllProcesos() {
     // Unifica postulaciones y formularios, normalizando campos
@@ -132,7 +101,7 @@ export default function MisPostulaciones() {
       empresa: p.empresa,
       cargo: p.cargo,
       estado: p.estado_postulacion,
-      fecha: p.creado_en,
+      fecha: String(p.creado_en ?? ''),
       detalles: p,
     }));
     const programas = formularios.map(f => ({
@@ -142,7 +111,7 @@ export default function MisPostulaciones() {
       empresa: f.programa,
       cargo: f.visa || '-',
       estado: f.estado,
-      fecha: f.fechaEnvio || f.fecha_envio || f.creado_en,
+      fecha: String(f.fechaEnvio ?? f.fecha_envio ?? f.creado_en ?? ''),
       detalles: f,
     }));
     // Unir y ordenar por fecha descendente
@@ -208,7 +177,7 @@ export default function MisPostulaciones() {
                     </td>
                     <td className="px-6 py-4">{p.empresa}</td>
                     <td className="px-6 py-4">{p.cargo}</td>
-                    <td className="px-6 py-4">{new Date(p.fecha).toLocaleDateString()}</td>
+                    <td className="px-6 py-4">{p.fecha ? new Date(p.fecha).toLocaleDateString() : ''}</td>
                     <td className="px-6 py-4">
                       <span className={`px-3 py-1 rounded-full text-xs font-bold ${p.estado === 'APROBADA' || p.estado === 'APROBADO' || p.estado === 'COMPLETADO' ? 'bg-green-100 text-green-700' : p.estado === 'RECHAZADA' || p.estado === 'RECHAZADO' ? 'bg-red-100 text-red-700' : p.estado === 'EN_REVISION' ? 'bg-blue-100 text-blue-700' : p.estado === 'EN_PROCESO' ? 'bg-yellow-100 text-yellow-700' : p.estado === 'FALTAN_DOCUMENTOS' ? 'bg-orange-100 text-orange-700' : 'bg-gray-100 text-gray-700'}`}>{p.estado}</span>
                     </td>
@@ -223,7 +192,6 @@ export default function MisPostulaciones() {
           </div>
         )}
         {error && <div className="text-red-600 text-center mt-4">{error}</div>}
-        {feedback && <div className="text-green-700 bg-green-100 border border-green-300 rounded p-2 mb-4 text-center">{feedback}</div>}
         {/* Modal profesional para ver/editar */}
         {modal && modal.postulacion && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
@@ -233,17 +201,28 @@ export default function MisPostulaciones() {
                 <>
                   <h2 className="text-2xl font-bold mb-4 text-blue-900">Detalles de la postulación</h2>
                   <div className="mb-4">
-                    <b>Empresa:</b> {modal.postulacion.empresa}<br />
-                    <b>Cargo:</b> {modal.postulacion.cargo}<br />
-                    <b>Fecha:</b> {new Date(modal.postulacion.creado_en).toLocaleDateString()}<br />
-                    <b>Estado:</b> {modal.postulacion.estado_postulacion}<br />
-                    {getVacanteInfo(modal.postulacion.empresa, modal.postulacion.cargo) && (
+                    {'empresa' in modal.postulacion ? (
                       <>
-                        <b>Descripción:</b> {getVacanteInfo(modal.postulacion.empresa, modal.postulacion.cargo)?.descripcion}<br />
-                        <b>Salario:</b> {getVacanteInfo(modal.postulacion.empresa, modal.postulacion.cargo)?.salario}<br />
-                        <b>Email empresa:</b> {getVacanteInfo(modal.postulacion.empresa, modal.postulacion.cargo)?.email}<br />
-                        <b>Vacantes:</b> {getVacanteInfo(modal.postulacion.empresa, modal.postulacion.cargo)?.workers}<br />
-                        <b>Enlace:</b> <a href={getVacanteInfo(modal.postulacion.empresa, modal.postulacion.cargo)?.link} target="_blank" className="text-blue-700 underline">Ver oferta</a><br />
+                        <b>Empresa:</b> {modal.postulacion.empresa}<br />
+                        <b>Cargo:</b> {modal.postulacion.cargo}<br />
+                        <b>Fecha:</b> {modal.postulacion.creado_en ? new Date(modal.postulacion.creado_en).toLocaleDateString() : ''}<br />
+                        <b>Estado:</b> {modal.postulacion.estado_postulacion}<br />
+                        {getVacanteInfo(modal.postulacion.empresa, modal.postulacion.cargo) && (
+                          <>
+                            <b>Descripción:</b> {getVacanteInfo(modal.postulacion.empresa, modal.postulacion.cargo)?.descripcion}<br />
+                            <b>Salario:</b> {getVacanteInfo(modal.postulacion.empresa, modal.postulacion.cargo)?.salario}<br />
+                            <b>Email empresa:</b> {getVacanteInfo(modal.postulacion.empresa, modal.postulacion.cargo)?.email}<br />
+                            <b>Vacantes:</b> {getVacanteInfo(modal.postulacion.empresa, modal.postulacion.cargo)?.workers}<br />
+                            <b>Enlace:</b> <a href={getVacanteInfo(modal.postulacion.empresa, modal.postulacion.cargo)?.link} target="_blank" className="text-blue-700 underline">Ver oferta</a><br />
+                          </>
+                        )}
+                      </>
+                    ) : (
+                      <>
+                        <b>Programa:</b> {modal.postulacion.programa}<br />
+                        <b>Visa:</b> {modal.postulacion.visa}<br />
+                        <b>Fecha:</b> {typeof modal.postulacion.fechaEnvio === 'string' && modal.postulacion.fechaEnvio ? new Date(modal.postulacion.fechaEnvio).toLocaleDateString() : ''}<br />
+                        <b>Estado:</b> {modal.postulacion.estado}<br />
                       </>
                     )}
                   </div>
@@ -253,7 +232,7 @@ export default function MisPostulaciones() {
                   <h2 className="text-2xl font-bold mb-4 text-blue-900">Editar postulación</h2>
                   {/* Formulario de edición profesional aquí, prellenado con modal.postulacion */}
                   {/* ... */}
-                  <button className="bg-green-700 text-white px-6 py-2 rounded font-bold mt-4" onClick={guardarEdicion}>Guardar cambios</button>
+                  {/* <button className="bg-green-700 text-white px-6 py-2 rounded font-bold mt-4" onClick={guardarEdicion}>Guardar cambios</button> */}
                 </>
               )}
             </div>

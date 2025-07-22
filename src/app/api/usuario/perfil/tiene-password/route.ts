@@ -12,7 +12,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ tienePassword: false }, { status: 200 });
     }
     return NextResponse.json({ tienePassword: true }, { status: 200 });
-  } catch (error) {
+  } catch {
     return NextResponse.json({ tienePassword: false }, { status: 200 });
   }
 } 

@@ -30,7 +30,7 @@ const Navbar = () => {
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      (window as any).refreshNavbarProfile = () => setRefreshImage(r => r + 1);
+      window.refreshNavbarProfile = () => setRefreshImage(r => r + 1);
     }
   }, []);
 
@@ -55,7 +55,7 @@ const Navbar = () => {
             setNombre(null);
             setImage(null);
           }
-        } catch (err) {
+        } catch {
           setNombre(null);
           setImage(null);
         } finally {

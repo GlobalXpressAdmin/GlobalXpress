@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { prisma } from '../../../lib/prisma';
 
 const PROGRAMAS_VALIDOS = [
   'EB5',
@@ -55,12 +53,12 @@ export async function POST(req: NextRequest) {
           referencia: formulario.id.toString(),
         }),
       });
-    } catch (error) {
-      console.error('Error al crear notificación:', error);
+    } catch {
+      // Error al crear notificación
     }
 
     return NextResponse.json({ ok: true });
-  } catch (error) {
+  } catch {
     return NextResponse.json({ ok: false, error: 'Error interno del servidor.' }, { status: 500 });
   }
 }
@@ -134,13 +132,12 @@ export async function PATCH(req: NextRequest) {
           });
         }
       }
-    } catch (error) {
-      console.error('Error al crear notificación:', error);
+    } catch {
+      // Error al crear notificación
     }
 
     return NextResponse.json({ ok: true, formulario });
-  } catch (error) {
-    console.error('Error al actualizar formulario:', error);
+  } catch {
     return NextResponse.json({ ok: false, error: 'Error interno del servidor.' }, { status: 500 });
   }
 }
@@ -161,7 +158,7 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ ok: true, formularios: [] });
     }
     return NextResponse.json({ ok: true, formularios });
-  } catch (error) {
+  } catch {
     return NextResponse.json({ ok: false, error: 'Error interno del servidor.' }, { status: 500 });
   }
 } 

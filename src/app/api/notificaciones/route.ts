@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { prisma } from '../../../lib/prisma';
 
 // GET /api/notificaciones?email=...
 export async function GET(req: NextRequest) {
@@ -20,7 +18,7 @@ export async function GET(req: NextRequest) {
       orderBy: { creada_en: 'desc' },
     });
     return NextResponse.json({ ok: true, notificaciones });
-  } catch (error) {
+  } catch {
     return NextResponse.json({ ok: false, error: 'Error interno del servidor.' }, { status: 500 });
   }
 }
@@ -47,7 +45,7 @@ export async function POST(req: NextRequest) {
       },
     });
     return NextResponse.json({ ok: true, notificacion });
-  } catch (error) {
+  } catch {
     return NextResponse.json({ ok: false, error: 'Error interno del servidor.' }, { status: 500 });
   }
 }
@@ -65,7 +63,7 @@ export async function PATCH(req: NextRequest) {
       data: { leida: true },
     });
     return NextResponse.json({ ok: true, notificacion });
-  } catch (error) {
+  } catch {
     return NextResponse.json({ ok: false, error: 'Error interno del servidor.' }, { status: 500 });
   }
 } 

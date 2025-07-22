@@ -38,12 +38,12 @@ export async function POST(req: NextRequest) {
           referencia: comunicacion.id,
         }),
       });
-    } catch (error) {
-      console.error('Error al crear notificación:', error);
+    } catch {
+      // Error al crear notificación
     }
 
     return NextResponse.json({ ok: true, message: 'Mensaje enviado correctamente.', comunicacion });
-  } catch (error) {
+  } catch {
     return NextResponse.json({ ok: false, error: 'Error interno del servidor.' }, { status: 500 });
   }
 }
@@ -71,7 +71,7 @@ export async function GET(req: NextRequest) {
       },
     });
     return NextResponse.json({ ok: true, comunicaciones });
-  } catch (error) {
+  } catch {
     return NextResponse.json({ ok: false, error: 'Error interno del servidor.' }, { status: 500 });
   }
 } 

@@ -17,12 +17,12 @@ export default function VacantesCarousel() {
       setCurrentSlide(slider.track.details.rel);
     },
     created(slider) {
-      let pv = 3;
+      const pv = 3;
       setPerView(pv);
       setPages(Math.ceil(vacantes.length / pv));
     },
     updated(slider) {
-      let pv = 3;
+      const pv = 3;
       setPerView(pv);
       setPages(Math.ceil(vacantes.length / pv));
     },
@@ -41,13 +41,6 @@ export default function VacantesCarousel() {
   }, [instanceRef]);
 
   const currentPage = Math.floor(currentSlide / perView);
-
-  const next = () => {
-    instanceRef.current?.next();
-  };
-  const prev = () => {
-    instanceRef.current?.prev();
-  };
 
   return (
     <section className="w-full py-12 bg-white">

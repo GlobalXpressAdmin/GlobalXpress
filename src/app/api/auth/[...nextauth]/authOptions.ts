@@ -62,9 +62,9 @@ export const authOptions = {
         if (typeof token.email !== 'string') {
           return token;
         }
-        let dbUser = await prisma.usuarios_global.findUnique({ where: { email: token.email } });
+        const dbUser = await prisma.usuarios_global.findUnique({ where: { email: token.email } });
         if (!dbUser) {
-          dbUser = await prisma.usuarios_global.create({
+          const newUser = await prisma.usuarios_global.create({
             data: {
               email: token.email,
               nombre: profile?.name || '',
@@ -76,14 +76,16 @@ export const authOptions = {
             },
           });
           await sendBienvenidaEmail(token.email, profile?.name || '');
+          token.id = newUser.id;
+          token.nombre = newUser.nombre ?? undefined;
         } else if (!dbUser.nombre && profile?.name) {
-          dbUser = await prisma.usuarios_global.update({
+          const updatedUser = await prisma.usuarios_global.update({
             where: { email: token.email },
             data: { nombre: profile.name }
           });
+          token.id = updatedUser.id;
+          token.nombre = updatedUser.nombre ?? undefined;
         }
-        token.id = dbUser.id;
-        token.nombre = dbUser.nombre ?? undefined;
       }
       // Lógica para credenciales
       if (user) {
@@ -93,7 +95,7 @@ export const authOptions = {
       }
       return token;
     },
-    async session(params: { session: Session; token: JWT; user?: AdapterUser; newSession?: any; trigger?: "update" }) {
+    async session(params: { session: Session; token: JWT; user?: AdapterUser; newSession?: unknown; trigger?: "update" }) {
       const { session, token } = params;
       if (token) {
         session.user = session.user || {};

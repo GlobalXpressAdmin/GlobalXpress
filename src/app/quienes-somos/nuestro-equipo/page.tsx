@@ -2,8 +2,6 @@
 import Image from 'next/image';
 import { useState } from 'react';
 import { 
-  UserGroupIcon, 
-  AcademicCapIcon, 
   GlobeAltIcon, 
   HeartIcon,
   StarIcon,

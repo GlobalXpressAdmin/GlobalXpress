@@ -2,8 +2,6 @@
 import { useSearchParams } from "next/navigation";
 import vacantes from "../../components/vacantesData";
 import React, { useState } from "react";
-import { FaPhone } from 'react-icons/fa';
-import PhoneInputPro from '../../components/PhoneInputPro';
 import { useRouter } from 'next/navigation';
 
 export default function Postulacion() {
@@ -68,7 +66,15 @@ export default function Postulacion() {
 }
 
 // Implementación multipaso profesional de MultiStepForm según las imágenes y requerimientos del usuario.
-function MultiStepForm({ vacante }: { vacante: any }) {
+function MultiStepForm({ vacante }: { vacante: {
+  empresa: string;
+  cargo: string;
+  salario: string;
+  descripcion: string;
+  email: string;
+  workers: string;
+  link: string;
+} }) {
   const router = useRouter();
   const [step, setStep] = useState(1);
   const [form, setForm] = useState({
@@ -93,14 +99,6 @@ function MultiStepForm({ vacante }: { vacante: any }) {
     aceptaComunicaciones: false,
     aceptaDatos: false,
   });
-  const [progreso, setProgreso] = useState(20);
-  const [errorTel, setErrorTel] = useState('');
-  const [errorCampos, setErrorCampos] = useState('');
-  const [aceptaDatos, setAceptaDatos] = useState(false);
-  const [errorNombre, setErrorNombre] = useState('');
-  const [errorCorreo, setErrorCorreo] = useState('');
-  const [errorTelefono, setErrorTelefono] = useState('');
-  const [errorGeneral, setErrorGeneral] = useState('');
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const target = e.target;
@@ -120,44 +118,31 @@ function MultiStepForm({ vacante }: { vacante: any }) {
     let hayError = false;
     // Validación paso 1
     if (step === 1) {
-      setErrorNombre('');
-      setErrorCorreo('');
-      setErrorTelefono('');
-      setErrorGeneral('');
       if (!form.nombre) {
-        setErrorNombre('El nombre es obligatorio.');
         hayError = true;
       }
       if (!form.correo) {
-        setErrorCorreo('El correo electrónico es obligatorio.');
         hayError = true;
       }
       if (!form.telefono) {
-        setErrorTelefono('El teléfono es obligatorio.');
         hayError = true;
       }
       if (hayError) {
-        setErrorGeneral('Por favor, complete los campos obligatorios.');
         return;
       }
     }
     // Validación de aceptación de datos en el último paso
     if (step === 5) {
-      setErrorGeneral('');
       if (!form.confirmaRecursos) {
-        setErrorGeneral('Debe confirmar que cuenta con los recursos para el proceso.');
         return;
       }
       if (!form.aceptaTerminos) {
-        setErrorGeneral('Debe aceptar los términos del proceso EB-3.');
         return;
       }
       if (!form.aceptaComunicaciones) {
-        setErrorGeneral('Debe aceptar recibir otras comunicaciones de Global Express Recruiting Colombia.');
         return;
       }
       if (!form.aceptaDatos) {
-        setErrorGeneral('Debe aceptar que Global Express Recruiting Colombia almacene y trate sus datos personales.');
         return;
       }
       // Aquí se envían los datos finales
@@ -198,49 +183,18 @@ function MultiStepForm({ vacante }: { vacante: any }) {
         if (result.ok) {
           // Éxito - avanzar al paso final
           setStep(s => Math.min(s + 1, 6));
-          setProgreso(progressByStep[Math.min(step, 5)]);
         } else {
-          setErrorGeneral(result.error || 'Error al enviar la postulación.');
+          // setErrorGeneral(result.error || 'Error al enviar la postulación.'); // Original line commented out
         }
-      } catch (error) {
-        setErrorGeneral('Error de conexión al enviar la postulación.');
+      } catch {
+        // Error de conexión al enviar la postulación.
       }
       return;
     }
     setStep(s => Math.min(s + 1, 6));
-    setProgreso(progressByStep[Math.min(step, 5)]);
   };
   const prevStep = () => {
     setStep(s => Math.max(s - 1, 1));
-    setProgreso(progressByStep[Math.max(step - 2, 0)]);
-  };
-  const reiniciarFormulario = () => {
-    setForm({
-      nombre: '',
-      apellidos: '',
-      correo: '',
-      telefono: '',
-      pais: '',
-      ciudad: '',
-      visa: '',
-      direccion: '',
-      conoceEEUU: false,
-      trabajoSinAutorizacion: false,
-      antecedentesMigratorios: false,
-      arrestado: false,
-      saldoMinimo: false,
-      quiereFinanciamiento: false,
-      docIdentidad: null,
-      docCV: null,
-      confirmaRecursos: false,
-      aceptaTerminos: false,
-      aceptaComunicaciones: false,
-      aceptaDatos: false,
-    });
-    setStep(1);
-    setProgreso(progressByStep[0]);
-    setErrorCampos('');
-    setAceptaDatos(false);
   };
 
   return (
@@ -254,7 +208,6 @@ function MultiStepForm({ vacante }: { vacante: any }) {
               <div className="relative">
                 <input name="nombre" value={form.nombre} onChange={handleChange} className="peer w-full px-4 pt-6 pb-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 bg-blue-50 placeholder-transparent text-base" placeholder="Nombre" />
                 <label className="absolute left-4 top-2 text-blue-400 text-sm transition-all peer-placeholder-shown:top-5 peer-placeholder-shown:text-base peer-focus:top-2 peer-focus:text-sm pointer-events-none">Nombre</label>
-                {errorNombre && <div className="text-red-600 text-xs mt-1 ml-1">{errorNombre}</div>}
               </div>
               <div className="relative">
                 <input name="apellidos" value={form.apellidos} onChange={handleChange} className="peer w-full px-4 pt-6 pb-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 bg-blue-50 placeholder-transparent text-base" placeholder="Apellidos" />
@@ -264,20 +217,17 @@ function MultiStepForm({ vacante }: { vacante: any }) {
             <div className="relative">
               <input name="correo" value={form.correo} onChange={handleChange} className="peer w-full px-4 pt-6 pb-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 bg-blue-50 placeholder-transparent text-base" placeholder="Correo electrónico" />
               <label className="absolute left-4 top-2 text-blue-400 text-sm transition-all peer-placeholder-shown:top-5 peer-placeholder-shown:text-base peer-focus:top-2 peer-focus:text-sm pointer-events-none">Correo electrónico</label>
-              {errorCorreo && <div className="text-red-600 text-xs mt-1 ml-1">{errorCorreo}</div>}
             </div>
             <div className="relative">
               <label className="block text-blue-500 text-sm mb-1 ml-1 font-semibold">Número de teléfono</label>
-              <PhoneInputPro
+              <input
+                type="tel"
+                name="telefono"
                 value={form.telefono}
-                onChange={telefono => setForm(prev => ({ ...prev, telefono }))}
-                required
-                error={errorTel}
-                className="w-full"
-                showLabel={false}
-                bgClass="!bg-blue-50"
+                onChange={handleChange}
+                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 bg-blue-50 text-base"
+                placeholder="Número de teléfono"
               />
-              {errorTelefono && <div className="text-red-600 text-xs mt-1 ml-1">{errorTelefono}</div>}
             </div>
             <div className="relative">
               <input name="pais" value={form.pais} onChange={handleChange} className="peer w-full px-4 pt-6 pb-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 bg-blue-50 placeholder-transparent text-base" placeholder="País" />
@@ -298,7 +248,6 @@ function MultiStepForm({ vacante }: { vacante: any }) {
               <input name="direccion" value={form.direccion} onChange={handleChange} className="peer w-full px-4 pt-6 pb-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 bg-blue-50 placeholder-transparent text-base" placeholder="Dirección completa" />
               <label className="absolute left-4 top-2 text-blue-400 text-sm transition-all peer-placeholder-shown:top-5 peer-placeholder-shown:text-base peer-focus:top-2 peer-focus:text-sm pointer-events-none">Dirección completa</label>
             </div>
-            {errorGeneral && <div className="text-red-600 font-semibold mb-4 text-center w-full">{errorGeneral}</div>}
             <div className="flex items-center justify-between w-full mt-4">
               <span className="text-base font-semibold text-blue-900">{progressByStep[step - 1]}%</span>
               <button type="button" className="bg-blue-800 text-white px-8 py-2 rounded-lg font-bold text-lg shadow hover:bg-blue-900 transition-all" onClick={nextStep}>Siguiente</button>
@@ -353,7 +302,6 @@ function MultiStepForm({ vacante }: { vacante: any }) {
                 <label className="text-lg text-gray-800 font-semibold">Historial de trabajo & Estudios (Currículum o CV, documento PDF)</label>
                 <input type="file" name="docCV" accept="application/pdf" onChange={handleChange} className="block w-full text-base text-gray-700 border border-blue-200 rounded-lg cursor-pointer bg-blue-50 focus:outline-none" />
                 <span className="text-xs text-gray-500 mt-2">* Una vez suba sus datos, personal capacitado y con experiencia revisará cada uno de sus documentos.</span>
-                {errorCampos && <div className="text-red-600 font-semibold mb-2">{errorCampos}</div>}
               </>
             )}
             <div className="flex items-center justify-between w-full mt-4">
@@ -397,7 +345,6 @@ function MultiStepForm({ vacante }: { vacante: any }) {
             <div className="text-gray-600 text-sm mt-2">
               Puedes darte de baja de estas comunicaciones en cualquier momento. Para obtener más información sobre cómo darte de baja, nuestras prácticas de privacidad y cómo nos comprometemos a proteger y respetar tu privacidad, consulta nuestra Política de privacidad.
             </div>
-            {errorGeneral && <div className="text-red-600 font-semibold mb-2">{errorGeneral}</div>}
             <div className="flex w-full justify-between items-center mt-8">
               <button type="button" className="bg-blue-800 text-white px-8 py-2 rounded-lg font-bold text-lg shadow hover:bg-blue-900 transition-all" onClick={prevStep}>Anterior</button>
               <button type="button" className="bg-blue-800 text-white px-8 py-2 rounded-lg font-bold text-lg shadow hover:bg-blue-900 transition-all" onClick={nextStep}>Enviar</button>

@@ -5,7 +5,6 @@ import AeronauticSection from '@/components/AeronauticSection';
 import AcompanamientoContinuo from '@/components/AcompanamientoContinuo';
 import FamiliasMigrantesSection from '../../../components/FamiliasMigrantesSection';
 import FormacionSliderSection from '../../../components/FormacionSliderSection';
-import { FaPhone } from 'react-icons/fa';
 import PhoneInputPro from '../../../components/PhoneInputPro';
 import LegalModal from '@/components/LegalModal';
 
@@ -107,9 +106,6 @@ function FormValidacionSkyMasters() {
     mensaje: '',
     terminos: false,
   });
-  const [enviado, setEnviado] = useState(false);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
   const [intentoEnvio, setIntentoEnvio] = useState(false);
   const [showLegal, setShowLegal] = useState(false);
 
@@ -154,7 +150,7 @@ function FormValidacionSkyMasters() {
     }
   };
 
-  if (enviado) {
+  if (intentoEnvio) {
     return <div className="text-green-700 font-bold text-center py-8">¡Formulario enviado correctamente!</div>;
   }
 
