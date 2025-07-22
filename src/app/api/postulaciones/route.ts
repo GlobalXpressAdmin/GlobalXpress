@@ -128,9 +128,9 @@ export async function POST(req: NextRequest) {
     ];
 
     // Filtra los campos undefined
-    const cleanData: Prisma.PostulacionTrabajoCreateInput = Object.fromEntries(
+    const cleanData = Object.fromEntries(
       Object.entries(postulacionData).filter((entry) => entry[1] !== undefined)
-    ) as Prisma.PostulacionTrabajoCreateInput;
+    ) as any;
 
     // Valida que todos los campos requeridos estén presentes
     const missing = requiredFields.filter(field => !(field in cleanData));
