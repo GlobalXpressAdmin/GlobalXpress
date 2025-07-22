@@ -15,8 +15,12 @@ const getRolAutorEnum = () => {
   }
 };
 
-export async function POST(request: NextRequest, { params }: { params: { id: string } }) {
-  const { id } = params;
+export async function POST(request: NextRequest) {
+  // Extraer el ID de la URL
+  const url = new URL(request.url);
+  // El ID es el penúltimo segmento de la ruta
+  const pathSegments = url.pathname.split('/');
+  const id = pathSegments[pathSegments.length - 2];
   const RolAutorEnum = getRolAutorEnum();
   try {
     if (!id) {
