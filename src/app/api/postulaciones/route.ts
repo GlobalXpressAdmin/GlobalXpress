@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '../../../lib/prisma';
+import { Prisma } from '@prisma/client';
 
 // Definir el tipo de entrada esperado según el modelo de Prisma
 interface PostulacionInput {
