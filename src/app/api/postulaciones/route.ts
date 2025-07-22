@@ -122,6 +122,11 @@ export async function POST(req: NextRequest) {
     };
 
     // Guardar en la base de datos
+    // Elimina usuario_id si es undefined para evitar errores de tipado de Prisma
+    if (typeof postulacionData.usuario_id === 'undefined') {
+      delete postulacionData.usuario_id;
+    }
+    // Si hay otros campos opcionales que pueden ser undefined, aplica la misma lógica aquí
     const postulacion = await prisma.postulacionTrabajo.create({
       data: postulacionData,
     });
