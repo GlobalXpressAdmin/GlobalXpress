@@ -1,52 +1,86 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '../../../lib/prisma';
 
+// Definir el tipo de entrada esperado según el modelo de Prisma
+interface PostulacionInput {
+  nombre: string;
+  apellido: string;
+  email: string;
+  telefono: string;
+  pais: string;
+  ciudad: string;
+  direccion: string;
+  visa: string;
+  empresa: string;
+  cargo: string;
+  conoceEEUU: string;
+  trabajoSinAutorizacion: string;
+  antecedentesMigratorios: string;
+  arrestado: string;
+  saldoMinimo: string;
+  quiereFinanciamiento: string;
+  confirmaRecursos: string;
+  aceptaTerminos: boolean;
+  aceptaComunicaciones: boolean;
+  aceptaDatos: boolean;
+  estado_postulacion: string;
+  programa: string;
+  salario?: string;
+  descripcion?: string;
+  emailVacante?: string;
+  workers?: string;
+  link?: string;
+  notas_admin?: string;
+  usuario_id?: string;
+}
+
 export async function POST(req: NextRequest) {
   try {
-    const data = await req.json();
+    const rawData: unknown = await req.json();
+    // Validación manual de los campos requeridos
+    function isPostulacionInput(data: any): data is PostulacionInput {
+      return (
+        typeof data === 'object' && data !== null &&
+        typeof data.nombre === 'string' &&
+        typeof data.apellido === 'string' &&
+        typeof data.email === 'string' &&
+        typeof data.telefono === 'string' &&
+        typeof data.pais === 'string' &&
+        typeof data.ciudad === 'string' &&
+        typeof data.direccion === 'string' &&
+        typeof data.visa === 'string' &&
+        typeof data.empresa === 'string' &&
+        typeof data.cargo === 'string' &&
+        typeof data.conoceEEUU === 'string' &&
+        typeof data.trabajoSinAutorizacion === 'string' &&
+        typeof data.antecedentesMigratorios === 'string' &&
+        typeof data.arrestado === 'string' &&
+        typeof data.saldoMinimo === 'string' &&
+        typeof data.quiereFinanciamiento === 'string' &&
+        typeof data.confirmaRecursos === 'string' &&
+        typeof data.aceptaTerminos === 'boolean' &&
+        typeof data.aceptaComunicaciones === 'boolean' &&
+        typeof data.aceptaDatos === 'boolean' &&
+        typeof data.estado_postulacion === 'string' &&
+        typeof data.programa === 'string'
+      );
+    }
+    if (!isPostulacionInput(rawData)) {
+      return NextResponse.json({ ok: false, error: 'Datos de postulación inválidos o incompletos.' }, { status: 400 });
+    }
+    const postulacionData = rawData as PostulacionInput;
     
-    // Extraer los datos del formulario y de la vacante
-    const {
-      nombre,
-      apellidos, // En el form es "apellidos", en la DB es "apellido"
-      correo, // En el form es "correo", en la DB es "email"
-      telefono,
-      pais,
-      ciudad,
-      direccion,
-      visa,
-      conoceEEUU,
-      trabajoSinAutorizacion,
-      antecedentesMigratorios,
-      arrestado,
-      saldoMinimo,
-      quiereFinanciamiento,
-      confirmaRecursos,
-      aceptaTerminos,
-      aceptaComunicaciones,
-      aceptaDatos,
-      programa = 'EB3', // Por defecto EB3, pero se puede cambiar
-      // Datos de la vacante
-      empresa,
-      cargo,
-      salario,
-      descripcion,
-      emailVacante,
-      workers,
-      link
-    } = data;
-
     // Validar que los datos de la vacante estén presentes
-    if (!empresa || !cargo) {
+    if (!postulacionData.empresa || !postulacionData.cargo) {
       return NextResponse.json({ ok: false, error: 'Faltan datos de la vacante (empresa o cargo).' }, { status: 400 });
     }
 
     // Verificar si existe un usuario registrado con el mismo email
     let usuario_id = null;
     
-    if (correo) {
+    if (postulacionData.email) {
       const usuarioExistente = await prisma.usuarios_global.findUnique({
-        where: { email: correo }
+        where: { email: postulacionData.email }
       });
       
       if (usuarioExistente) {
@@ -55,7 +89,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Validación básica de campos obligatorios
-    if (!nombre || !apellidos || !correo || !telefono || !pais || !ciudad || !direccion) {
+    if (!postulacionData.nombre || !postulacionData.apellido || !postulacionData.email || !postulacionData.telefono || !postulacionData.pais || !postulacionData.ciudad || !postulacionData.direccion) {
       return NextResponse.json({ 
         ok: false, 
         error: 'Faltan campos obligatorios.' 
@@ -64,13 +98,11 @@ export async function POST(req: NextRequest) {
 
     // Validar que los campos booleanos estén presentes
     const camposBooleanos = [
-      'conoceEEUU', 'trabajoSinAutorizacion', 'antecedentesMigratorios', 
-      'arrestado', 'saldoMinimo', 'quiereFinanciamiento', 'confirmaRecursos',
       'aceptaTerminos', 'aceptaComunicaciones', 'aceptaDatos'
     ];
 
     for (const campo of camposBooleanos) {
-      if (data[campo] === undefined) {
+      if ((postulacionData as any)[campo] === undefined) {
         return NextResponse.json({ 
           ok: false, 
           error: `Campo ${campo} es obligatorio.` 
@@ -80,7 +112,7 @@ export async function POST(req: NextRequest) {
 
     // Validar programa
     const programasValidos = ['EB3', 'DUAL_PLACEMENT', 'SKY_MASTERS', 'GLOBAL_ACADEMIC'];
-    if (!programasValidos.includes(programa)) {
+    if (!programasValidos.includes(postulacionData.programa)) {
       return NextResponse.json({ 
         ok: false, 
         error: 'Programa no válido.' 
@@ -88,87 +120,37 @@ export async function POST(req: NextRequest) {
     }
 
     // Preparar datos para la base de datos
-    const postulacionData = {
-      nombre,
-      apellido: apellidos, // Mapear apellidos -> apellido
-      email: correo, // Mapear correo -> email
-      telefono,
-      pais,
-      ciudad,
-      direccion,
-      visa,
-      empresa,
-      cargo,
-      salario,
-      descripcion,
-      emailVacante,
-      workers,
-      link,
-      conoceEEUU,
-      trabajoSinAutorizacion,
-      antecedentesMigratorios,
-      arrestado,
-      saldoMinimo,
-      quiereFinanciamiento,
-      confirmaRecursos,
-      aceptaTerminos,
-      aceptaComunicaciones,
-      aceptaDatos,
-      programa: programa as string, // Cast seguro
-      estado_postulacion: 'PENDIENTE' as const,
-      ...(usuario_id && { usuario_id }) // Solo incluir usuario_id si existe
-    };
-
-    // Lista de campos obligatorios según el modelo Prisma
-    const requiredFields = [
-      'nombre', 'apellido', 'email', 'telefono', 'pais', 'ciudad', 'direccion', 'visa',
-      'empresa', 'cargo', 'estado_postulacion', 'programa'
-      // Agrega aquí todos los campos que NO son opcionales en tu modelo
-    ];
-
-    // Construir cleanData con todos los campos requeridos y opcionales
-    const cleanData = {
-      nombre: postulacionData.nombre,
-      apellido: postulacionData.apellido,
-      email: postulacionData.email,
-      telefono: postulacionData.telefono,
-      pais: postulacionData.pais,
-      ciudad: postulacionData.ciudad,
-      direccion: postulacionData.direccion,
-      visa: postulacionData.visa,
-      empresa: postulacionData.empresa,
-      cargo: postulacionData.cargo,
-      conoceEEUU: postulacionData.conoceEEUU,
-      trabajoSinAutorizacion: postulacionData.trabajoSinAutorizacion,
-      antecedentesMigratorios: postulacionData.antecedentesMigratorios,
-      arrestado: postulacionData.arrestado,
-      saldoMinimo: postulacionData.saldoMinimo,
-      quiereFinanciamiento: postulacionData.quiereFinanciamiento,
-      confirmaRecursos: postulacionData.confirmaRecursos,
-      aceptaTerminos: postulacionData.aceptaTerminos,
-      aceptaComunicaciones: postulacionData.aceptaComunicaciones,
-      aceptaDatos: postulacionData.aceptaDatos,
-      estado_postulacion: postulacionData.estado_postulacion,
-      programa: postulacionData.programa,
-      // Opcionales:
-      ...(postulacionData.salario !== undefined && { salario: postulacionData.salario }),
-      ...(postulacionData.descripcion !== undefined && { descripcion: postulacionData.descripcion }),
-      ...(postulacionData.emailVacante !== undefined && { emailVacante: postulacionData.emailVacante }),
-      ...(postulacionData.workers !== undefined && { workers: postulacionData.workers }),
-      ...(postulacionData.link !== undefined && { link: postulacionData.link }),
-      ...(postulacionData.notas_admin !== undefined && { notas_admin: postulacionData.notas_admin }),
-      ...(postulacionData.usuario_id !== undefined && { usuario_id: postulacionData.usuario_id }),
-    };
-
-    // Valida que todos los campos requeridos estén presentes
-    const missing = requiredFields.filter(field => !(field in cleanData));
-    if (missing.length > 0) {
-      return NextResponse.json({ ok: false, error: `Faltan campos obligatorios: ${missing.join(', ')}` }, { status: 400 });
-    }
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const postulacion = await prisma.postulacionTrabajo.create({
-      data: cleanData as any,
+      data: {
+        nombre: postulacionData.nombre,
+        apellido: postulacionData.apellido, // Mapear apellidos -> apellido
+        email: postulacionData.email, // Mapear correo -> email
+        telefono: postulacionData.telefono,
+        pais: postulacionData.pais,
+        ciudad: postulacionData.ciudad,
+        direccion: postulacionData.direccion,
+        visa: postulacionData.visa,
+        empresa: postulacionData.empresa,
+        cargo: postulacionData.cargo,
+        salario: postulacionData.salario,
+        descripcion: postulacionData.descripcion,
+        emailVacante: postulacionData.emailVacante,
+        workers: postulacionData.workers,
+        link: postulacionData.link,
+        conoceEEUU: postulacionData.conoceEEUU,
+        trabajoSinAutorizacion: postulacionData.trabajoSinAutorizacion,
+        antecedentesMigratorios: postulacionData.antecedentesMigratorios,
+        arrestado: postulacionData.arrestado,
+        saldoMinimo: postulacionData.saldoMinimo,
+        quiereFinanciamiento: postulacionData.quiereFinanciamiento,
+        confirmaRecursos: postulacionData.confirmaRecursos,
+        aceptaTerminos: postulacionData.aceptaTerminos,
+        aceptaComunicaciones: postulacionData.aceptaComunicaciones,
+        aceptaDatos: postulacionData.aceptaDatos,
+        programa: postulacionData.programa as string, // Cast seguro
+        estado_postulacion: 'PENDIENTE' as const,
+        ...(usuario_id && { usuario_id }) // Solo incluir usuario_id si existe
+      },
     });
 
     return NextResponse.json({ 
@@ -181,7 +163,8 @@ export async function POST(req: NextRequest) {
         : 'Tu postulación ha sido enviada como visitante'
     });
 
-  } catch {
+  } catch (error) {
+    console.error('Error en POST /api/postulaciones:', error);
     return NextResponse.json({ 
       ok: false, 
       error: 'Error interno del servidor.' 
@@ -205,7 +188,8 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ ok: false, error: 'No se encontró postulación para ese email.' }, { status: 404 });
     }
     return NextResponse.json({ ok: true, postulaciones });
-  } catch {
+  } catch (error) {
+    console.error('Error en GET /api/postulaciones:', error);
     return NextResponse.json({ ok: false, error: 'Error interno del servidor.' }, { status: 500 });
   }
 }
@@ -277,11 +261,13 @@ export async function PATCH(req: NextRequest) {
           });
         }
       }
-    } catch {
+    } catch (error) {
+      console.error('Error al crear notificación en PATCH /api/postulaciones:', error);
     }
 
     return NextResponse.json({ ok: true, postulacion });
-  } catch {
+  } catch (error) {
+    console.error('Error en PATCH /api/postulaciones:', error);
     return NextResponse.json({ ok: false, error: 'Error interno del servidor.' }, { status: 500 });
   }
 } 
