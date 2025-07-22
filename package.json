@@ -22,7 +22,7 @@
     "classnames": "^2.5.1",
     "date-fns": "^4.1.0",
     "keen-slider": "^6.8.6",
-    "next": "15.3.4",
+    "next": "^15.4.2",
     "next-auth": "^4.24.11",
     "nodemailer": "^6.10.1",
     "prisma": "^6.11.1",
