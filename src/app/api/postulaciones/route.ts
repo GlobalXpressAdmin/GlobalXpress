@@ -38,31 +38,32 @@ export async function POST(req: NextRequest) {
   try {
     const rawData: unknown = await req.json();
     // Validación manual de los campos requeridos
-    function isPostulacionInput(data: any): data is PostulacionInput {
+    function isPostulacionInput(data: unknown): data is PostulacionInput {
+      if (typeof data !== 'object' || data === null) return false;
+      const d = data as Record<string, unknown>;
       return (
-        typeof data === 'object' && data !== null &&
-        typeof data.nombre === 'string' &&
-        typeof data.apellido === 'string' &&
-        typeof data.email === 'string' &&
-        typeof data.telefono === 'string' &&
-        typeof data.pais === 'string' &&
-        typeof data.ciudad === 'string' &&
-        typeof data.direccion === 'string' &&
-        typeof data.visa === 'string' &&
-        typeof data.empresa === 'string' &&
-        typeof data.cargo === 'string' &&
-        typeof data.conoceEEUU === 'string' &&
-        typeof data.trabajoSinAutorizacion === 'string' &&
-        typeof data.antecedentesMigratorios === 'string' &&
-        typeof data.arrestado === 'string' &&
-        typeof data.saldoMinimo === 'string' &&
-        typeof data.quiereFinanciamiento === 'string' &&
-        typeof data.confirmaRecursos === 'string' &&
-        typeof data.aceptaTerminos === 'boolean' &&
-        typeof data.aceptaComunicaciones === 'boolean' &&
-        typeof data.aceptaDatos === 'boolean' &&
-        typeof data.estado_postulacion === 'string' &&
-        typeof data.programa === 'string'
+        typeof d.nombre === 'string' &&
+        typeof d.apellido === 'string' &&
+        typeof d.email === 'string' &&
+        typeof d.telefono === 'string' &&
+        typeof d.pais === 'string' &&
+        typeof d.ciudad === 'string' &&
+        typeof d.direccion === 'string' &&
+        typeof d.visa === 'string' &&
+        typeof d.empresa === 'string' &&
+        typeof d.cargo === 'string' &&
+        typeof d.conoceEEUU === 'string' &&
+        typeof d.trabajoSinAutorizacion === 'string' &&
+        typeof d.antecedentesMigratorios === 'string' &&
+        typeof d.arrestado === 'string' &&
+        typeof d.saldoMinimo === 'string' &&
+        typeof d.quiereFinanciamiento === 'string' &&
+        typeof d.confirmaRecursos === 'string' &&
+        typeof d.aceptaTerminos === 'boolean' &&
+        typeof d.aceptaComunicaciones === 'boolean' &&
+        typeof d.aceptaDatos === 'boolean' &&
+        typeof d.estado_postulacion === 'string' &&
+        typeof d.programa === 'string'
       );
     }
     if (!isPostulacionInput(rawData)) {
@@ -102,7 +103,7 @@ export async function POST(req: NextRequest) {
     ];
 
     for (const campo of camposBooleanos) {
-      if ((postulacionData as any)[campo] === undefined) {
+      if (typeof ((postulacionData as unknown) as Record<string, unknown>)[campo] === 'undefined') {
         return NextResponse.json({ 
           ok: false, 
           error: `Campo ${campo} es obligatorio.` 
