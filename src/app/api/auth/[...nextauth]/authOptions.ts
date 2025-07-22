@@ -3,6 +3,8 @@ import GoogleProvider from "next-auth/providers/google";
 import { prisma } from '../../../../lib/prisma';
 import { sendBienvenidaEmail } from '../../../../lib/sendBienvenidaEmail';
 import bcrypt from "bcryptjs";
+import { Session, User as AdapterUser } from "next-auth";
+import { JWT } from "next-auth/jwt";
 
 export const authOptions = {
   providers: [
@@ -86,9 +88,10 @@ export const authOptions = {
       }
       return token;
     },
-    async session({ session, token }: { session: Record<string, unknown>; token: Record<string, unknown> }) {
+    async session(params: { session: Session; token: JWT; user?: AdapterUser; newSession?: any; trigger?: "update" }) {
+      const { session, token } = params;
       if (token) {
-        if (!session.user) session.user = {} as { id?: string; email?: string; nombre?: string };
+        session.user = session.user || {};
         (session.user as { id?: string; email?: string; nombre?: string }).id = token.id as string;
         (session.user as { id?: string; email?: string; nombre?: string }).email = token.email as string;
         (session.user as { id?: string; email?: string; nombre?: string }).nombre = token.nombre as string;
