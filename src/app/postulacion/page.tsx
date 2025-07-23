@@ -1,10 +1,10 @@
 'use client';
 import { useSearchParams } from "next/navigation";
 import vacantes from "../../components/vacantesData";
-import React, { useState } from "react";
+import React, { useState, Suspense } from "react";
 import { useRouter } from 'next/navigation';
 
-export default function Postulacion() {
+function PostulacionInner() {
   const searchParams = useSearchParams();
   const idx = parseInt(searchParams.get("idx") || "", 10);
   const vacante = !isNaN(idx) && vacantes[idx] ? vacantes[idx] : null;
@@ -62,6 +62,14 @@ export default function Postulacion() {
       )}
       {/* Aquí irá el contenido de la página de postulación */}
     </section>
+  );
+}
+
+export default function Postulacion() {
+  return (
+    <Suspense fallback={<div className="text-center py-10">Cargando...</div>}>
+      <PostulacionInner />
+    </Suspense>
   );
 }
 
