@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '../../../lib/prisma';
+import { ProgramaEmpleo, EstadoPostulacion } from '@prisma/client';
 
 export async function POST(req: NextRequest) {
   try {
@@ -16,7 +17,7 @@ export async function POST(req: NextRequest) {
     ];
 
     // Normalizar: si un campo viene vacío, null o undefined, poner 'FALTA DATO' (excepto programa y estado_postulacion)
-    const datos: Record<string, any> = {};
+    const datos: Record<string, unknown> = {};
     for (const campo of campos) {
       if (campo === 'programa' || campo === 'estado_postulacion') {
         datos[campo] = rawData[campo] ?? 'FALTA DATO';
@@ -31,7 +32,7 @@ export async function POST(req: NextRequest) {
 
     // Validar programa
     const programasValidos = ['EB3', 'DUAL_PLACEMENT', 'SKY_MASTERS', 'GLOBAL_ACADEMIC'];
-    if (!programasValidos.includes(datos.programa)) {
+    if (!programasValidos.includes(datos.programa as string)) {
       return NextResponse.json({ 
         ok: false, 
         error: 'Programa no válido.' 
@@ -47,7 +48,7 @@ export async function POST(req: NextRequest) {
     let usuario_id = null;
     if (datos.email && datos.email !== 'FALTA DATO') {
       const usuarioExistente = await prisma.usuarios_global.findUnique({
-        where: { email: datos.email }
+        where: { email: datos.email as string }
       });
       if (usuarioExistente) {
         usuario_id = usuarioExistente.id;
@@ -60,34 +61,34 @@ export async function POST(req: NextRequest) {
     // Crear postulación
     const postulacion = await prisma.postulacionTrabajo.create({
       data: {
-        nombre: datos.nombre,
-        apellido: datos.apellido,
-        email: datos.email,
-        telefono: datos.telefono,
-        pais: datos.pais,
-        ciudad: datos.ciudad,
-        direccion: datos.direccion,
-        visa: datos.visa,
-        empresa: datos.empresa,
-        cargo: datos.cargo,
-        salario: datos.salario,
-        descripcion: datos.descripcion,
-        emailVacante: datos.emailVacante,
-        workers: datos.workers,
-        link: datos.link,
-        conoceEEUU: datos.conoceEEUU,
-        trabajoSinAutorizacion: datos.trabajoSinAutorizacion,
-        antecedentesMigratorios: datos.antecedentesMigratorios,
-        arrestado: datos.arrestado,
-        saldoMinimo: datos.saldoMinimo,
-        quiereFinanciamiento: datos.quiereFinanciamiento,
-        confirmaRecursos: datos.confirmaRecursos,
-        aceptaTerminos: datos.aceptaTerminos,
-        aceptaComunicaciones: datos.aceptaComunicaciones,
-        aceptaDatos: datos.aceptaDatos,
-        programa: datos.programa,
-        estado_postulacion: datos.estado_postulacion,
-        notas_admin: datos.notas_admin,
+        nombre: datos.nombre as string,
+        apellido: datos.apellido as string,
+        email: datos.email as string,
+        telefono: datos.telefono as string,
+        pais: datos.pais as string,
+        ciudad: datos.ciudad as string,
+        direccion: datos.direccion as string,
+        visa: String(datos.visa),
+        empresa: datos.empresa as string,
+        cargo: datos.cargo as string,
+        salario: datos.salario as string,
+        descripcion: datos.descripcion as string,
+        emailVacante: datos.emailVacante as string,
+        workers: datos.workers as string,
+        link: datos.link as string,
+        conoceEEUU: String(datos.conoceEEUU),
+        trabajoSinAutorizacion: String(datos.trabajoSinAutorizacion),
+        antecedentesMigratorios: String(datos.antecedentesMigratorios),
+        arrestado: String(datos.arrestado),
+        saldoMinimo: String(datos.saldoMinimo),
+        quiereFinanciamiento: String(datos.quiereFinanciamiento),
+        confirmaRecursos: String(datos.confirmaRecursos),
+        aceptaTerminos: String(datos.aceptaTerminos),
+        aceptaComunicaciones: String(datos.aceptaComunicaciones),
+        aceptaDatos: String(datos.aceptaDatos),
+        programa: datos.programa as ProgramaEmpleo,
+        estado_postulacion: datos.estado_postulacion as EstadoPostulacion,
+        notas_admin: datos.notas_admin as string,
         ...(usuario_id && { usuario_id })
       },
     });
@@ -145,7 +146,7 @@ export async function PATCH(req: NextRequest) {
 
     // Estados válidos
     const estadosValidos = ['PENDIENTE', 'EN_REVISION', 'APROBADA', 'RECHAZADA', 'EN_PROCESO'];
-    if (!estadosValidos.includes(estado_postulacion)) {
+    if (!estadosValidos.includes(estado_postulacion as string)) {
       return NextResponse.json({ ok: false, error: 'Estado no válido.' }, { status: 400 });
     }
 
