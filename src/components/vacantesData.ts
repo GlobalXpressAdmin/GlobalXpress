@@ -493,7 +493,34 @@ const vacantes = [
     email: "No especificado",
     workers: "No especificado",
     link: "https://seasonaljobs.dol.gov/jobs/H-300-25156-054731"
-  }
+  },
+  {
+    empresa: "Just Tires (subsidiaria de Rubber Company)",
+    descripcion: "Mantenimiento y reparación de vehículos en centro Just Tires, Torrance, CA.",
+    cargo: "General Maintenance Technician",
+    salario: "$16.50 – $24.83/hora ($2,640 – $3,972.80/mes)",
+    email: "No especificado",
+    workers: "12",
+    link: "No especificado"
+  },
+  {
+    empresa: "Rubber Company",
+    descripcion: "Mantenimiento preventivo y reparación de vehículos en Weslaco, TX.",
+    cargo: "Mid-Level Automotive Technician",
+    salario: "$17.00 – $25.00/hora ($2,720 – $4,000/mes)",
+    email: "No especificado",
+    workers: "10",
+    link: "No especificado"
+  },
+  {
+    empresa: "Washington Metropolitan Area Transit Authority (WMATA)",
+    descripcion: "Mantenimiento y reparación de autobuses en Hyattsville, MD.",
+    cargo: "Automotive Service Technician (Bus Mechanic)",
+    salario: "A conevir, dependiendo de as habilidades y experiencia",
+    email: "No especificado",
+    workers: "10",
+    link: "No especificado"
+  },
 ];
 
 export default vacantes;

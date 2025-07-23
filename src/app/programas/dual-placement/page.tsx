@@ -230,88 +230,91 @@ function DualPlacementForm({ showLegal, setShowLegal }: { showLegal: boolean; se
   };
 
   return (
-    <>
-      <form className="bg-[#ededed] rounded-lg flex-1 max-w-xl flex flex-col gap-4" onSubmit={handleSubmit}>
-        <div className="flex gap-4">
-          <input
-            type="text"
-            name="nombre"
-            placeholder="Nombre"
-            className="flex-1 p-3 rounded-lg bg-white border-none outline-none text-black"
-            value={form.nombre}
-            onChange={handleChange}
-          />
-          <input
-            type="text"
-            name="apellido"
-            placeholder="Apellido"
-            className="flex-1 p-3 rounded-lg bg-white border-none outline-none text-black"
-            value={form.apellido}
-            onChange={handleChange}
-          />
-        </div>
+    <form className="bg-[#ededed] rounded-lg flex-1 max-w-xl flex flex-col gap-4" onSubmit={handleSubmit}>
+      <div className="flex gap-4">
         <input
-          type="email"
-          name="email"
-          placeholder="Correo electrónico"
-          className="p-3 rounded-lg bg-white border-none outline-none text-black"
-          value={form.email}
+          type="text"
+          name="nombre"
+          placeholder="Nombre"
+          className="flex-1 p-3 rounded-lg bg-white border-none outline-none text-black"
+          value={form.nombre}
           onChange={handleChange}
         />
-        <div className="flex items-center bg-white rounded p-3 gap-2">
-          <PhoneInputPro
-            value={form.telefono}
-            onChange={(telefono: string) => setForm(prev => ({ ...prev, telefono }))}
-            required
-            bgClass="!bg-white"
-            labelClass="block text-gray-500 text-sm mb-1 ml-1 font-semibold"
-            helpTextClass="block text-xs text-gray-400 mt-2 ml-1"
-            showAsterisk={false}
-          />
-        </div>
-        <div className="flex items-center gap-4">
-          <span className="text-black bg-[#f5f5f5] px-3 py-2 rounded-lg">¿Dispone de visa?</span>
-          <button
-            type="button"
-            className={`w-12 h-12 rounded-full border-2 font-bold flex items-center justify-center focus:outline-none ${form.visa === 'SI' ? 'bg-[#1161A9] text-white border-[#1161A9]' : 'border-[#1161A9] text-[#1161A9]'}`}
-            onClick={() => handleVisa('SI')}
-          >
-            SI
-          </button>
-          <button
-            type="button"
-            className={`w-12 h-12 rounded-full border-2 font-bold flex items-center justify-center focus:outline-none ${form.visa === 'NO' ? 'bg-[#1161A9] text-white border-[#1161A9]' : 'border-[#1161A9] text-[#1161A9]'}`}
-            onClick={() => handleVisa('NO')}
-          >
-            NO
-          </button>
-        </div>
-        <textarea
-          name="mensaje"
-          placeholder="Escriba su mensaje"
-          className="p-3 rounded-lg bg-white border-none outline-none text-black min-h-[80px]"
-          value={form.mensaje}
+        <input
+          type="text"
+          name="apellido"
+          placeholder="Apellido"
+          className="flex-1 p-3 rounded-lg bg-white border-none outline-none text-black"
+          value={form.apellido}
           onChange={handleChange}
         />
-        <div className="flex items-center gap-2 mt-2">
-          <a href="#" className="text-[#1161A9] font-semibold underline" onClick={e => { e.preventDefault(); setShowLegal(true); }}>Términos y Condiciones</a>
-          <input
-            type="checkbox"
-            name="terminos"
-            className={`w-5 h-5 rounded-full border-2 ${intentoEnvio && !form.terminos ? 'border-red-500' : 'border-[#222]'}`}
-            checked={form.terminos}
-            onChange={handleChange}
-          />
-          <span className="text-black">Confirmo que he leído y acepto los términos del proceso Dual Placement</span>
-          {intentoEnvio && !form.terminos && (
-            <span className="text-red-600 text-xs font-bold ml-2">* Obligatorio para enviar</span>
-          )}
-        </div>
-        {error && <div className="text-red-600 text-sm font-bold mt-1">{error}</div>}
-        {success && <div className="text-green-600 text-sm font-bold mt-1">{success}</div>}
-        <button type="submit" className="bg-[#004876] text-white font-bold py-3 rounded-full mt-4 text-lg">Enviar formulario</button>
-      </form>
+      </div>
+      <input
+        type="email"
+        name="email"
+        placeholder="Correo electrónico"
+        className="p-3 rounded-lg bg-white border-none outline-none text-black"
+        value={form.email}
+        onChange={handleChange}
+      />
+      <div className="flex items-center bg-white rounded p-3 gap-2">
+        <PhoneInputPro
+          value={form.telefono}
+          onChange={telefono => setForm(prev => ({ ...prev, telefono }))}
+          required
+          bgClass="!bg-white"
+          labelClass="block text-gray-500 text-sm mb-1 ml-1 font-semibold"
+          helpTextClass="block text-xs text-gray-400 mt-2 ml-1"
+          showAsterisk={false}
+        />
+      </div>
+      <div className="flex items-center gap-4">
+        <span className="text-black bg-[#f5f5f5] px-3 py-2 rounded-lg">¿Dispone de visa?</span>
+        <button
+          type="button"
+          className={`w-12 h-12 rounded-full border-2 font-bold flex items-center justify-center focus:outline-none ${form.visa === 'SI' ? 'bg-[#1161A9] text-white border-[#1161A9]' : 'border-[#1161A9] text-[#1161A9]'}`}
+          onClick={() => handleVisa('SI')}
+        >
+          SI
+        </button>
+        <button
+          type="button"
+          className={`w-12 h-12 rounded-full border-2 font-bold flex items-center justify-center focus:outline-none ${form.visa === 'NO' ? 'bg-[#1161A9] text-white border-[#1161A9]' : 'border-[#1161A9] text-[#1161A9]'}`}
+          onClick={() => handleVisa('NO')}
+        >
+          NO
+        </button>
+      </div>
+      <textarea
+        name="mensaje"
+        placeholder="Escriba su mensaje"
+        className="p-3 rounded-lg bg-white border-none outline-none text-black min-h-[80px]"
+        value={form.mensaje}
+        onChange={handleChange}
+      />
+      <div className="flex items-center gap-2 mt-2">
+        <a href="#" className="text-[#1161A9] font-semibold underline" onClick={e => { e.preventDefault(); setShowLegal(true); }}>Términos y Condiciones</a>
+        <input
+          type="checkbox"
+          name="terminos"
+          className={`w-5 h-5 rounded-full border-2 ${intentoEnvio && !form.terminos ? 'border-red-500' : 'border-[#222]'}`}
+          checked={form.terminos}
+          onChange={handleChange}
+        />
+        <span className="text-black">Confirmo que he leído y acepto los términos del proceso Dual Placement</span>
+        {intentoEnvio && !form.terminos && (
+          <span className="text-red-600 text-xs font-bold ml-2">* Obligatorio para enviar</span>
+        )}
+      </div>
       <LegalModal open={showLegal} onClose={() => setShowLegal(false)} />
-    </>
+      <button
+        type="submit"
+        className="bg-[#004876] text-white font-bold py-3 rounded-full mt-4 text-lg transition-all duration-150 hover:bg-[#1161A9] hover:scale-105 active:bg-[#003b5c] active:scale-95"
+      >
+        Enviar formulario
+      </button>
+      {error && <div className="text-red-600 text-sm font-bold mt-1">{error}</div>}
+      {success && <div className="text-green-600 text-sm font-bold mt-1">{success}</div>}
+    </form>
   );
 } 

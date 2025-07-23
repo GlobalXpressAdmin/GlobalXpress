@@ -158,7 +158,7 @@ export default function VisaE2() {
             Queremos conocer su nacionalidad, tipo de inversión y objetivos empresariales para determinar si el programa E-2 es el camino adecuado para usted.
           </p>
         </div>
-        {/* Formulario controlado */}
+        {/* Formulario controlado unificado */}
         <form className="bg-[#ededed] rounded-lg flex-1 max-w-xl flex flex-col gap-4" onSubmit={handleSubmit}>
           <div className="flex gap-4">
             <input
@@ -186,16 +186,17 @@ export default function VisaE2() {
             value={form.email}
             onChange={handleChange}
           />
-          {/* Teléfono con ícono */}
-          <PhoneInputPro
-            value={form.telefono}
-            onChange={telefono => setForm(prev => ({ ...prev, telefono }))}
-            required
-            bgClass="!bg-white"
-            labelClass="block text-gray-500 text-sm mb-1 ml-1 font-semibold"
-            helpTextClass="block text-xs text-gray-400 mt-2 ml-1"
-            showAsterisk={false}
-          />
+          <div className="flex items-center bg-white rounded p-3 gap-2">
+            <PhoneInputPro
+              value={form.telefono}
+              onChange={telefono => setForm(prev => ({ ...prev, telefono }))}
+              required
+              bgClass="!bg-white"
+              labelClass="block text-gray-500 text-sm mb-1 ml-1 font-semibold"
+              helpTextClass="block text-xs text-gray-400 mt-2 ml-1"
+              showAsterisk={false}
+            />
+          </div>
           <div className="flex items-center gap-4">
             <span className="text-black bg-[#f5f5f5] px-3 py-2 rounded-lg">¿Dispone de visa?</span>
             <button
@@ -235,10 +236,15 @@ export default function VisaE2() {
             )}
           </div>
           <LegalModal open={showLegal} onClose={() => setShowLegal(false)} />
-          <button type="submit" className="bg-[#004876] text-white font-bold py-3 rounded-full mt-4 text-lg">Enviar formulario</button>
+          <button
+            type="submit"
+            className="bg-[#004876] text-white font-bold py-3 rounded-full mt-4 text-lg transition-all duration-150 hover:bg-[#1161A9] hover:scale-105 active:bg-[#003b5c] active:scale-95"
+          >
+            Enviar formulario
+          </button>
+          {error && <div className="text-red-600 text-sm font-bold mt-1">{error}</div>}
+          {success && <div className="text-green-600 text-sm font-bold mt-1">{success}</div>}
         </form>
-        {error && <div className="text-red-600 text-sm font-bold mt-1">{error}</div>}
-        {success && <div className="text-green-600 text-sm font-bold mt-1">{success}</div>}
       </section>
       {/* Bloque superior blanco con mensaje */}
       <section className="w-full bg-white py-16 px-4 text-center">

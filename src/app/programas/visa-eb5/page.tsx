@@ -35,11 +35,13 @@ export default function VisaEB5() {
 
   const [intentoEnvio, setIntentoEnvio] = useState(false);
   const [showLegal, setShowLegal] = useState(false);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!form.nombre || !form.apellido || !form.email || !form.telefono || !form.visa || !form.terminos) {
-      // setError('Por favor complete todos los campos y acepte los términos.'); // This line was removed
+      setError('Por favor complete todos los campos y acepte los términos.');
       return;
     }
     try {
@@ -50,14 +52,14 @@ export default function VisaEB5() {
       });
       const data = await res.json();
       if (data.ok) {
-        // setSuccess('¡Formulario enviado correctamente!'); // This line was removed
+        setSuccess('¡Formulario enviado correctamente!');
         setForm({ nombre: '', apellido: '', email: '', telefono: '', visa: '', mensaje: '', terminos: false });
         setIntentoEnvio(false);
       } else {
-        // setError(data.error || 'Error al enviar el formulario.'); // This line was removed
+        setError(data.error || 'Error al enviar el formulario.');
       }
     } catch {
-      // setError('Error de conexión.'); // This line was removed
+      setError('Error de conexión.');
     }
   };
 
@@ -156,7 +158,7 @@ export default function VisaEB5() {
               Queremos conocer su nacionalidad, tipo de inversión y objetivos empresariales para determinar si el programa EB-5 es el camino adecuado para usted.
             </p>
           </div>
-          {/* Formulario controlado */}
+          {/* Formulario controlado unificado */}
           <form className="bg-[#ededed] rounded-lg flex-1 max-w-xl flex flex-col gap-4" onSubmit={handleSubmit}>
             <div className="flex gap-4">
               <input
@@ -234,8 +236,14 @@ export default function VisaEB5() {
               )}
             </div>
             <LegalModal open={showLegal} onClose={() => setShowLegal(false)} />
-            <button type="submit" className="bg-[#004876] text-white font-bold py-3 rounded-full mt-4 text-lg">Enviar formulario</button>
-            {/* Los mensajes de error y éxito solo deben mostrarse dentro del formulario, no fuera del componente del formulario */}
+            <button
+              type="submit"
+              className="bg-[#004876] text-white font-bold py-3 rounded-full mt-4 text-lg transition-all duration-150 hover:bg-[#1161A9] hover:scale-105 active:bg-[#003b5c] active:scale-95"
+            >
+              Enviar formulario
+            </button>
+            {error && <div className="text-red-600 text-sm font-bold mt-1">{error}</div>}
+            {success && <div className="text-green-600 text-sm font-bold mt-1">{success}</div>}
           </form>
         </section>
         {/* Mensaje superior en fondo blanco */}
