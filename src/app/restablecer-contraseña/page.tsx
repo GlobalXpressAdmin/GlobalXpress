@@ -1,9 +1,9 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 
-export default function RestablecerContrasena() {
+function RestablecerContrasenaInner() {
   const searchParams = useSearchParams();
   const token = searchParams.get("token") || "";
   const [password, setPassword] = useState("");
@@ -104,10 +104,15 @@ export default function RestablecerContrasena() {
             </button>
           </form>
         )}
-        <div className="mt-8 text-center text-sm text-blue-700">
-          <a href="/ingreso-cliente" className="text-blue-600 hover:underline font-semibold">Volver a iniciar sesión</a>
-        </div>
       </div>
     </div>
+  );
+}
+
+export default function RestablecerContrasena() {
+  return (
+    <Suspense fallback={<div className="text-center py-10">Cargando...</div>}>
+      <RestablecerContrasenaInner />
+    </Suspense>
   );
 } 
