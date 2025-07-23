@@ -1,43 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '../../../lib/prisma';
-import { ProgramaEmpleo } from '@prisma/client';
-
-// Definir el tipo de entrada esperado según el modelo de Prisma
-interface PostulacionInput {
-  nombre: string;
-  apellido: string;
-  email: string;
-  telefono: string;
-  pais: string;
-  ciudad: string;
-  direccion: string;
-  visa: string;
-  empresa: string;
-  cargo: string;
-  conoceEEUU: string;
-  trabajoSinAutorizacion: string;
-  antecedentesMigratorios: string;
-  arrestado: string;
-  saldoMinimo: string;
-  quiereFinanciamiento: string;
-  confirmaRecursos: string;
-  aceptaTerminos: boolean;
-  aceptaComunicaciones: boolean;
-  aceptaDatos: boolean;
-  estado_postulacion: string;
-  programa: string;
-  salario?: string;
-  descripcion?: string;
-  emailVacante?: string;
-  workers?: string;
-  link?: string;
-  notas_admin?: string;
-  usuario_id?: string;
-}
 
 export async function POST(req: NextRequest) {
   try {
-    const rawData: any = await req.json();
+    const rawData = await req.json() as Record<string, unknown>;
 
     // Lista de campos según el modelo Prisma
     const campos = [

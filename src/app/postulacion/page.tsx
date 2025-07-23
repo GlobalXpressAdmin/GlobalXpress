@@ -161,7 +161,7 @@ function MultiStepForm({ vacante }: { vacante: {
         'arrestado', 'saldoMinimo', 'quiereFinanciamiento', 'confirmaRecursos',
         'aceptaTerminos', 'aceptaComunicaciones', 'aceptaDatos', 'programa'
       ];
-      const datosEnviar: Record<string, any> = {
+      const datosEnviar: Record<string, unknown> = {
         ...form,
         conoceEEUU: form.conoceEEUU ? 'SI' : 'NO',
         trabajoSinAutorizacion: form.trabajoSinAutorizacion ? 'SI' : 'NO',
