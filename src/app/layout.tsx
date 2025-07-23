@@ -18,7 +18,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Global Express - Tu página web",
+  title: "GlobalXpress",
   description: "Página web profesional de Global Express",
 };
 
