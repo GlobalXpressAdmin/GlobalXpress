@@ -37,121 +37,92 @@ interface PostulacionInput {
 
 export async function POST(req: NextRequest) {
   try {
-    const rawData: unknown = await req.json();
-    // Validación manual de los campos requeridos
-    function isPostulacionInput(data: unknown): data is PostulacionInput {
-      if (typeof data !== 'object' || data === null) return false;
-      const d = data as Record<string, unknown>;
-      return (
-        typeof d.nombre === 'string' &&
-        typeof d.apellido === 'string' &&
-        typeof d.email === 'string' &&
-        typeof d.telefono === 'string' &&
-        typeof d.pais === 'string' &&
-        typeof d.ciudad === 'string' &&
-        typeof d.direccion === 'string' &&
-        typeof d.visa === 'string' &&
-        typeof d.empresa === 'string' &&
-        typeof d.cargo === 'string' &&
-        typeof d.conoceEEUU === 'string' &&
-        typeof d.trabajoSinAutorizacion === 'string' &&
-        typeof d.antecedentesMigratorios === 'string' &&
-        typeof d.arrestado === 'string' &&
-        typeof d.saldoMinimo === 'string' &&
-        typeof d.quiereFinanciamiento === 'string' &&
-        typeof d.confirmaRecursos === 'string' &&
-        typeof d.aceptaTerminos === 'boolean' &&
-        typeof d.aceptaComunicaciones === 'boolean' &&
-        typeof d.aceptaDatos === 'boolean' &&
-        typeof d.estado_postulacion === 'string' &&
-        typeof d.programa === 'string'
-      );
-    }
-    if (!isPostulacionInput(rawData)) {
-      return NextResponse.json({ ok: false, error: 'Datos de postulación inválidos o incompletos.' }, { status: 400 });
-    }
-    const postulacionData = rawData as PostulacionInput;
-    
-    // Validar que los datos de la vacante estén presentes
-    if (!postulacionData.empresa || !postulacionData.cargo) {
-      return NextResponse.json({ ok: false, error: 'Faltan datos de la vacante (empresa o cargo).' }, { status: 400 });
-    }
+    const rawData: any = await req.json();
 
-    // Verificar si existe un usuario registrado con el mismo email
-    let usuario_id = null;
-    
-    if (postulacionData.email) {
-      const usuarioExistente = await prisma.usuarios_global.findUnique({
-        where: { email: postulacionData.email }
-      });
-      
-      if (usuarioExistente) {
-        usuario_id = usuarioExistente.id;
-      }
-    }
-
-    // Validación básica de campos obligatorios
-    if (!postulacionData.nombre || !postulacionData.apellido || !postulacionData.email || !postulacionData.telefono || !postulacionData.pais || !postulacionData.ciudad || !postulacionData.direccion) {
-      return NextResponse.json({ 
-        ok: false, 
-        error: 'Faltan campos obligatorios.' 
-      }, { status: 400 });
-    }
-
-    // Validar que los campos booleanos estén presentes
-    const camposBooleanos = [
-      'aceptaTerminos', 'aceptaComunicaciones', 'aceptaDatos'
+    // Lista de campos según el modelo Prisma
+    const campos = [
+      'nombre', 'apellido', 'email', 'telefono', 'pais', 'ciudad', 'direccion', 'visa',
+      'empresa', 'cargo', 'salario', 'descripcion', 'emailVacante', 'workers', 'link',
+      'conoceEEUU', 'trabajoSinAutorizacion', 'antecedentesMigratorios', 'arrestado',
+      'saldoMinimo', 'quiereFinanciamiento', 'confirmaRecursos',
+      'aceptaTerminos', 'aceptaComunicaciones', 'aceptaDatos',
+      'programa', 'estado_postulacion', 'notas_admin', 'usuario_id'
     ];
 
-    for (const campo of camposBooleanos) {
-      if (typeof ((postulacionData as unknown) as Record<string, unknown>)[campo] === 'undefined') {
-        return NextResponse.json({ 
-          ok: false, 
-          error: `Campo ${campo} es obligatorio.` 
-        }, { status: 400 });
+    // Normalizar: si un campo viene vacío, null o undefined, poner 'FALTA DATO' (excepto programa y estado_postulacion)
+    const datos: Record<string, any> = {};
+    for (const campo of campos) {
+      if (campo === 'programa' || campo === 'estado_postulacion') {
+        datos[campo] = rawData[campo] ?? 'FALTA DATO';
+      } else if (typeof rawData[campo] === 'boolean') {
+        datos[campo] = String(rawData[campo]);
+      } else if (rawData[campo] === undefined || rawData[campo] === null || rawData[campo] === '') {
+        datos[campo] = 'FALTA DATO';
+      } else {
+        datos[campo] = rawData[campo];
       }
     }
 
     // Validar programa
     const programasValidos = ['EB3', 'DUAL_PLACEMENT', 'SKY_MASTERS', 'GLOBAL_ACADEMIC'];
-    if (!programasValidos.includes(postulacionData.programa)) {
+    if (!programasValidos.includes(datos.programa)) {
       return NextResponse.json({ 
         ok: false, 
         error: 'Programa no válido.' 
       }, { status: 400 });
     }
 
-    // Preparar datos para la base de datos
+    // Estado por defecto
+    if (!datos.estado_postulacion || datos.estado_postulacion === 'FALTA DATO') {
+      datos.estado_postulacion = 'PENDIENTE';
+    }
+
+    // Buscar usuario_id si hay email
+    let usuario_id = null;
+    if (datos.email && datos.email !== 'FALTA DATO') {
+      const usuarioExistente = await prisma.usuarios_global.findUnique({
+        where: { email: datos.email }
+      });
+      if (usuarioExistente) {
+        usuario_id = usuarioExistente.id;
+      }
+    }
+    if (usuario_id) {
+      datos.usuario_id = usuario_id;
+    }
+
+    // Crear postulación
     const postulacion = await prisma.postulacionTrabajo.create({
       data: {
-        nombre: postulacionData.nombre,
-        apellido: postulacionData.apellido, // Mapear apellidos -> apellido
-        email: postulacionData.email, // Mapear correo -> email
-        telefono: postulacionData.telefono,
-        pais: postulacionData.pais,
-        ciudad: postulacionData.ciudad,
-        direccion: postulacionData.direccion,
-        visa: postulacionData.visa,
-        empresa: postulacionData.empresa,
-        cargo: postulacionData.cargo,
-        salario: postulacionData.salario,
-        descripcion: postulacionData.descripcion,
-        emailVacante: postulacionData.emailVacante,
-        workers: postulacionData.workers,
-        link: postulacionData.link,
-        conoceEEUU: postulacionData.conoceEEUU,
-        trabajoSinAutorizacion: postulacionData.trabajoSinAutorizacion,
-        antecedentesMigratorios: postulacionData.antecedentesMigratorios,
-        arrestado: postulacionData.arrestado,
-        saldoMinimo: postulacionData.saldoMinimo,
-        quiereFinanciamiento: postulacionData.quiereFinanciamiento,
-        confirmaRecursos: postulacionData.confirmaRecursos,
-        aceptaTerminos: String(postulacionData.aceptaTerminos),
-        aceptaComunicaciones: String(postulacionData.aceptaComunicaciones),
-        aceptaDatos: String(postulacionData.aceptaDatos),
-        programa: postulacionData.programa as ProgramaEmpleo,
-        estado_postulacion: 'PENDIENTE' as const,
-        ...(usuario_id && { usuario_id }) // Solo incluir usuario_id si existe
+        nombre: datos.nombre,
+        apellido: datos.apellido,
+        email: datos.email,
+        telefono: datos.telefono,
+        pais: datos.pais,
+        ciudad: datos.ciudad,
+        direccion: datos.direccion,
+        visa: datos.visa,
+        empresa: datos.empresa,
+        cargo: datos.cargo,
+        salario: datos.salario,
+        descripcion: datos.descripcion,
+        emailVacante: datos.emailVacante,
+        workers: datos.workers,
+        link: datos.link,
+        conoceEEUU: datos.conoceEEUU,
+        trabajoSinAutorizacion: datos.trabajoSinAutorizacion,
+        antecedentesMigratorios: datos.antecedentesMigratorios,
+        arrestado: datos.arrestado,
+        saldoMinimo: datos.saldoMinimo,
+        quiereFinanciamiento: datos.quiereFinanciamiento,
+        confirmaRecursos: datos.confirmaRecursos,
+        aceptaTerminos: datos.aceptaTerminos,
+        aceptaComunicaciones: datos.aceptaComunicaciones,
+        aceptaDatos: datos.aceptaDatos,
+        programa: datos.programa,
+        estado_postulacion: datos.estado_postulacion,
+        notas_admin: datos.notas_admin,
+        ...(usuario_id && { usuario_id })
       },
     });
 

@@ -87,8 +87,8 @@ function MultiStepForm({ vacante }: { vacante: {
   const [step, setStep] = useState(1);
   const [form, setForm] = useState({
     nombre: '',
-    apellidos: '',
-    correo: '',
+    apellido: '', // Cambiado de apellidos a apellido
+    email: '',    // Cambiado de correo a email
     telefono: '',
     pais: '',
     ciudad: '',
@@ -129,7 +129,7 @@ function MultiStepForm({ vacante }: { vacante: {
       if (!form.nombre) {
         hayError = true;
       }
-      if (!form.correo) {
+      if (!form.email) {
         hayError = true;
       }
       if (!form.telefono) {
@@ -154,7 +154,14 @@ function MultiStepForm({ vacante }: { vacante: {
         return;
       }
       // Aquí se envían los datos finales
-      const datosEnviar = {
+      // Lista de campos obligatorios según Prisma
+      const camposObligatorios = [
+        'nombre', 'apellido', 'email', 'telefono', 'pais', 'ciudad', 'direccion', 'visa',
+        'empresa', 'cargo', 'conoceEEUU', 'trabajoSinAutorizacion', 'antecedentesMigratorios',
+        'arrestado', 'saldoMinimo', 'quiereFinanciamiento', 'confirmaRecursos',
+        'aceptaTerminos', 'aceptaComunicaciones', 'aceptaDatos', 'programa'
+      ];
+      const datosEnviar: Record<string, any> = {
         ...form,
         conoceEEUU: form.conoceEEUU ? 'SI' : 'NO',
         trabajoSinAutorizacion: form.trabajoSinAutorizacion ? 'SI' : 'NO',
@@ -166,7 +173,6 @@ function MultiStepForm({ vacante }: { vacante: {
         aceptaTerminos: form.aceptaTerminos ? 'SI' : 'NO',
         aceptaComunicaciones: form.aceptaComunicaciones ? 'SI' : 'NO',
         aceptaDatos: form.aceptaDatos ? 'SI' : 'NO',
-        // Datos de la vacante:
         empresa: vacante.empresa,
         cargo: vacante.cargo,
         salario: vacante.salario,
@@ -174,8 +180,14 @@ function MultiStepForm({ vacante }: { vacante: {
         emailVacante: vacante.email,
         workers: vacante.workers,
         link: vacante.link,
+        programa: 'EB3',
       };
-      
+      // Rellenar todos los campos obligatorios si faltan
+      for (const campo of camposObligatorios) {
+        if (typeof datosEnviar[campo] === 'undefined' || datosEnviar[campo] === null || datosEnviar[campo] === '') {
+          datosEnviar[campo] = 'FALTA DATO';
+        }
+      }
       // Enviar datos al backend
       try {
         const response = await fetch('/api/postulaciones', {
@@ -185,14 +197,11 @@ function MultiStepForm({ vacante }: { vacante: {
           },
           body: JSON.stringify(datosEnviar),
         });
-        
         const result = await response.json();
-        
         if (result.ok) {
-          // Éxito - avanzar al paso final
           setStep(s => Math.min(s + 1, 6));
         } else {
-          // setErrorGeneral(result.error || 'Error al enviar la postulación.'); // Original line commented out
+          // setErrorGeneral(result.error || 'Error al enviar la postulación.');
         }
       } catch {
         // Error de conexión al enviar la postulación.
@@ -218,12 +227,12 @@ function MultiStepForm({ vacante }: { vacante: {
                 <label className="absolute left-4 top-2 text-blue-400 text-sm transition-all peer-placeholder-shown:top-5 peer-placeholder-shown:text-base peer-focus:top-2 peer-focus:text-sm pointer-events-none">Nombre</label>
               </div>
               <div className="relative">
-                <input name="apellidos" value={form.apellidos} onChange={handleChange} className="peer w-full px-4 pt-6 pb-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 bg-blue-50 placeholder-transparent text-base" placeholder="Apellidos" />
-                <label className="absolute left-4 top-2 text-blue-400 text-sm transition-all peer-placeholder-shown:top-5 peer-placeholder-shown:text-base peer-focus:top-2 peer-focus:text-sm pointer-events-none">Apellidos</label>
+                <input name="apellido" value={form.apellido} onChange={handleChange} className="peer w-full px-4 pt-6 pb-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 bg-blue-50 placeholder-transparent text-base" placeholder="Apellido" />
+                <label className="absolute left-4 top-2 text-blue-400 text-sm transition-all peer-placeholder-shown:top-5 peer-placeholder-shown:text-base peer-focus:top-2 peer-focus:text-sm pointer-events-none">Apellido</label>
               </div>
             </div>
             <div className="relative">
-              <input name="correo" value={form.correo} onChange={handleChange} className="peer w-full px-4 pt-6 pb-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 bg-blue-50 placeholder-transparent text-base" placeholder="Correo electrónico" />
+              <input name="email" value={form.email} onChange={handleChange} className="peer w-full px-4 pt-6 pb-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 bg-blue-50 placeholder-transparent text-base" placeholder="Correo electrónico" />
               <label className="absolute left-4 top-2 text-blue-400 text-sm transition-all peer-placeholder-shown:top-5 peer-placeholder-shown:text-base peer-focus:top-2 peer-focus:text-sm pointer-events-none">Correo electrónico</label>
             </div>
             <div className="relative">

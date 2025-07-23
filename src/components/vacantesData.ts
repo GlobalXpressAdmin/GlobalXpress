@@ -521,6 +521,15 @@ const vacantes = [
     workers: "10",
     link: "No especificado"
   },
+  {
+    empresa: "Global Language Institute",
+    cargo: "Docente Bilingüe de Español e Inglés (Nivel B2+)",
+    salario: "Por hora: $15.00 – $22.00 USD / Mes: $2,400 – $3,520 USD",
+    descripcion: "Se busca docente bilingüe (español e inglés, nivel mínimo B2)",
+    email: "No especificado",
+    workers: "2",
+    link: "No especificado"
+  }
 ];
 
 export default vacantes;
