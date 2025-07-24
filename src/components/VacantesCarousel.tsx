@@ -1,7 +1,7 @@
 "use client";
 import "keen-slider/keen-slider.min.css";
 import { useKeenSlider } from "keen-slider/react";
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import vacantes from "./vacantesData";
 import React from "react";
 import Link from "next/link";
