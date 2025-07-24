@@ -8,7 +8,6 @@ import Link from "next/link";
 
 export default function VacantesCarousel() {
   const [currentSlide, setCurrentSlide] = useState(0);
-  const [pages, setPages] = useState(1);
   const [perView, setPerView] = useState(1);
   const [sliderRef, instanceRef] = useKeenSlider({
     loop: true,
@@ -18,11 +17,9 @@ export default function VacantesCarousel() {
     },
     created() {
       setPerView(1);
-      setPages(Math.ceil(vacantes.length / 1));
     },
     updated() {
       setPerView(1);
-      setPages(Math.ceil(vacantes.length / 1));
     },
   });
 
@@ -31,23 +28,18 @@ export default function VacantesCarousel() {
       if (window.innerWidth < 640) {
         instanceRef.current?.update({ slides: { perView: 1, spacing: 12 } });
         setPerView(1);
-        setPages(Math.ceil(vacantes.length / 1));
       } else if (window.innerWidth < 1024) {
         instanceRef.current?.update({ slides: { perView: 2, spacing: 18 } });
         setPerView(2);
-        setPages(Math.ceil(vacantes.length / 2));
       } else {
         instanceRef.current?.update({ slides: { perView: 3, spacing: 26 } });
         setPerView(3);
-        setPages(Math.ceil(vacantes.length / 3));
       }
     };
     window.addEventListener('resize', handleResize);
     handleResize();
     return () => window.removeEventListener('resize', handleResize);
-  }, [vacantes.length, instanceRef]);
-
-  const currentPage = Math.floor(currentSlide / perView);
+  }, [instanceRef]);
 
   return (
     <section className="w-full max-w-7xl mx-auto py-12 bg-white">
