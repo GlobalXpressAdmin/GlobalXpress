@@ -65,8 +65,7 @@ export default function Footer() {
               <span className="w-4 h-4 mt-1">📍</span>
               <div>
                 <strong>Dirección:</strong><br />
-                Carrera 45 N.º 108-27, Torre 2,<br />
-                Oficina 502, Edificio Paralelo 108
+                1146 E. Green St. Pasadena, CA 91106
               </div>
             </div>
           </div>
