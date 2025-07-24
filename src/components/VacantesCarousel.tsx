@@ -7,33 +7,23 @@ import React from "react";
 import Link from "next/link";
 
 export default function VacantesCarousel() {
-  const [currentSlide, setCurrentSlide] = useState(0);
-  const [perView, setPerView] = useState(1);
+  // Eliminadas las variables no usadas currentSlide y perView
   const [sliderRef, instanceRef] = useKeenSlider({
     loop: true,
     slides: { perView: 1, spacing: 12 },
-    slideChanged(s) {
-      setCurrentSlide(s.track.details.rel);
-    },
-    created() {
-      setPerView(1);
-    },
-    updated() {
-      setPerView(1);
-    },
+    slideChanged() {},
+    created() {},
+    updated() {},
   });
 
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth < 640) {
         instanceRef.current?.update({ slides: { perView: 1, spacing: 12 } });
-        setPerView(1);
       } else if (window.innerWidth < 1024) {
         instanceRef.current?.update({ slides: { perView: 2, spacing: 18 } });
-        setPerView(2);
       } else {
         instanceRef.current?.update({ slides: { perView: 3, spacing: 26 } });
-        setPerView(3);
       }
     };
     window.addEventListener('resize', handleResize);
