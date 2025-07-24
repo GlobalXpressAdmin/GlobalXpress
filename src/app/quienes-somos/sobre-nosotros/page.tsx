@@ -105,7 +105,7 @@ function CarruselTestimonios() {
   const siguiente = () => setActual((actual + 1) % testimonios.length);
   const anterior = () => setActual((actual - 1 + testimonios.length) % testimonios.length);
   return (
-    <section className="bg-[#0D4A7A] py-16 px-4 md:px-24">
+    <section className="bg-[#0D4A7A] py-16 px-2 sm:px-4 md:px-24 w-full">
       <h2 className="text-3xl md:text-4xl font-extrabold text-white mb-10 text-center">
         Lo que dicen <span className="text-[#00E6F6]">las personas</span> sobre nuestro servicio
       </h2>
@@ -151,29 +151,29 @@ export default function SobreNosotros() {
   const [valorActivo, setValorActivo] = useState(0);
 
   return (
-    <div className="min-h-screen bg-white flex flex-col">
+    <div className="min-h-screen bg-white flex flex-col w-full max-w-7xl mx-auto px-2 md:px-0">
       {/* Encabezado con imagen de fondo */}
-      <div className="relative h-[500px] w-full flex items-end mb-8">
+      <div className="relative h-[320px] sm:h-[400px] md:h-[500px] w-full flex items-end mb-8">
         <img
           src="/quienessomos.png"
           alt="Fondo Sobre Nosotros"
-          className="absolute inset-0 w-full h-full object-contain object-top"
+          className="absolute inset-0 w-full h-full object-cover object-top"
         />
         {/* Overlay oscuro */}
         <div className="absolute inset-0 bg-black/50"></div>
-        <div className="relative z-10 p-8 md:p-16">
-          <h1 className="text-5xl font-bold text-cyan-400 mb-2">NOSOTROS</h1>
+        <div className="relative z-10 p-4 sm:p-8 md:p-16">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-cyan-400 mb-2">NOSOTROS</h1>
           <div className="w-24 h-1 bg-cyan-400 mt-2"></div>
         </div>
       </div>
 
       {/* Visión y Misión en dos columnas */}
-      <div className="py-4 px-8 md:px-24 flex flex-col md:flex-row gap-8 items-start">
+      <div className="py-4 px-2 sm:px-8 md:px-24 flex flex-col md:flex-row gap-8 items-start w-full">
         {/* Columna de texto con velo curvo detrás */}
         <div className="relative max-w-xl w-full">
           {/* Velo curvo detrás gris más oscuro */}
           <div
-            className="absolute inset-0 -left-16 -top-8 w-[120%] h-[115%] bg-gray-300/90 rounded-l-[120px] z-0"
+            className="absolute inset-0 -left-8 sm:-left-16 -top-4 sm:-top-8 w-[110%] sm:w-[120%] h-[105%] sm:h-[115%] bg-gray-300/90 rounded-l-[60px] sm:rounded-l-[120px] z-0"
             style={{ pointerEvents: "none" }}
           />
           {/* Contenido de texto */}
@@ -193,8 +193,7 @@ export default function SobreNosotros() {
           <img
             src="/imagenmisionvision.png"
             alt="Misión y Visión"
-            className="object-contain w-[320px] h-auto rounded-xl shadow-lg"
-            style={{ marginTop: "-0.83cm" }}
+            className="object-contain w-[320px] h-auto rounded-xl shadow-lg mt-8 sm:mt-0"
           />
         </div>
       </div>

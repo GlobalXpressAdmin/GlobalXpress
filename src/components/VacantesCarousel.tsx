@@ -1,7 +1,7 @@
 "use client";
 import "keen-slider/keen-slider.min.css";
 import { useKeenSlider } from "keen-slider/react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import vacantes from "./vacantesData";
 import React from "react";
 import Link from "next/link";
@@ -9,40 +9,59 @@ import Link from "next/link";
 export default function VacantesCarousel() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [pages, setPages] = useState(1);
-  const [perView, setPerView] = useState(3);
+  const [perView, setPerView] = useState(1);
   const [sliderRef, instanceRef] = useKeenSlider({
     loop: true,
-    slides: { perView: 3, spacing: 26 },
+    slides: { perView: 1, spacing: 12 },
     slideChanged(s) {
       setCurrentSlide(s.track.details.rel);
     },
     created() {
-      const pv = 3;
-      setPerView(pv);
-      setPages(Math.ceil(vacantes.length / pv));
+      setPerView(1);
+      setPages(Math.ceil(vacantes.length / 1));
     },
     updated() {
-      const pv = 3;
-      setPerView(pv);
-      setPages(Math.ceil(vacantes.length / pv));
+      setPerView(1);
+      setPages(Math.ceil(vacantes.length / 1));
     },
   });
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 640) {
+        instanceRef.current?.update({ slides: { perView: 1, spacing: 12 } });
+        setPerView(1);
+        setPages(Math.ceil(vacantes.length / 1));
+      } else if (window.innerWidth < 1024) {
+        instanceRef.current?.update({ slides: { perView: 2, spacing: 18 } });
+        setPerView(2);
+        setPages(Math.ceil(vacantes.length / 2));
+      } else {
+        instanceRef.current?.update({ slides: { perView: 3, spacing: 26 } });
+        setPerView(3);
+        setPages(Math.ceil(vacantes.length / 3));
+      }
+    };
+    window.addEventListener('resize', handleResize);
+    handleResize();
+    return () => window.removeEventListener('resize', handleResize);
+  }, [vacantes.length, instanceRef]);
 
   const currentPage = Math.floor(currentSlide / perView);
 
   return (
-    <section className="w-full py-12 bg-white">
+    <section className="w-full max-w-7xl mx-auto py-12 bg-white">
       <h2 className="text-2xl md:text-3xl font-bold text-[#0D4A7A] mb-8 text-center">
         Sponsors con <span className="text-[#1161A9]">Vacantes abiertas</span>
       </h2>
       {vacantes.length === 0 ? (
         <p>No hay vacantes disponibles en este momento.</p>
       ) : (
-        <div ref={sliderRef} className="keen-slider px-2">
+        <div ref={sliderRef} className="keen-slider px-0 sm:px-2">
           {vacantes.map((v, idx) => (
             <React.Fragment key={idx}>
               <div className="keen-slider__slide flex justify-center h-full flex flex-col">
-                <div className="w-full max-w-[340px] min-h-[400px] border-2 border-[#0D4A7A] rounded-2xl bg-white p-6 shadow-md flex flex-col gap-1.5 relative mx-auto">
+                <div className="w-full max-w-full sm:max-w-[340px] min-h-[400px] border-2 border-[#0D4A7A] rounded-2xl bg-white p-4 sm:p-6 shadow-md flex flex-col gap-1.5 relative mx-auto">
                   <div className="font-semibold text-lg text-[#0D4A7A] break-words">{v.empresa}</div>
                   <div className="text-xs text-gray-500 mb-1">{v.descripcion}</div>
                   <div className="text-sm text-gray-700 mb-1"><b>Cargo:</b> {v.cargo}</div>
@@ -73,18 +92,9 @@ export default function VacantesCarousel() {
         </div>
       )}
       {/* Dots de navegación por página */}
-      <div className="flex justify-center gap-2 mt-6">
-        {Array.from({ length: pages }).map((_, idx) => (
-          <button
-            key={idx}
-            onClick={() => instanceRef.current?.moveToIdx(idx * perView)}
-            className={`w-3 h-3 rounded-full border-2 ${currentPage === idx ? 'bg-[#0D4A7A] border-[#0D4A7A]' : 'bg-white border-[#0D4A7A]'}`}
-            aria-label={`Ir a la página ${idx + 1}`}
-          />
-        ))}
-      </div>
-      <div className="w-full flex justify-start mt-6 mb-10 ml-[80px]">
-        <a href="/todas-vacantes" className="bg-[#0D4A7A] hover:bg-[#1161A9] text-white font-semibold py-2 px-6 rounded text-base transition-colors">Ver todas las vacantes</a>
+      {/* Eliminado para mayor limpieza visual */}
+      <div className="w-full max-w-7xl mx-auto flex flex-col sm:flex-row sm:justify-start mt-6 mb-10 px-4 sm:ml-[80px]">
+        <a href="/todas-vacantes" className="bg-[#0D4A7A] hover:bg-[#1161A9] text-white font-semibold py-2 px-6 rounded text-base transition-colors w-full sm:w-auto text-center">Ver todas las vacantes</a>
       </div>
       <div className="mb-16" />
     </section>

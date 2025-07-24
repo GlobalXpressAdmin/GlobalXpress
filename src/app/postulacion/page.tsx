@@ -29,7 +29,7 @@ function PostulacionInner() {
       </div>
       {/* Tabla de vacante seleccionada */}
       {vacante && (
-        <div className="max-w-7xl mx-auto mt-10 w-full px-2 md:px-0">
+        <div className="w-full max-w-7xl mx-auto mt-10 px-2 md:px-0">
           <div className="grid grid-cols-2 md:grid-cols-4 bg-white rounded overflow-hidden shadow">
             <div className="bg-[#054B74] text-white flex items-center gap-2 px-6 py-4 font-bold text-lg">
               Empresa
@@ -215,7 +215,7 @@ function MultiStepForm({ vacante }: { vacante: {
   };
 
   return (
-    <div className="bg-white rounded-2xl shadow-2xl p-10 mt-10 max-w-2xl mx-auto border border-blue-100 flex flex-col items-center w-full">
+    <div className="bg-white rounded-2xl shadow-2xl p-4 sm:p-10 mt-10 max-w-2xl mx-auto border border-blue-100 flex flex-col items-center w-full">
       {step === 1 && (
         <>
           <h2 className="text-2xl md:text-3xl font-bold text-blue-900 mb-2 text-left w-full">Paso 1: Datos Personales</h2>

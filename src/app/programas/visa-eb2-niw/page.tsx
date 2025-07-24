@@ -106,8 +106,8 @@ export default function VisaEB2NIW() {
           </p>
         </div>
         {/* Formulario controlado unificado */}
-        <form className="bg-[#ededed] rounded-lg flex-1 max-w-xl flex flex-col gap-4" onSubmit={handleSubmit}>
-          <div className="flex gap-4">
+        <form className="bg-[#ededed] rounded-lg flex-1 flex flex-col gap-4 mx-auto px-2" style={{maxWidth: '100%'}} onSubmit={handleSubmit}>
+          <div className="flex flex-col sm:flex-row gap-4">
             <input
               type="text"
               name="nombre"
@@ -115,6 +115,7 @@ export default function VisaEB2NIW() {
               className="flex-1 p-3 rounded-lg bg-white border-none outline-none text-black"
               value={form.nombre}
               onChange={e => setForm(prev => ({ ...prev, nombre: e.target.value }))}
+              style={{ maxWidth: '100%', marginBottom: '0' }}
             />
             <input
               type="text"
@@ -123,6 +124,7 @@ export default function VisaEB2NIW() {
               className="flex-1 p-3 rounded-lg bg-white border-none outline-none text-black"
               value={form.apellido}
               onChange={e => setForm(prev => ({ ...prev, apellido: e.target.value }))}
+              style={{ maxWidth: '100%', marginTop: '0.5rem' }}
             />
           </div>
           <input

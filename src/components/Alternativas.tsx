@@ -70,19 +70,19 @@ export default function Alternativas() {
   const [abierto, setAbierto] = useState(0);
 
   return (
-    <section className="w-full flex flex-col md:flex-row items-stretch justify-between max-w-7xl mx-auto min-h-[520px]">
+    <section className="w-screen max-w-none flex flex-col md:flex-row items-stretch justify-between max-w-7xl mx-auto min-h-[520px] px-0 sm:px-4 md:px-0 overflow-x-hidden">
       {/* Columna izquierda */}
-      <div className="flex-1 bg-white p-8 md:p-12 flex flex-col justify-center min-h-[520px] sticky top-0">
-        <h2 className="text-3xl md:text-4xl font-extrabold text-[#1161A9] mb-4 leading-tight">
+      <div className="flex-1 bg-white p-4 sm:p-8 md:p-12 flex flex-col justify-center min-h-[320px] md:min-h-[520px] sticky top-0">
+        <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-[#1161A9] mb-4 leading-tight">
           Explore las alternativas <br className="hidden md:block" />
           <span className="font-normal text-[#1161A9]">para vivir, trabajar o invertir en EE. UU.</span>
         </h2>
-        <p className="text-lg text-gray-800 mb-6">
+        <p className="text-base sm:text-lg text-gray-800 mb-6">
           Encuentre la alternativa ideal con procesos migratorios confiables y regulados.
         </p>
-        <p className="text-base font-semibold text-black mb-4 flex items-center gap-2">
+        <p className="text-sm sm:text-base font-semibold text-black mb-4 flex items-center gap-2">
           Seleccione una de las opciones para conocer más detalles.
-          <span className="text-[#1161A9] text-2xl">&#187;&#187;</span>
+          <span className="text-[#1161A9] text-xl sm:text-2xl">»»</span>
         </p>
       </div>
       {/* Columna derecha: Acordeón */}
@@ -90,13 +90,13 @@ export default function Alternativas() {
         {secciones.map((sec, idx) => (
           <div key={sec.label} className="border-b border-white/20 last:border-b-0">
             <button
-              className={`w-full flex items-center justify-between px-8 md:px-12 py-6 text-left text-2xl md:text-3xl font-semibold transition-colors duration-200 focus:outline-none
+              className={`w-full flex items-center justify-between px-4 sm:px-8 md:px-12 py-4 sm:py-6 text-left text-lg sm:text-2xl md:text-3xl font-semibold transition-colors duration-200 focus:outline-none
                 ${abierto === idx ? 'bg-[#075985] text-white' : 'bg-[#e5e7eb] text-[#075985] hover:bg-[#dbeafe]'}`}
               onClick={() => setAbierto(abierto === idx ? -1 : idx)}
               aria-expanded={abierto === idx}
             >
               <span>{sec.label}</span>
-              <span className="ml-4 text-3xl">
+              <span className="ml-4 text-2xl sm:text-3xl">
                 {abierto === idx ? (
                   <svg width="28" height="28" fill="none" viewBox="0 0 24 24"><path stroke="#00E6F6" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" d="M6 15l6-6 6 6"/></svg>
                 ) : (
@@ -105,7 +105,7 @@ export default function Alternativas() {
               </span>
             </button>
             {abierto === idx && (
-              <div className="bg-[#075985] text-white p-8 md:p-12 animate-fade-in">
+              <div className="bg-[#075985] text-white p-4 sm:p-8 md:p-12 animate-fade-in">
                 {sec.content}
               </div>
             )}

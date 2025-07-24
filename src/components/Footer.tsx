@@ -3,7 +3,18 @@ import Link from 'next/link';
 
 export default function Footer() {
   return (
-    <footer className="w-full bg-[#075985] text-white pt-12 pb-4 px-4 mt-0">
+    <>
+      {/* WhatsApp y eslogan solo en móvil */}
+      <div className="block sm:hidden w-full max-w-7xl mx-auto px-4 py-6 flex items-center justify-center gap-3">
+        <a href="https://wa.me/573001234567" target="_blank" rel="noopener noreferrer" className="bg-green-500 rounded-full shadow-lg p-2 flex items-center justify-center hover:bg-green-600 transition-colors" style={{ width: '44px', height: '44px' }}>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="white" width="28" height="28">
+            <path d="M16 3C9.373 3 4 8.373 4 15c0 2.385.832 4.584 2.236 6.393L4 29l7.824-2.205C13.41 27.597 14.686 28 16 28c6.627 0 12-5.373 12-12S22.627 3 16 3zm0 22c-1.18 0-2.334-.205-3.424-.609l-.244-.088-4.646 1.309 1.242-4.824-.16-.25C7.24 18.08 6.5 16.573 6.5 15c0-5.238 4.262-9.5 9.5-9.5s9.5 4.262 9.5 9.5-4.262 9.5-9.5 9.5zm5.25-7.25c-.287-.143-1.697-.838-1.96-.934-.263-.096-.454-.143-.646.143-.192.287-.741.934-.909 1.127-.168.192-.335.215-.622.072-.287-.143-1.213-.447-2.31-1.425-.854-.76-1.43-1.698-1.598-1.985-.168-.287-.018-.443.126-.585.13-.13.287-.335.43-.502.144-.168.192-.287.288-.478.096-.192.048-.359-.024-.502-.072-.143-.646-1.56-.885-2.14-.233-.561-.47-.484-.646-.493-.168-.007-.359-.009-.55-.009-.192 0-.502.072-.765.359-.263.287-1.01.986-1.01 2.402 0 1.416 1.034 2.783 1.178 2.975.144.192 2.037 3.116 5.04 4.25.705.242 1.254.386 1.684.494.707.18 1.35.155 1.86.094.567-.067 1.697-.693 1.938-1.363.24-.67.24-1.244.168-1.363-.072-.12-.263-.192-.55-.335z"/>
+          </svg>
+        </a>
+        <span className="text-base text-[#075985] font-semibold">¿Tienes dudas? <b>¡Escríbenos por WhatsApp!</b></span>
+      </div>
+      {/* Pie de página */}
+      <footer className="w-full bg-[#075985] text-white pt-12 pb-4 px-4 mt-0">
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-5 gap-8 text-sm items-start">
         {/* Columna 1: Logo principal y Quienes Somos */}
         <div className="flex flex-col items-center md:items-start">
@@ -99,5 +110,6 @@ export default function Footer() {
       <hr className="my-6 border-white/30" />
       <div className="text-center text-lg">@2025 Global Express Recruiting todos los derechos reservados</div>
     </footer>
+    </>
   );
 } 

@@ -75,30 +75,32 @@ export default function FormF1Section({ id }: { id?: string }) {
           </p>
         </div>
         {/* Formulario a la derecha */}
-        <form onSubmit={handleSubmit} className="flex-1 max-w-xl w-full bg-transparent flex flex-col gap-4">
-          <div className="flex gap-4">
+        <form onSubmit={handleSubmit} className="flex-1 flex flex-col gap-4 mx-auto px-2" style={{maxWidth: '100%'}}>
+          <div className="flex flex-col sm:flex-row gap-4">
             <input
               type="text"
               name="nombre"
               placeholder="Nombre"
-              className="flex-1 rounded-lg bg-white px-4 py-3 text-lg outline-none border-none"
+              className="flex-1 rounded-lg bg-white px-3 py-3 text-lg outline-none border-none"
               value={form.nombre}
               onChange={handleChange}
+              style={{ maxWidth: '100%', marginBottom: '0' }}
             />
             <input
               type="text"
               name="apellido"
               placeholder="Apellido"
-              className="flex-1 rounded-lg bg-white px-4 py-3 text-lg outline-none border-none"
+              className="flex-1 rounded-lg bg-white px-3 py-3 text-lg outline-none border-none"
               value={form.apellido}
               onChange={handleChange}
+              style={{ maxWidth: '100%', marginTop: '0.5rem' }}
             />
           </div>
           <input
             type="email"
             name="email"
             placeholder="Correo electrónico"
-            className="rounded-lg bg-white px-4 py-3 text-lg outline-none border-none"
+            className="rounded-lg bg-white px-3 py-3 text-lg outline-none border-none"
             value={form.email}
             onChange={handleChange}
           />
@@ -136,7 +138,7 @@ export default function FormF1Section({ id }: { id?: string }) {
           <textarea
             name="mensaje"
             placeholder="Escriba su mensaje"
-            className="rounded-lg bg-white px-4 py-3 text-lg outline-none border-none min-h-[80px]"
+            className="rounded-lg bg-white px-3 py-3 text-lg outline-none border-none min-h-[80px]"
             value={form.mensaje}
             onChange={handleChange}
           />
@@ -159,7 +161,7 @@ export default function FormF1Section({ id }: { id?: string }) {
           {success && <div className="text-green-600 text-sm font-bold mt-1">{success}</div>}
           <button
             type="submit"
-            className="mt-4 bg-[#006494] text-white font-bold text-lg rounded-full py-3 w-full hover:bg-[#005c82] transition-all"
+            className="mt-4 bg-[#006494] text-white font-bold text-base rounded-full py-3 w-full whitespace-normal break-words hover:bg-[#005c82] transition-all"
           >
             Enviar formulario
           </button>
