@@ -11,7 +11,7 @@ import {
   ChatBubbleLeftRightIcon,
   Cog6ToothIcon,
   ChartBarIcon,
-  BellIcon,
+
   ArrowLeftOnRectangleIcon,
   Bars3Icon,
   XMarkIcon,

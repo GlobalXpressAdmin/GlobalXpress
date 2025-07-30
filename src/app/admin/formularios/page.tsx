@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { Search, Filter, Calendar, User, Mail, Phone, FileText, CheckCircle, XCircle, Clock, AlertCircle } from 'lucide-react';
+import { Search, User, Mail, Phone, FileText, CheckCircle, Clock, AlertCircle } from 'lucide-react';
 
 interface FormularioPrograma {
   id: number;
@@ -270,7 +270,7 @@ export default function FormulariosPage() {
                 <select
                   id="estado"
                   value={filterEstado}
-                  onChange={(e) => setFilterEstado(e.target.value as any)}
+                  onChange={(e) => setFilterEstado(e.target.value as 'todos' | 'RECIBIDO' | 'EN_REVISION' | 'EN_PROCESO' | 'APROBADO' | 'RECHAZADO' | 'FALTAN_DOCUMENTOS' | 'CONTACTADO' | 'COMPLETADO')}
                   className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                 >
                   <option value="todos">Todos los estados</option>
@@ -292,7 +292,7 @@ export default function FormulariosPage() {
                 <select
                   id="programa"
                   value={filterPrograma}
-                  onChange={(e) => setFilterPrograma(e.target.value as any)}
+                  onChange={(e) => setFilterPrograma(e.target.value as 'todos' | 'VISA_E2' | 'VISA_EB2_NIW' | 'VISA_EB3' | 'VISA_EB5' | 'DUAL_PLACEMENT' | 'GLOBAL_ACADEMIC' | 'SKY_MASTERS')}
                   className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                 >
                   <option value="todos">Todos los programas</option>

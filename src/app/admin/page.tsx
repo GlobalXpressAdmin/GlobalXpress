@@ -5,7 +5,7 @@ import {
   UsersIcon,
   DocumentTextIcon,
   ChatBubbleLeftRightIcon,
-  EyeIcon,
+
   ClipboardDocumentIcon,
 } from '@heroicons/react/24/outline';
 

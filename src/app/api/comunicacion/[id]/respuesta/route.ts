@@ -7,7 +7,6 @@ import { prisma } from '../../../../../lib/prisma';
 // Restaurar la definición de RolAutorEnum para que el código compile y funcione correctamente.
 const getRolAutorEnum = () => {
   try {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports -- Necesario para compatibilidad con Prisma Enum en SSR
     return require('@prisma/client').Prisma?.RolAutor || require('@prisma/client').Prisma?.$Enums?.RolAutor;
   } catch {
     // Fallback manual si no existe

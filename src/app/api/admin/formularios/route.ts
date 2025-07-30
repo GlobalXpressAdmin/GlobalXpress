@@ -20,16 +20,7 @@ export async function GET(request: NextRequest) {
     const search = searchParams.get('search');
 
     // Construir filtros
-    const where: {
-      estado?: string;
-      programa?: string;
-      OR?: Array<{
-        nombre?: { contains: string; mode: 'insensitive' };
-        apellido?: { contains: string; mode: 'insensitive' };
-        email?: { contains: string; mode: 'insensitive' };
-        programa?: { contains: string; mode: 'insensitive' };
-      }>;
-    } = {};
+    const where: any = {};
     
     if (estado && estado !== 'todos') {
       where.estado = estado;
@@ -44,7 +35,6 @@ export async function GET(request: NextRequest) {
         { nombre: { contains: search, mode: 'insensitive' } },
         { apellido: { contains: search, mode: 'insensitive' } },
         { email: { contains: search, mode: 'insensitive' } },
-        { programa: { contains: search, mode: 'insensitive' } },
       ];
     }
 
