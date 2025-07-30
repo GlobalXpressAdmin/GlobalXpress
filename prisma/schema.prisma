@@ -21,6 +21,7 @@ model usuarios_global {
   genero           String?
   fecha_nacimiento DateTime?            @db.Date
   nacionalidad     String?
+  rol              RolUsuario           @default(USUARIO) // Nuevo campo para roles
   passwordResets   PasswordReset[]
   postulaciones    PostulacionTrabajo[]
   comunicaciones   Comunicacion[]
@@ -108,6 +109,10 @@ model PostulacionTrabajo {
   // Relación con usuario (opcional)
   usuario_id          String?           @db.Uuid
   usuario             usuarios_global?  @relation(fields: [usuario_id], references: [id])
+  
+  // Relación con vacante (opcional)
+  vacante_id          String?           @db.Uuid
+  vacante             Vacante?          @relation(fields: [vacante_id], references: [id])
 }
 
 model Comunicacion {
@@ -141,6 +146,24 @@ model Notificacion {
   tipo        NotificacionTipo
   creada_en   DateTime @default(now())
   referencia  String?  // ID de la postulación, formulario, comunicación, etc.
+}
+
+model Vacante {
+  id          String   @id @default(uuid()) @db.Uuid
+  creado_en   DateTime @default(now()) @db.Timestamptz(6)
+  actualizado_en DateTime @default(now()) @db.Timestamptz(6)
+  
+  empresa     String
+  cargo       String
+  salario     String?
+  descripcion String?
+  email       String?
+  workers     String?
+  link        String?
+  activa      Boolean  @default(true)
+  
+  // Relación con postulaciones
+  postulaciones PostulacionTrabajo[]
 }
 
 enum EstadoVisa {
@@ -191,4 +214,10 @@ enum NotificacionTipo {
   RECORDATORIO_DOCUMENTO
   ADMINISTRATIVA
   PAGO
+}
+
+enum RolUsuario {
+  USUARIO
+  ADMIN
+  SUPER_ADMIN
 }

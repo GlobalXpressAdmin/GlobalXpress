@@ -79,13 +79,13 @@ export default function Contacto() {
               <span className="bg-white rounded-full p-2 flex items-center justify-center">
                 <svg className="w-8 h-8 text-[#17486B]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 010 20M12 2a15.3 15.3 0 000 20"/></svg>
               </span>
-              <span className="text-white font-bold">www.globalexpresscol.com</span>
+              <span className="text-white font-bold">www.globalxpresscol.com</span>
             </div>
             <div className="flex items-center gap-4">
               <span className="bg-white rounded-full p-2 flex items-center justify-center">
                 <svg className="w-8 h-8 text-[#17486B]" fill="currentColor" viewBox="0 0 24 24"><path d="M22.675 0h-21.35C.595 0 0 .592 0 1.326v21.348C0 23.408.595 24 1.325 24h11.495v-9.294H9.692v-3.622h3.128V8.413c0-3.1 1.893-4.788 4.659-4.788 1.325 0 2.05.18 2.05.18v2.25h-1.16c-1.14 0-1.5.71-1.5 1.44v1.68h2.56l-.41 2.65h-2.15v6.4c4.35-.75 7.65-4.5 7.65-9.05z"/></svg>
               </span>
-              <span className="text-white font-bold">Global Express Recruiting Colombia</span>
+              <span className="text-white font-bold">Global & Express Recruiting</span>
             </div>
             <div className="flex items-center gap-4">
               <span className="rounded-full flex items-center justify-center">

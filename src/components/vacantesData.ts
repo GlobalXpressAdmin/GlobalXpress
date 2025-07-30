@@ -529,7 +529,17 @@ const vacantes = [
     email: "No especificado",
     workers: "2",
     link: "No especificado"
+  },
+  {
+    empresa: "Luxury Massage",
+    cargo: "Cosmetóloga Especializada en Postoperatorios y Aparatología",
+    salario: "Por hora: $4.00 – $6.00 USD / Mes: $2,400,000 – $3,600,000 COP",
+    descripcion: "Centro médico-estético busca cosmetóloga con experiencia en limpieza facial, exfoliaciones, tratamientos, masajes.",
+    email: "No especificado",
+    workers: "6",
+    link: "No especificado"
   }
+  
 ];
 
 export default vacantes;

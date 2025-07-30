@@ -1,11 +1,12 @@
 "use client";
 
 import React, { useState } from 'react';
-import { signIn } from 'next-auth/react';
+import { signIn, useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 export default function IngresoCliente() {
+  const { data: session } = useSession();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -23,7 +24,31 @@ export default function IngresoCliente() {
     });
     setLoading(false);
     if (res?.ok && !res?.error) {
-      window.location.href = "/area-personal";
+      // Hacer una verificación del rol del usuario
+      try {
+        const userResponse = await fetch('/api/admin/check-user-role', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ email }),
+        });
+        
+        if (userResponse.ok) {
+          const userData = await userResponse.json();
+          if (userData.rol === 'ADMIN' || userData.rol === 'SUPER_ADMIN') {
+            window.location.href = "/admin";
+          } else {
+            window.location.href = "/area-personal";
+          }
+        } else {
+          // Si no se puede verificar, redirigir al área personal por defecto
+          window.location.href = "/area-personal";
+        }
+      } catch (error) {
+        console.error('Error verificando rol:', error);
+        window.location.href = "/area-personal";
+      }
     } else {
       setError("Correo o contraseña incorrectos o error interno. Por favor, verifica tus datos.");
     }

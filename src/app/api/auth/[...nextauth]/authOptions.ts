@@ -28,6 +28,7 @@ export const authOptions = {
             id: user.id,
             email: user.email,
             nombre: user.nombre || undefined,
+            rol: user.rol || 'USUARIO',
           };
         } catch (error) {
           console.error("Error en authorize:", error);
@@ -78,11 +79,13 @@ export const authOptions = {
               genero: '',
               fecha_nacimiento: undefined,
               nacionalidad: '',
+              rol: 'USUARIO',
             },
           });
           await sendBienvenidaEmail(token.email, profile?.name || '');
           token.id = newUser.id;
           token.nombre = newUser.nombre ?? undefined;
+          token.rol = newUser.rol;
         } else if (!dbUser.nombre && profile?.name) {
           const updatedUser = await prisma.usuarios_global.update({
             where: { email: token.email },
@@ -90,6 +93,9 @@ export const authOptions = {
           });
           token.id = updatedUser.id;
           token.nombre = updatedUser.nombre ?? undefined;
+          token.rol = updatedUser.rol;
+        } else {
+          token.rol = dbUser.rol;
         }
       }
       // Lógica para credenciales
@@ -97,6 +103,7 @@ export const authOptions = {
         token.id = user.id;
         token.email = user.email;
         token.nombre = user.nombre;
+        token.rol = user.rol;
       }
       return token;
     },
@@ -104,13 +111,16 @@ export const authOptions = {
       const { session, token } = params;
       if (token) {
         session.user = session.user || {};
-        (session.user as { id?: string; email?: string; nombre?: string }).id = token.id as string;
-        (session.user as { id?: string; email?: string; nombre?: string }).email = token.email as string;
-        (session.user as { id?: string; email?: string; nombre?: string }).nombre = token.nombre as string;
+        (session.user as { id?: string; email?: string; nombre?: string; rol?: string }).id = token.id as string;
+        (session.user as { id?: string; email?: string; nombre?: string; rol?: string }).email = token.email as string;
+        (session.user as { id?: string; email?: string; nombre?: string; rol?: string }).nombre = token.nombre as string;
+        (session.user as { id?: string; email?: string; nombre?: string; rol?: string }).rol = token.rol as string;
       }
       return session;
     },
     async redirect({ baseUrl }: { baseUrl: string }) {
+      // Por defecto, redirigir al área personal
+      // La redirección específica se manejará en el componente de login
       return `${baseUrl}/area-personal`;
     },
   },
