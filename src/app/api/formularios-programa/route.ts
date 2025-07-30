@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '../../../lib/prisma';
+import { sendFormularioProgramaConfirmacionEmail } from '../../../lib/sendFormularioProgramaConfirmacionEmail';
 
 const PROGRAMAS_VALIDOS = [
   'EB5',
@@ -39,6 +40,21 @@ export async function POST(req: NextRequest) {
         programa,
       },
     });
+
+    // Enviar email de confirmación
+    try {
+      await sendFormularioProgramaConfirmacionEmail({
+        to: email,
+        nombre,
+        apellido,
+        programa,
+        visa,
+        fechaEnvio: formulario.fechaEnvio.toISOString()
+      });
+    } catch (error) {
+      console.error('Error enviando email de confirmación:', error);
+      // No fallar el formulario si el email falla
+    }
 
     // Crear notificación automática de formulario recibido
     try {

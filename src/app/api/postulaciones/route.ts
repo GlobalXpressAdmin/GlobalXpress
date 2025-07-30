@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '../../../lib/prisma';
 import { ProgramaEmpleo, EstadoPostulacion } from '@prisma/client';
+import { sendPostulacionConfirmacionEmail } from '../../../lib/sendPostulacionConfirmacionEmail';
 
 export async function POST(req: NextRequest) {
   try {
@@ -92,6 +93,22 @@ export async function POST(req: NextRequest) {
         ...(usuario_id && { usuario_id })
       },
     });
+
+    // Enviar email de confirmación
+    try {
+      await sendPostulacionConfirmacionEmail({
+        to: datos.email as string,
+        nombre: datos.nombre as string,
+        apellido: datos.apellido as string,
+        empresa: datos.empresa as string,
+        cargo: datos.cargo as string,
+        salario: datos.salario as string,
+        fechaPostulacion: postulacion.creado_en.toISOString()
+      });
+    } catch (error) {
+      console.error('Error enviando email de confirmación:', error);
+      // No fallar la postulación si el email falla
+    }
 
     return NextResponse.json({ 
       ok: true, 
