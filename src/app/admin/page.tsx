@@ -5,8 +5,8 @@ import {
   UsersIcon,
   DocumentTextIcon,
   ChatBubbleLeftRightIcon,
-  BellIcon,
   EyeIcon,
+  ClipboardDocumentIcon,
 } from '@heroicons/react/24/outline';
 
 interface DashboardStats {
@@ -102,7 +102,7 @@ export default function AdminDashboard() {
     {
       name: 'Formularios Programa',
       value: stats.totalFormularios,
-      icon: DocumentTextIcon,
+      icon: ClipboardDocumentIcon,
       color: 'bg-purple-500',
       change: `${stats.formulariosPendientes} pendientes`,
     },
@@ -140,11 +140,11 @@ export default function AdminDashboard() {
       case 'POSTULACION':
         return <DocumentTextIcon className="h-5 w-5 text-green-500" />;
       case 'FORMULARIO':
-        return <DocumentTextIcon className="h-5 w-5 text-purple-500" />;
+        return <ClipboardDocumentIcon className="h-5 w-5 text-purple-500" />;
       case 'COMUNICACION':
         return <ChatBubbleLeftRightIcon className="h-5 w-5 text-orange-500" />;
       default:
-        return <BellIcon className="h-5 w-5 text-gray-500" />;
+        return <DocumentTextIcon className="h-5 w-5 text-gray-500" />;
     }
   };
 
@@ -276,6 +276,18 @@ export default function AdminDashboard() {
             </a>
 
             <a
+              href="/admin/formularios"
+              className="relative rounded-lg border border-gray-300 bg-white px-6 py-5 shadow-sm flex items-center space-x-3 hover:border-gray-400 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500"
+            >
+              <ClipboardDocumentIcon className="h-6 w-6 text-purple-500" />
+              <div className="flex-1 min-w-0">
+                <span className="absolute inset-0" aria-hidden="true" />
+                <p className="text-sm font-medium text-gray-900">Formularios Programa</p>
+                <p className="text-sm text-gray-500">Gestionar solicitudes</p>
+              </div>
+            </a>
+
+            <a
               href="/admin/comunicaciones"
               className="relative rounded-lg border border-gray-300 bg-white px-6 py-5 shadow-sm flex items-center space-x-3 hover:border-gray-400 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500"
             >
@@ -284,18 +296,6 @@ export default function AdminDashboard() {
                 <span className="absolute inset-0" aria-hidden="true" />
                 <p className="text-sm font-medium text-gray-900">Responder Mensajes</p>
                 <p className="text-sm text-gray-500">Soporte al cliente</p>
-              </div>
-            </a>
-
-            <a
-              href="/admin/estadisticas"
-              className="relative rounded-lg border border-gray-300 bg-white px-6 py-5 shadow-sm flex items-center space-x-3 hover:border-gray-400 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500"
-            >
-              <EyeIcon className="h-6 w-6 text-purple-500" />
-              <div className="flex-1 min-w-0">
-                <span className="absolute inset-0" aria-hidden="true" />
-                <p className="text-sm font-medium text-gray-900">Ver Estadísticas</p>
-                <p className="text-sm text-gray-500">Análisis detallado</p>
               </div>
             </a>
           </div>

@@ -49,9 +49,8 @@ export default function AdminLayout({
     { name: 'Usuarios', href: '/admin/usuarios', icon: UsersIcon },
     { name: 'Vacantes', href: '/admin/vacantes', icon: DocumentTextIcon },
     { name: 'Postulaciones', href: '/admin/postulaciones', icon: DocumentTextIcon },
-    { name: 'Formularios Programa', href: '/admin/formularios-programa', icon: DocumentTextIcon },
+    { name: 'Formularios Programa', href: '/admin/formularios', icon: DocumentTextIcon },
     { name: 'Comunicaciones', href: '/admin/comunicaciones', icon: ChatBubbleLeftRightIcon },
-    { name: 'Notificaciones', href: '/admin/notificaciones', icon: BellIcon },
     { name: 'Estadísticas', href: '/admin/estadisticas', icon: ChartBarIcon },
     { name: 'Configuración', href: '/admin/configuracion', icon: Cog6ToothIcon },
   ];

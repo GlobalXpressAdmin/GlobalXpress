@@ -87,23 +87,21 @@ export default function VacantesCarousel() {
                   <div className="text-sm text-gray-700 mb-1"><b>Salario:</b> {v.salario || 'No especificado'}</div>
                   <div className="text-sm text-gray-700 mb-1"><b>Email:</b> {v.email || 'No especificado'}</div>
                   <div className="text-sm text-gray-700 mb-1"><b>Number of Workers Requested:</b> {v.workers || 'No especificado'}</div>
-                  {v.link && (
-                    <div className="mt-auto mb-2 flex items-center gap-2">
-                      <a href={v.link} target="_blank" rel="noopener noreferrer" className="ml-1 flex items-center group">
-                        <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <circle cx="11" cy="11" r="11" fill="#22c55e"/>
-                          <path d="M8 11h6m0 0l-2.5-2.5M14 11l-2.5 2.5" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                        </svg>
-                      </a>
-                      <Link
-                        href={`/postulacion?vacante=${v.id}`}
-                        className="px-6 py-2 rounded-lg font-bold text-white bg-[#0D4A7A] hover:bg-[#1161A9] transition-colors text-base mt-2"
-                        style={{display: 'inline-block'}}
-                      >
-                        Postular ahora
-                      </Link>
-                    </div>
-                  )}
+                  <div className="mt-auto mb-2 flex items-center gap-2">
+                    <a href={v.link || '#'} target="_blank" rel="noopener noreferrer" className="ml-1 flex items-center group">
+                      <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="11" cy="11" r="11" fill="#22c55e"/>
+                        <path d="M8 11h6m0 0l-2.5-2.5M14 11l-2.5 2.5" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                    </a>
+                    <Link
+                      href={`/postulacion?vacante=${v.id}`}
+                      className="px-6 py-2 rounded-lg font-bold text-white bg-[#0D4A7A] hover:bg-[#1161A9] transition-colors text-base mt-2"
+                      style={{display: 'inline-block'}}
+                    >
+                      Postular ahora
+                    </Link>
+                  </div>
                 </div>
               </div>
             </React.Fragment>
