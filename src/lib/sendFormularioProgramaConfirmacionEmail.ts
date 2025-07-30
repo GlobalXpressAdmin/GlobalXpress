@@ -1,5 +1,7 @@
-import { render } from '@react-email/render';
+import { Resend } from "resend";
 import { FormularioProgramaConfirmacionEmail } from '../emails/FormularioProgramaConfirmacionEmail';
+
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 interface SendFormularioProgramaConfirmacionEmailProps {
   to: string;
@@ -19,16 +21,6 @@ export async function sendFormularioProgramaConfirmacionEmail({
   fechaEnvio
 }: SendFormularioProgramaConfirmacionEmailProps) {
   try {
-    const emailHtml = render(
-      FormularioProgramaConfirmacionEmail({
-        nombre,
-        apellido,
-        programa,
-        visa,
-        fechaEnvio
-      })
-    );
-
     const getProgramaLabel = (programa: string) => {
       switch (programa) {
         case 'EB5':
@@ -48,21 +40,18 @@ export async function sendFormularioProgramaConfirmacionEmail({
       }
     };
 
-    const response = await fetch('/api/send-email', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        to,
-        subject: `¡Solicitud Recibida - ${getProgramaLabel(programa)}`,
-        html: emailHtml,
+    await resend.emails.send({
+      from: "GlobalXpress <no-reply@globalxpresscol.com>",
+      to: to,
+      subject: `¡Solicitud Recibida - ${getProgramaLabel(programa)}`,
+      react: FormularioProgramaConfirmacionEmail({
+        nombre,
+        apellido,
+        programa,
+        visa,
+        fechaEnvio
       }),
     });
-
-    if (!response.ok) {
-      throw new Error('Error al enviar email');
-    }
 
     return { success: true };
   } catch (error) {

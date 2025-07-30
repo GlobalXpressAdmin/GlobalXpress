@@ -1,5 +1,7 @@
-import { render } from '@react-email/render';
+import { Resend } from "resend";
 import { PostulacionConfirmacionEmail } from '../emails/PostulacionConfirmacionEmail';
+
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 interface SendPostulacionConfirmacionEmailProps {
   to: string;
@@ -21,32 +23,19 @@ export async function sendPostulacionConfirmacionEmail({
   fechaPostulacion
 }: SendPostulacionConfirmacionEmailProps) {
   try {
-    const emailHtml = render(
-      PostulacionConfirmacionEmail({
+    await resend.emails.send({
+      from: "GlobalXpress <no-reply@globalxpresscol.com>",
+      to: to,
+      subject: `¡Postulación Confirmada - ${empresa}`,
+      react: PostulacionConfirmacionEmail({
         nombre,
         apellido,
         empresa,
         cargo,
         salario,
         fechaPostulacion
-      })
-    );
-
-    const response = await fetch('/api/send-email', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        to,
-        subject: `¡Postulación Confirmada - ${empresa}`,
-        html: emailHtml,
       }),
     });
-
-    if (!response.ok) {
-      throw new Error('Error al enviar email');
-    }
 
     return { success: true };
   } catch (error) {
