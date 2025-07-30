@@ -5,8 +5,9 @@ import { prisma } from '../../../../../lib/prisma';
 
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   try {
     const session = await getServerSession(authOptions);
     
@@ -24,7 +25,6 @@ export async function PUT(
       return NextResponse.json({ ok: false, error: 'Acceso denegado' }, { status: 403 });
     }
 
-    const { id } = params;
     const data = await req.json();
 
     // Validar que el usuario existe
@@ -74,8 +74,9 @@ export async function PUT(
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   try {
     const session = await getServerSession(authOptions);
     
@@ -93,8 +94,6 @@ export async function DELETE(
       return NextResponse.json({ ok: false, error: 'Acceso denegado' }, { status: 403 });
     }
 
-    const { id } = params;
-
     // Verificar que el usuario existe
     const existingUser = await prisma.usuarios_global.findUnique({
       where: { id }
@@ -104,41 +103,50 @@ export async function DELETE(
       return NextResponse.json({ ok: false, error: 'Usuario no encontrado' }, { status: 404 });
     }
 
-    // No permitir eliminar super admins a menos que sea otro super admin
-    if (existingUser.rol === 'SUPER_ADMIN' && adminUser.rol !== 'SUPER_ADMIN') {
-      return NextResponse.json({ 
-        ok: false, 
-        error: 'No tienes permisos para eliminar super administradores' 
-      }, { status: 403 });
+    // Verificar que no se está eliminando a sí mismo
+    if (existingUser.email === session.user.email) {
+      return NextResponse.json({ ok: false, error: 'No puedes eliminar tu propia cuenta' }, { status: 400 });
     }
 
-    // Eliminar el usuario y todos sus datos relacionados
-    await prisma.$transaction([
+    // Verificar que no se está eliminando a un super admin (solo super admins pueden eliminar super admins)
+    if (existingUser.rol === 'SUPER_ADMIN' && adminUser.rol !== 'SUPER_ADMIN') {
+      return NextResponse.json({ ok: false, error: 'Solo los super administradores pueden eliminar super administradores' }, { status: 403 });
+    }
+
+    // Eliminar en una transacción para mantener integridad referencial
+    await prisma.$transaction(async (tx) => {
       // Eliminar notificaciones
-      prisma.notificacion.deleteMany({
+      await tx.notificacion.deleteMany({
         where: { usuario_id: id }
-      }),
+      });
+
       // Eliminar comunicaciones
-      prisma.comunicacion.deleteMany({
+      await tx.comunicacion.deleteMany({
         where: { usuario_id: id }
-      }),
+      });
+
       // Eliminar postulaciones
-      prisma.postulacionTrabajo.deleteMany({
+      await tx.postulacionTrabajo.deleteMany({
         where: { usuario_id: id }
-      }),
+      });
+
+      // Nota: FormularioPrograma no está relacionado con usuarios específicos
+      // por lo que no se eliminan al borrar un usuario
+
       // Eliminar resets de contraseña
-      prisma.passwordReset.deleteMany({
+      await tx.passwordReset.deleteMany({
         where: { userId: id }
-      }),
-      // Finalmente eliminar el usuario
-      prisma.usuarios_global.delete({
+      });
+
+      // Finalmente, eliminar el usuario
+      await tx.usuarios_global.delete({
         where: { id }
-      })
-    ]);
+      });
+    });
 
     return NextResponse.json({
       ok: true,
-      message: 'Usuario eliminado correctamente'
+      message: 'Usuario eliminado exitosamente'
     });
 
   } catch (error) {

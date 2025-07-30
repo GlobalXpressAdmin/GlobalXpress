@@ -1,12 +1,11 @@
 "use client";
 
 import React, { useState } from 'react';
-import { signIn, useSession } from 'next-auth/react';
+import { signIn } from 'next-auth/react';
 import Link from 'next/link';
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 export default function IngresoCliente() {
-  const { data: session } = useSession();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");

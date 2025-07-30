@@ -10,7 +10,14 @@ export async function GET(request: NextRequest) {
     const search = searchParams.get('search');
 
     // Construir filtros - solo vacantes activas
-    const where: any = {
+               const where: {
+             activa: boolean;
+             OR?: Array<{
+               empresa?: { contains: string; mode: 'insensitive' };
+               cargo?: { contains: string; mode: 'insensitive' };
+               descripcion?: { contains: string; mode: 'insensitive' };
+             }>;
+           } = {
       activa: true
     };
     

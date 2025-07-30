@@ -27,7 +27,7 @@ export default function AdminUsuarios() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterRol, setFilterRol] = useState('TODOS');
-  const [selectedUsuario, setSelectedUsuario] = useState<Usuario | null>(null);
+  const [, setSelectedUsuario] = useState<Usuario | null>(null);
   const [showModal, setShowModal] = useState(false);
   const [editingUsuario, setEditingUsuario] = useState<Usuario | null>(null);
 

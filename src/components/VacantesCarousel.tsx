@@ -77,7 +77,7 @@ export default function VacantesCarousel() {
         <p className="text-center text-gray-600">No hay vacantes disponibles en este momento.</p>
       ) : (
         <div ref={sliderRef} className="keen-slider px-0 sm:px-2">
-          {vacantes.map((v, idx) => (
+          {vacantes.map((v) => (
             <React.Fragment key={v.id}>
               <div className="keen-slider__slide flex justify-center h-full flex flex-col">
                 <div className="w-full max-w-full sm:max-w-[340px] min-h-[400px] border-2 border-[#0D4A7A] rounded-2xl bg-white p-4 sm:p-6 shadow-md flex flex-col gap-1.5 relative mx-auto">

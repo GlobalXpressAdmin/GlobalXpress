@@ -5,8 +5,9 @@ import { prisma } from '../../../../../lib/prisma';
 
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   try {
     const session = await getServerSession(authOptions);
     
@@ -24,7 +25,7 @@ export async function PUT(
       return NextResponse.json({ ok: false, error: 'Acceso denegado' }, { status: 403 });
     }
 
-    const { id } = params;
+
     const data = await req.json();
 
     // Validar que la postulación existe
@@ -55,16 +56,18 @@ export async function PUT(
       }
     });
 
-    // Crear notificación para el usuario
-    await prisma.notificacion.create({
-      data: {
-        usuario_id: existingPostulacion.usuario_id,
-        titulo: 'Estado de Postulación Actualizado',
-        mensaje: `Tu postulación para ${existingPostulacion.empresa} ha sido ${data.estado_postulacion.toLowerCase()}.`,
-        tipo: 'POSTULACION_ESTADO',
-        referencia: id,
-      }
-    });
+               // Crear notificación para el usuario
+           if (existingPostulacion.usuario_id) {
+             await prisma.notificacion.create({
+               data: {
+                 usuario_id: existingPostulacion.usuario_id,
+                 titulo: 'Estado de Postulación Actualizado',
+                 mensaje: `Tu postulación para ${existingPostulacion.empresa} ha sido ${data.estado_postulacion.toLowerCase()}.`,
+                 tipo: 'POSTULACION_ESTADO',
+                 referencia: id,
+               }
+             });
+           }
 
     return NextResponse.json({
       ok: true,

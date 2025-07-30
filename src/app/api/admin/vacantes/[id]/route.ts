@@ -6,8 +6,9 @@ import { prisma } from '@/lib/prisma';
 // GET - Obtener una vacante específica
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   try {
     const session = await getServerSession(authOptions);
 
@@ -15,8 +16,6 @@ export async function GET(
     if (!session || (session.user?.rol !== 'ADMIN' && session.user?.rol !== 'SUPER_ADMIN')) {
       return NextResponse.json({ message: 'No autorizado' }, { status: 401 });
     }
-
-    const { id } = params;
 
     // Validar UUID
     if (!id || typeof id !== 'string') {
@@ -62,8 +61,9 @@ export async function GET(
 // PUT - Actualizar vacante completa
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   try {
     const session = await getServerSession(authOptions);
 
@@ -72,7 +72,6 @@ export async function PUT(
       return NextResponse.json({ message: 'No autorizado' }, { status: 401 });
     }
 
-    const { id } = params;
     const body = await request.json();
     const { empresa, cargo, salario, descripcion, email, workers, link, activa } = body;
 
@@ -127,8 +126,9 @@ export async function PUT(
 // PATCH - Actualizar parcialmente (principalmente para cambiar estado)
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   try {
     const session = await getServerSession(authOptions);
 
@@ -137,7 +137,6 @@ export async function PATCH(
       return NextResponse.json({ message: 'No autorizado' }, { status: 401 });
     }
 
-    const { id } = params;
     const body = await request.json();
 
     // Validar UUID
@@ -155,7 +154,17 @@ export async function PATCH(
     }
 
     // Preparar datos para actualización
-    const updateData: any = {
+    const updateData: {
+      actualizado_en: Date;
+      empresa?: string;
+      cargo?: string;
+      salario?: string | null;
+      descripcion?: string | null;
+      email?: string | null;
+      workers?: string | null;
+      link?: string | null;
+      activa?: boolean;
+    } = {
       actualizado_en: new Date(),
     };
 
@@ -188,8 +197,9 @@ export async function PATCH(
 // DELETE - Eliminar vacante
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   try {
     const session = await getServerSession(authOptions);
 
@@ -197,8 +207,6 @@ export async function DELETE(
     if (!session || (session.user?.rol !== 'ADMIN' && session.user?.rol !== 'SUPER_ADMIN')) {
       return NextResponse.json({ message: 'No autorizado' }, { status: 401 });
     }
-
-    const { id } = params;
 
     // Validar UUID
     if (!id || typeof id !== 'string') {

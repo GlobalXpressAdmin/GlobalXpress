@@ -7,9 +7,6 @@ import {
   ChatBubbleLeftRightIcon,
   BellIcon,
   EyeIcon,
-  ClockIcon,
-  CheckCircleIcon,
-  XCircleIcon,
 } from '@heroicons/react/24/outline';
 
 interface DashboardStats {
@@ -67,7 +64,11 @@ export default function AdminDashboard() {
 
       if (activityRes.ok) {
         const activityData = await activityRes.json();
-        setRecentActivity(activityData);
+        if (activityData.ok && activityData.activity) {
+          setRecentActivity(activityData.activity);
+        } else {
+          setRecentActivity([]);
+        }
       }
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
@@ -198,7 +199,7 @@ export default function AdminDashboard() {
           </h3>
           <div className="flow-root">
             <ul className="-mb-8">
-              {recentActivity.length === 0 ? (
+              {!recentActivity || recentActivity.length === 0 ? (
                 <li className="text-center py-8 text-gray-500">
                   No hay actividad reciente
                 </li>
