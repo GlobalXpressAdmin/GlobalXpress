@@ -140,6 +140,8 @@ export default function MisPostulaciones() {
             <option value="ENTREVISTA">Entrevista</option>
             <option value="ACEPTADA">Aceptada</option>
             <option value="RECHAZADA">Rechazada</option>
+            <option value="ADMITIDA">Admitida</option>
+            <option value="DENEGADA">Denegada</option>
           </select>
           <button className="bg-blue-800 text-white px-6 py-2 rounded-lg font-bold text-base shadow hover:bg-blue-900 transition-all" onClick={() => router.push('/todas-vacantes')}>Ver vacantes</button>
         </div>
@@ -178,7 +180,19 @@ export default function MisPostulaciones() {
                     <td className="px-6 py-4">{p.cargo}</td>
                     <td className="px-6 py-4">{p.fecha ? new Date(p.fecha).toLocaleDateString() : ''}</td>
                     <td className="px-6 py-4">
-                      <span className={`px-3 py-1 rounded-full text-xs font-bold ${p.estado === 'APROBADA' || p.estado === 'APROBADO' || p.estado === 'COMPLETADO' ? 'bg-green-100 text-green-700' : p.estado === 'RECHAZADA' || p.estado === 'RECHAZADO' ? 'bg-red-100 text-red-700' : p.estado === 'EN_REVISION' ? 'bg-blue-100 text-blue-700' : p.estado === 'EN_PROCESO' ? 'bg-yellow-100 text-yellow-700' : p.estado === 'FALTAN_DOCUMENTOS' ? 'bg-orange-100 text-orange-700' : 'bg-gray-100 text-gray-700'}`}>{p.estado}</span>
+                      <span className={`px-3 py-1 rounded-full text-xs font-bold ${
+                        p.estado === 'APROBADA' || p.estado === 'APROBADO' || p.estado === 'COMPLETADO' || p.estado === 'ADMITIDA' 
+                          ? 'bg-green-100 text-green-700' 
+                          : p.estado === 'RECHAZADA' || p.estado === 'RECHAZADO' || p.estado === 'DENEGADA' || p.estado === 'DENEGADO'
+                          ? 'bg-red-100 text-red-700' 
+                          : p.estado === 'EN_REVISION' 
+                          ? 'bg-blue-100 text-blue-700' 
+                          : p.estado === 'EN_PROCESO' 
+                          ? 'bg-yellow-100 text-yellow-700' 
+                          : p.estado === 'FALTAN_DOCUMENTOS' 
+                          ? 'bg-orange-100 text-orange-700' 
+                          : 'bg-gray-100 text-gray-700'
+                      }`}>{p.estado}</span>
                     </td>
                     <td className="px-6 py-4 flex gap-2 items-center">
                       <button className="text-blue-700 underline" onClick={() => setModal({ tipo: 'ver', postulacion: p.detalles })}>Ver</button>

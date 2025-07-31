@@ -61,6 +61,7 @@ enum EstadoFormularioPrograma {
   FALTAN_DOCUMENTOS
   CONTACTADO
   COMPLETADO
+  DENEGADO
 }
 
 model PostulacionTrabajo {
@@ -186,6 +187,8 @@ enum EstadoPostulacion {
   APROBADA
   RECHAZADA
   EN_PROCESO
+  ADMITIDA
+  DENEGADA
 }
 
 enum ProgramaEmpleo {

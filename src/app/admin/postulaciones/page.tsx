@@ -91,6 +91,10 @@ export default function AdminPostulaciones() {
         return 'bg-red-100 text-red-800';
       case 'EN_PROCESO':
         return 'bg-purple-100 text-purple-800';
+      case 'ADMITIDA':
+        return 'bg-emerald-100 text-emerald-800';
+      case 'DENEGADA':
+        return 'bg-orange-100 text-orange-800';
       default:
         return 'bg-gray-100 text-gray-800';
     }
@@ -103,6 +107,10 @@ export default function AdminPostulaciones() {
       case 'APROBADA':
         return <CheckCircleIcon className="h-4 w-4" />;
       case 'RECHAZADA':
+        return <XCircleIcon className="h-4 w-4" />;
+      case 'ADMITIDA':
+        return <CheckCircleIcon className="h-4 w-4" />;
+      case 'DENEGADA':
         return <XCircleIcon className="h-4 w-4" />;
       default:
         return <ClockIcon className="h-4 w-4" />;
@@ -165,6 +173,8 @@ export default function AdminPostulaciones() {
               <option value="APROBADA">Aprobada</option>
               <option value="RECHAZADA">Rechazada</option>
               <option value="EN_PROCESO">En Proceso</option>
+              <option value="ADMITIDA">Admitida</option>
+              <option value="DENEGADA">Denegada</option>
             </select>
           </div>
 
@@ -271,6 +281,8 @@ export default function AdminPostulaciones() {
                           <option value="APROBADA">Aprobada</option>
                           <option value="RECHAZADA">Rechazada</option>
                           <option value="EN_PROCESO">En Proceso</option>
+                          <option value="ADMITIDA">Admitida</option>
+                          <option value="DENEGADA">Denegada</option>
                         </select>
                       </div>
                     </td>

@@ -25,7 +25,7 @@ export default function FormulariosPage() {
   const [formularios, setFormularios] = useState<FormularioPrograma[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
-  const [filterEstado, setFilterEstado] = useState<'todos' | 'RECIBIDO' | 'EN_REVISION' | 'EN_PROCESO' | 'APROBADO' | 'RECHAZADO' | 'FALTAN_DOCUMENTOS' | 'CONTACTADO' | 'COMPLETADO'>('todos');
+  const [filterEstado, setFilterEstado] = useState<'todos' | 'RECIBIDO' | 'EN_REVISION' | 'EN_PROCESO' | 'APROBADO' | 'RECHAZADO' | 'FALTAN_DOCUMENTOS' | 'CONTACTADO' | 'COMPLETADO' | 'DENEGADO'>('todos');
   const [filterPrograma, setFilterPrograma] = useState<'todos' | 'VISA_E2' | 'VISA_EB2_NIW' | 'VISA_EB3' | 'VISA_EB5' | 'DUAL_PLACEMENT' | 'GLOBAL_ACADEMIC' | 'SKY_MASTERS'>('todos');
 
   // Verificar permisos de administrador
@@ -99,6 +99,8 @@ export default function FormulariosPage() {
         return 'bg-indigo-100 text-indigo-800';
       case 'COMPLETADO':
         return 'bg-emerald-100 text-emerald-800';
+      case 'DENEGADO':
+        return 'bg-orange-100 text-orange-800';
       default:
         return 'bg-gray-100 text-gray-800';
     }
@@ -270,7 +272,7 @@ export default function FormulariosPage() {
                 <select
                   id="estado"
                   value={filterEstado}
-                  onChange={(e) => setFilterEstado(e.target.value as 'todos' | 'RECIBIDO' | 'EN_REVISION' | 'EN_PROCESO' | 'APROBADO' | 'RECHAZADO' | 'FALTAN_DOCUMENTOS' | 'CONTACTADO' | 'COMPLETADO')}
+                  onChange={(e) => setFilterEstado(e.target.value as 'todos' | 'RECIBIDO' | 'EN_REVISION' | 'EN_PROCESO' | 'APROBADO' | 'RECHAZADO' | 'FALTAN_DOCUMENTOS' | 'CONTACTADO' | 'COMPLETADO' | 'DENEGADO')}
                   className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                 >
                   <option value="todos">Todos los estados</option>
@@ -282,6 +284,7 @@ export default function FormulariosPage() {
                   <option value="FALTAN_DOCUMENTOS">Faltan Documentos</option>
                   <option value="CONTACTADO">Contactado</option>
                   <option value="COMPLETADO">Completado</option>
+                  <option value="DENEGADO">Denegado</option>
                 </select>
               </div>
 
@@ -389,6 +392,7 @@ export default function FormulariosPage() {
                           <option value="FALTAN_DOCUMENTOS">Faltan Documentos</option>
                           <option value="CONTACTADO">Contactado</option>
                           <option value="COMPLETADO">Completado</option>
+                          <option value="DENEGADO">Denegado</option>
                         </select>
                       </td>
                     </tr>
