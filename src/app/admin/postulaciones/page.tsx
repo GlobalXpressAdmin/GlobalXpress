@@ -8,6 +8,9 @@ import {
   XCircleIcon,
   ClockIcon,
   FunnelIcon,
+  PencilIcon,
+  TrashIcon,
+  EnvelopeIcon,
 } from '@heroicons/react/24/outline';
 
 interface Postulacion {
@@ -29,6 +32,22 @@ export default function AdminPostulaciones() {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterEstado, setFilterEstado] = useState('TODOS');
   const [selectedPostulacion, setSelectedPostulacion] = useState<Postulacion | null>(null);
+  
+  // Estados para modales
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showResendModal, setShowResendModal] = useState(false);
+  const [editingPostulacion, setEditingPostulacion] = useState<Postulacion | null>(null);
+  const [deletingPostulacion, setDeletingPostulacion] = useState<Postulacion | null>(null);
+  const [resendingPostulacion, setResendingPostulacion] = useState<Postulacion | null>(null);
+  
+  // Estados para formulario de edición
+  const [editForm, setEditForm] = useState({
+    nombre: '',
+    apellido: '',
+    email: '',
+    telefono: '',
+  });
 
   useEffect(() => {
     fetchPostulaciones();
@@ -65,6 +84,108 @@ export default function AdminPostulaciones() {
       }
     } catch (error) {
       console.error('Error updating postulacion:', error);
+    }
+  };
+
+  // Función para abrir modal de edición
+  const handleEdit = (postulacion: Postulacion) => {
+    setEditingPostulacion(postulacion);
+    setEditForm({
+      nombre: postulacion.nombre || '',
+      apellido: postulacion.apellido || '',
+      email: postulacion.email || '',
+      telefono: postulacion.telefono || '',
+    });
+    setShowEditModal(true);
+  };
+
+  // Función para guardar edición
+  const handleSaveEdit = async () => {
+    if (!editingPostulacion) return;
+
+    try {
+      const response = await fetch(`/api/admin/postulaciones/${editingPostulacion.id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(editForm),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setPostulaciones(postulaciones.map(p => 
+          p.id === editingPostulacion.id ? { ...p, ...data.postulacion } : p
+        ));
+        setShowEditModal(false);
+        setEditingPostulacion(null);
+        alert('Postulación actualizada exitosamente');
+      } else {
+        const error = await response.json();
+        alert(`Error: ${error.error}`);
+      }
+    } catch (error) {
+      console.error('Error updating postulacion:', error);
+      alert('Error al actualizar la postulación');
+    }
+  };
+
+  // Función para abrir modal de eliminación
+  const handleDelete = (postulacion: Postulacion) => {
+    setDeletingPostulacion(postulacion);
+    setShowDeleteModal(true);
+  };
+
+  // Función para confirmar eliminación
+  const handleConfirmDelete = async () => {
+    if (!deletingPostulacion) return;
+
+    try {
+      const response = await fetch(`/api/admin/postulaciones/${deletingPostulacion.id}`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        setPostulaciones(postulaciones.filter(p => p.id !== deletingPostulacion.id));
+        setShowDeleteModal(false);
+        setDeletingPostulacion(null);
+        alert('Postulación eliminada exitosamente');
+      } else {
+        const error = await response.json();
+        alert(`Error: ${error.error}`);
+      }
+    } catch (error) {
+      console.error('Error deleting postulacion:', error);
+      alert('Error al eliminar la postulación');
+    }
+  };
+
+  // Función para abrir modal de reenvío
+  const handleResend = (postulacion: Postulacion) => {
+    setResendingPostulacion(postulacion);
+    setShowResendModal(true);
+  };
+
+  // Función para confirmar reenvío
+  const handleConfirmResend = async () => {
+    if (!resendingPostulacion) return;
+
+    try {
+      const response = await fetch(`/api/admin/postulaciones/${resendingPostulacion.id}`, {
+        method: 'POST',
+      });
+
+      if (response.ok) {
+        setShowResendModal(false);
+        setResendingPostulacion(null);
+        alert('Email reenviado exitosamente');
+      } else {
+        const error = await response.json();
+        alert(`Error: ${error.error}`);
+      }
+    } catch (error) {
+      console.error('Error resending email:', error);
+      alert('Error al reenviar el email');
     }
   };
 
@@ -268,8 +389,30 @@ export default function AdminPostulaciones() {
                         <button
                           onClick={() => setSelectedPostulacion(postulacion)}
                           className="text-blue-600 hover:text-blue-900"
+                          title="Ver detalles"
                         >
                           <EyeIcon className="h-4 w-4" />
+                        </button>
+                        <button
+                          onClick={() => handleEdit(postulacion)}
+                          className="text-green-600 hover:text-green-900"
+                          title="Editar"
+                        >
+                          <PencilIcon className="h-4 w-4" />
+                        </button>
+                        <button
+                          onClick={() => handleResend(postulacion)}
+                          className="text-purple-600 hover:text-purple-900"
+                          title="Reenviar email"
+                        >
+                          <EnvelopeIcon className="h-4 w-4" />
+                        </button>
+                        <button
+                          onClick={() => handleDelete(postulacion)}
+                          className="text-red-600 hover:text-red-900"
+                          title="Eliminar"
+                        >
+                          <TrashIcon className="h-4 w-4" />
                         </button>
                         <select
                           value={postulacion.estado_postulacion}
@@ -348,6 +491,127 @@ export default function AdminPostulaciones() {
                   className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
                 >
                   Cerrar
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal de edición */}
+      {showEditModal && editingPostulacion && (
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+          <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+            <div className="mt-3">
+              <h3 className="text-lg font-medium text-gray-900 mb-4">Editar Postulación</h3>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">Nombre</label>
+                  <input
+                    type="text"
+                    value={editForm.nombre}
+                    onChange={(e) => setEditForm({...editForm, nombre: e.target.value})}
+                    className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">Apellido</label>
+                  <input
+                    type="text"
+                    value={editForm.apellido}
+                    onChange={(e) => setEditForm({...editForm, apellido: e.target.value})}
+                    className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">Email</label>
+                  <input
+                    type="email"
+                    value={editForm.email}
+                    onChange={(e) => setEditForm({...editForm, email: e.target.value})}
+                    className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">Teléfono</label>
+                  <input
+                    type="text"
+                    value={editForm.telefono}
+                    onChange={(e) => setEditForm({...editForm, telefono: e.target.value})}
+                    className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  />
+                </div>
+              </div>
+              <div className="mt-6 flex justify-end space-x-3">
+                <button
+                  onClick={() => setShowEditModal(false)}
+                  className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+                >
+                  Cancelar
+                </button>
+                <button
+                  onClick={handleSaveEdit}
+                  className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700"
+                >
+                  Guardar
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal de confirmación de eliminación */}
+      {showDeleteModal && deletingPostulacion && (
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+          <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+            <div className="mt-3">
+              <h3 className="text-lg font-medium text-gray-900 mb-4">Confirmar Eliminación</h3>
+              <p className="text-sm text-gray-600 mb-4">
+                ¿Está seguro de que desea eliminar la postulación de <strong>{deletingPostulacion.nombre} {deletingPostulacion.apellido}</strong>?
+                Esta acción no se puede deshacer.
+              </p>
+              <div className="flex justify-end space-x-3">
+                <button
+                  onClick={() => setShowDeleteModal(false)}
+                  className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+                >
+                  Cancelar
+                </button>
+                <button
+                  onClick={handleConfirmDelete}
+                  className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700"
+                >
+                  Eliminar
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal de confirmación de reenvío */}
+      {showResendModal && resendingPostulacion && (
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+          <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+            <div className="mt-3">
+              <h3 className="text-lg font-medium text-gray-900 mb-4">Confirmar Reenvío</h3>
+              <p className="text-sm text-gray-600 mb-4">
+                ¿Está seguro de que desea reenviar el email a <strong>{resendingPostulacion.nombre} {resendingPostulacion.apellido}</strong>?
+                Se enviará el email correspondiente al estado actual: <strong>{resendingPostulacion.estado_postulacion}</strong>
+              </p>
+              <div className="flex justify-end space-x-3">
+                <button
+                  onClick={() => setShowResendModal(false)}
+                  className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+                >
+                  Cancelar
+                </button>
+                <button
+                  onClick={handleConfirmResend}
+                  className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-purple-600 hover:bg-purple-700"
+                >
+                  Reenviar
                 </button>
               </div>
             </div>

@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { Search, User, Mail, Phone, FileText, CheckCircle, Clock, AlertCircle } from 'lucide-react';
+import { Search, User, Mail, Phone, FileText, CheckCircle, Clock, AlertCircle, Pencil, Trash2, Send } from 'lucide-react';
 
 interface FormularioPrograma {
   id: number;
@@ -27,6 +27,22 @@ export default function FormulariosPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterEstado, setFilterEstado] = useState<'todos' | 'RECIBIDO' | 'EN_REVISION' | 'EN_PROCESO' | 'APROBADO' | 'RECHAZADO' | 'FALTAN_DOCUMENTOS' | 'CONTACTADO' | 'COMPLETADO' | 'DENEGADO'>('todos');
   const [filterPrograma, setFilterPrograma] = useState<'todos' | 'VISA_E2' | 'VISA_EB2_NIW' | 'VISA_EB3' | 'VISA_EB5' | 'DUAL_PLACEMENT' | 'GLOBAL_ACADEMIC' | 'SKY_MASTERS'>('todos');
+
+  // Estados para modales
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showResendModal, setShowResendModal] = useState(false);
+  const [editingFormulario, setEditingFormulario] = useState<FormularioPrograma | null>(null);
+  const [deletingFormulario, setDeletingFormulario] = useState<FormularioPrograma | null>(null);
+  const [resendingFormulario, setResendingFormulario] = useState<FormularioPrograma | null>(null);
+  
+  // Estados para formulario de edición
+  const [editForm, setEditForm] = useState({
+    nombre: '',
+    apellido: '',
+    email: '',
+    telefono: '',
+  });
 
   // Verificar permisos de administrador
   useEffect(() => {
@@ -78,6 +94,108 @@ export default function FormulariosPage() {
     } catch (error) {
       console.error('Error al actualizar estado:', error);
       alert('Error al actualizar el estado');
+    }
+  };
+
+  // Función para abrir modal de edición
+  const handleEdit = (formulario: FormularioPrograma) => {
+    setEditingFormulario(formulario);
+    setEditForm({
+      nombre: formulario.nombre || '',
+      apellido: formulario.apellido || '',
+      email: formulario.email || '',
+      telefono: formulario.telefono || '',
+    });
+    setShowEditModal(true);
+  };
+
+  // Función para guardar edición
+  const handleSaveEdit = async () => {
+    if (!editingFormulario) return;
+
+    try {
+      const response = await fetch(`/api/admin/formularios/${editingFormulario.id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(editForm),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setFormularios(formularios.map(f => 
+          f.id === editingFormulario.id ? { ...f, ...data.formulario } : f
+        ));
+        setShowEditModal(false);
+        setEditingFormulario(null);
+        alert('Formulario actualizado exitosamente');
+      } else {
+        const error = await response.json();
+        alert(`Error: ${error.error}`);
+      }
+    } catch (error) {
+      console.error('Error updating formulario:', error);
+      alert('Error al actualizar el formulario');
+    }
+  };
+
+  // Función para abrir modal de eliminación
+  const handleDelete = (formulario: FormularioPrograma) => {
+    setDeletingFormulario(formulario);
+    setShowDeleteModal(true);
+  };
+
+  // Función para confirmar eliminación
+  const handleConfirmDelete = async () => {
+    if (!deletingFormulario) return;
+
+    try {
+      const response = await fetch(`/api/admin/formularios/${deletingFormulario.id}`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        setFormularios(formularios.filter(f => f.id !== deletingFormulario.id));
+        setShowDeleteModal(false);
+        setDeletingFormulario(null);
+        alert('Formulario eliminado exitosamente');
+      } else {
+        const error = await response.json();
+        alert(`Error: ${error.error}`);
+      }
+    } catch (error) {
+      console.error('Error deleting formulario:', error);
+      alert('Error al eliminar el formulario');
+    }
+  };
+
+  // Función para abrir modal de reenvío
+  const handleResend = (formulario: FormularioPrograma) => {
+    setResendingFormulario(formulario);
+    setShowResendModal(true);
+  };
+
+  // Función para confirmar reenvío
+  const handleConfirmResend = async () => {
+    if (!resendingFormulario) return;
+
+    try {
+      const response = await fetch(`/api/admin/formularios/${resendingFormulario.id}`, {
+        method: 'POST',
+      });
+
+      if (response.ok) {
+        setShowResendModal(false);
+        setResendingFormulario(null);
+        alert('Email reenviado exitosamente');
+      } else {
+        const error = await response.json();
+        alert(`Error: ${error.error}`);
+      }
+    } catch (error) {
+      console.error('Error resending email:', error);
+      alert('Error al reenviar el email');
     }
   };
 
@@ -379,21 +497,44 @@ export default function FormulariosPage() {
                         {new Date(formulario.fechaEnvio).toLocaleDateString()}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <select
-                          value={formulario.estado}
-                          onChange={(e) => handleUpdateEstado(formulario.id, e.target.value)}
-                          className="text-sm border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                        >
-                          <option value="RECIBIDO">Recibido</option>
-                          <option value="EN_REVISION">En Revisión</option>
-                          <option value="EN_PROCESO">En Proceso</option>
-                          <option value="APROBADO">Aprobado</option>
-                          <option value="RECHAZADO">Rechazado</option>
-                          <option value="FALTAN_DOCUMENTOS">Faltan Documentos</option>
-                          <option value="CONTACTADO">Contactado</option>
-                          <option value="COMPLETADO">Completado</option>
-                          <option value="DENEGADO">Denegado</option>
-                        </select>
+                        <div className="flex space-x-2">
+                          <button
+                            onClick={() => handleEdit(formulario)}
+                            className="text-green-600 hover:text-green-900"
+                            title="Editar"
+                          >
+                            <Pencil className="h-4 w-4" />
+                          </button>
+                          <button
+                            onClick={() => handleResend(formulario)}
+                            className="text-purple-600 hover:text-purple-900"
+                            title="Reenviar email"
+                          >
+                            <Send className="h-4 w-4" />
+                          </button>
+                          <button
+                            onClick={() => handleDelete(formulario)}
+                            className="text-red-600 hover:text-red-900"
+                            title="Eliminar"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </button>
+                          <select
+                            value={formulario.estado}
+                            onChange={(e) => handleUpdateEstado(formulario.id, e.target.value)}
+                            className="text-sm border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                          >
+                            <option value="RECIBIDO">Recibido</option>
+                            <option value="EN_REVISION">En Revisión</option>
+                            <option value="EN_PROCESO">En Proceso</option>
+                            <option value="APROBADO">Aprobado</option>
+                            <option value="RECHAZADO">Rechazado</option>
+                            <option value="FALTAN_DOCUMENTOS">Faltan Documentos</option>
+                            <option value="CONTACTADO">Contactado</option>
+                            <option value="COMPLETADO">Completado</option>
+                            <option value="DENEGADO">Denegado</option>
+                          </select>
+                        </div>
                       </td>
                     </tr>
                   ))}
@@ -408,6 +549,127 @@ export default function FormulariosPage() {
             )}
           </div>
         </div>
+
+        {/* Modal de edición */}
+        {showEditModal && editingFormulario && (
+          <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+            <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+              <div className="mt-3">
+                <h3 className="text-lg font-medium text-gray-900 mb-4">Editar Formulario</h3>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">Nombre</label>
+                    <input
+                      type="text"
+                      value={editForm.nombre}
+                      onChange={(e) => setEditForm({...editForm, nombre: e.target.value})}
+                      className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">Apellido</label>
+                    <input
+                      type="text"
+                      value={editForm.apellido}
+                      onChange={(e) => setEditForm({...editForm, apellido: e.target.value})}
+                      className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">Email</label>
+                    <input
+                      type="email"
+                      value={editForm.email}
+                      onChange={(e) => setEditForm({...editForm, email: e.target.value})}
+                      className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">Teléfono</label>
+                    <input
+                      type="text"
+                      value={editForm.telefono}
+                      onChange={(e) => setEditForm({...editForm, telefono: e.target.value})}
+                      className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                    />
+                  </div>
+                </div>
+                <div className="mt-6 flex justify-end space-x-3">
+                  <button
+                    onClick={() => setShowEditModal(false)}
+                    className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+                  >
+                    Cancelar
+                  </button>
+                  <button
+                    onClick={handleSaveEdit}
+                    className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700"
+                  >
+                    Guardar
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Modal de confirmación de eliminación */}
+        {showDeleteModal && deletingFormulario && (
+          <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+            <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+              <div className="mt-3">
+                <h3 className="text-lg font-medium text-gray-900 mb-4">Confirmar Eliminación</h3>
+                <p className="text-sm text-gray-600 mb-4">
+                  ¿Está seguro de que desea eliminar el formulario de <strong>{deletingFormulario.nombre} {deletingFormulario.apellido}</strong>?
+                  Esta acción no se puede deshacer.
+                </p>
+                <div className="flex justify-end space-x-3">
+                  <button
+                    onClick={() => setShowDeleteModal(false)}
+                    className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+                  >
+                    Cancelar
+                  </button>
+                  <button
+                    onClick={handleConfirmDelete}
+                    className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700"
+                  >
+                    Eliminar
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Modal de confirmación de reenvío */}
+        {showResendModal && resendingFormulario && (
+          <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+            <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+              <div className="mt-3">
+                <h3 className="text-lg font-medium text-gray-900 mb-4">Confirmar Reenvío</h3>
+                <p className="text-sm text-gray-600 mb-4">
+                  ¿Está seguro de que desea reenviar el email a <strong>{resendingFormulario.nombre} {resendingFormulario.apellido}</strong>?
+                  Se enviará el email correspondiente al estado actual: <strong>{resendingFormulario.estado}</strong>
+                </p>
+                <div className="flex justify-end space-x-3">
+                  <button
+                    onClick={() => setShowResendModal(false)}
+                    className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+                  >
+                    Cancelar
+                  </button>
+                  <button
+                    onClick={handleConfirmResend}
+                    className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-purple-600 hover:bg-purple-700"
+                  >
+                    Reenviar
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
