@@ -1,21 +1,19 @@
 'use client';
 
 import Link from "next/link";
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useRef } from "react";
 import { 
   Search, 
   Filter, 
-  MapPin, 
   Building2, 
   DollarSign, 
-  Users, 
-  Calendar,
+  Briefcase,
   X,
   ChevronDown,
   SortAsc,
-  SortDesc,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  SlidersHorizontal
 } from "lucide-react";
 
 interface Vacante {
@@ -41,7 +39,7 @@ export default function TodasVacantes() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCompany, setSelectedCompany] = useState<string>('');
   const [selectedSalary, setSelectedSalary] = useState<string>('');
-  const [selectedWorkers, setSelectedWorkers] = useState<string>('');
+  const [selectedCargo, setSelectedCargo] = useState<string>('');
   const [sortBy, setSortBy] = useState<SortOption>('recent');
   const [showFilters, setShowFilters] = useState(false);
   const [showSortMenu, setShowSortMenu] = useState(false);
@@ -49,6 +47,10 @@ export default function TodasVacantes() {
   // Estados para paginación
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(12);
+
+  // Refs para manejar clicks fuera de los menús
+  const sortMenuRef = useRef<HTMLDivElement>(null);
+  const filtersRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const fetchVacantes = async () => {
@@ -68,6 +70,23 @@ export default function TodasVacantes() {
     fetchVacantes();
   }, []);
 
+  // Manejar clicks fuera de los menús
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (sortMenuRef.current && !sortMenuRef.current.contains(event.target as Node)) {
+        setShowSortMenu(false);
+      }
+      if (filtersRef.current && !filtersRef.current.contains(event.target as Node)) {
+        setShowFilters(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
   // Obtener opciones únicas para filtros
   const uniqueCompanies = useMemo(() => {
     const companies = vacantes.map(v => v.empresa).filter(Boolean);
@@ -79,9 +98,9 @@ export default function TodasVacantes() {
     return [...new Set(salaries)].sort();
   }, [vacantes]);
 
-  const uniqueWorkers = useMemo(() => {
-    const workers = vacantes.map(v => v.workers).filter(Boolean);
-    return [...new Set(workers)].sort();
+  const uniqueCargos = useMemo(() => {
+    const cargos = vacantes.map(v => v.cargo).filter(Boolean);
+    return [...new Set(cargos)].sort();
   }, [vacantes]);
 
   // Filtrar y ordenar vacantes
@@ -99,10 +118,10 @@ export default function TodasVacantes() {
       // Filtro por salario
       const matchesSalary = selectedSalary === '' || vacante.salario === selectedSalary;
 
-      // Filtro por workers
-      const matchesWorkers = selectedWorkers === '' || vacante.workers === selectedWorkers;
+      // Filtro por cargo
+      const matchesCargo = selectedCargo === '' || vacante.cargo === selectedCargo;
 
-      return matchesSearch && matchesCompany && matchesSalary && matchesWorkers;
+      return matchesSearch && matchesCompany && matchesSalary && matchesCargo;
     });
 
     // Ordenar vacantes
@@ -136,7 +155,7 @@ export default function TodasVacantes() {
     }
 
     return filtered;
-  }, [vacantes, searchTerm, selectedCompany, selectedSalary, selectedWorkers, sortBy]);
+  }, [vacantes, searchTerm, selectedCompany, selectedSalary, selectedCargo, sortBy]);
 
   // Calcular paginación
   const totalPages = Math.ceil(filteredAndSortedVacantes.length / itemsPerPage);
@@ -147,20 +166,20 @@ export default function TodasVacantes() {
   // Resetear página cuando cambian los filtros
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchTerm, selectedCompany, selectedSalary, selectedWorkers, sortBy]);
+  }, [searchTerm, selectedCompany, selectedSalary, selectedCargo, sortBy]);
 
   // Limpiar todos los filtros
   const clearAllFilters = () => {
     setSearchTerm('');
     setSelectedCompany('');
     setSelectedSalary('');
-    setSelectedWorkers('');
+    setSelectedCargo('');
     setSortBy('recent');
     setCurrentPage(1);
   };
 
   // Verificar si hay filtros activos
-  const hasActiveFilters = searchTerm || selectedCompany || selectedSalary || selectedWorkers || sortBy !== 'recent';
+  const hasActiveFilters = searchTerm || selectedCompany || selectedSalary || selectedCargo || sortBy !== 'recent';
 
   const getSortLabel = (sort: SortOption) => {
     switch (sort) {
@@ -208,6 +227,12 @@ export default function TodasVacantes() {
     }
     
     return pages;
+  };
+
+  // Manejar selección de ordenamiento
+  const handleSortSelect = (sortOption: SortOption) => {
+    setSortBy(sortOption);
+    setShowSortMenu(false);
   };
 
   if (loading) {
@@ -273,13 +298,13 @@ export default function TodasVacantes() {
             onClick={() => setShowFilters(!showFilters)}
             className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
           >
-            <Filter className="h-4 w-4" />
+            <SlidersHorizontal className="h-4 w-4" />
             <span>Filtros</span>
             <ChevronDown className={`h-4 w-4 transition-transform ${showFilters ? 'rotate-180' : ''}`} />
           </button>
 
           {/* Ordenamiento */}
-          <div className="relative">
+          <div className="relative" ref={sortMenuRef}>
             <button
               onClick={() => setShowSortMenu(!showSortMenu)}
               className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
@@ -291,7 +316,7 @@ export default function TodasVacantes() {
 
             {/* Menú de ordenamiento */}
             {showSortMenu && (
-              <div className="absolute right-0 top-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg z-10 min-w-[200px]">
+              <div className="absolute right-0 top-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg z-20 min-w-[200px]">
                 {[
                   { value: 'recent', label: 'Más recientes' },
                   { value: 'oldest', label: 'Más antiguas' },
@@ -302,10 +327,7 @@ export default function TodasVacantes() {
                 ].map((option) => (
                   <button
                     key={option.value}
-                    onClick={() => {
-                      setSortBy(option.value as SortOption);
-                      setShowSortMenu(false);
-                    }}
+                    onClick={() => handleSortSelect(option.value as SortOption)}
                     className={`w-full text-left px-4 py-2 hover:bg-gray-50 ${
                       sortBy === option.value ? 'bg-[#0D4A7A] text-white' : ''
                     }`}
@@ -331,18 +353,18 @@ export default function TodasVacantes() {
 
         {/* Panel de filtros expandible */}
         {showFilters && (
-          <div className="bg-gray-50 rounded-lg p-6 mb-6">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl p-6 mb-6 shadow-sm" ref={filtersRef}>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {/* Filtro por empresa */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  <Building2 className="inline h-4 w-4 mr-1" />
+              <div className="space-y-2">
+                <label className="flex items-center gap-2 text-sm font-semibold text-gray-700">
+                  <Building2 className="h-4 w-4 text-[#0D4A7A]" />
                   Empresa
                 </label>
                 <select
                   value={selectedCompany}
                   onChange={(e) => setSelectedCompany(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0D4A7A] focus:border-[#0D4A7A]"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0D4A7A] focus:border-[#0D4A7A] transition-colors bg-white"
                 >
                   <option value="">Todas las empresas</option>
                   {uniqueCompanies.map((company) => (
@@ -354,15 +376,15 @@ export default function TodasVacantes() {
               </div>
 
               {/* Filtro por salario */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  <DollarSign className="inline h-4 w-4 mr-1" />
+              <div className="space-y-2">
+                <label className="flex items-center gap-2 text-sm font-semibold text-gray-700">
+                  <DollarSign className="h-4 w-4 text-[#0D4A7A]" />
                   Salario
                 </label>
                 <select
                   value={selectedSalary}
                   onChange={(e) => setSelectedSalary(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0D4A7A] focus:border-[#0D4A7A]"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0D4A7A] focus:border-[#0D4A7A] transition-colors bg-white"
                 >
                   <option value="">Todos los salarios</option>
                   {uniqueSalaries.map((salary) => (
@@ -373,21 +395,21 @@ export default function TodasVacantes() {
                 </select>
               </div>
 
-              {/* Filtro por workers */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  <Users className="inline h-4 w-4 mr-1" />
-                  Workers
+              {/* Filtro por cargo */}
+              <div className="space-y-2">
+                <label className="flex items-center gap-2 text-sm font-semibold text-gray-700">
+                  <Briefcase className="h-4 w-4 text-[#0D4A7A]" />
+                  Cargo
                 </label>
                 <select
-                  value={selectedWorkers}
-                  onChange={(e) => setSelectedWorkers(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0D4A7A] focus:border-[#0D4A7A]"
+                  value={selectedCargo}
+                  onChange={(e) => setSelectedCargo(e.target.value)}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0D4A7A] focus:border-[#0D4A7A] transition-colors bg-white"
                 >
-                  <option value="">Todos los workers</option>
-                  {uniqueWorkers.map((worker) => (
-                    <option key={worker} value={worker}>
-                      {worker}
+                  <option value="">Todos los cargos</option>
+                  {uniqueCargos.map((cargo) => (
+                    <option key={cargo} value={cargo}>
+                      {cargo}
                     </option>
                   ))}
                 </select>
@@ -400,33 +422,33 @@ export default function TodasVacantes() {
         {hasActiveFilters && (
           <div className="flex flex-wrap gap-2 mb-4">
             {searchTerm && (
-              <span className="inline-flex items-center gap-1 px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">
+              <span className="inline-flex items-center gap-1 px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
                 Búsqueda: "{searchTerm}"
-                <button onClick={() => setSearchTerm('')} className="ml-1">
+                <button onClick={() => setSearchTerm('')} className="ml-1 hover:text-blue-600">
                   <X className="h-3 w-3" />
                 </button>
               </span>
             )}
             {selectedCompany && (
-              <span className="inline-flex items-center gap-1 px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">
+              <span className="inline-flex items-center gap-1 px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium">
                 Empresa: {selectedCompany}
-                <button onClick={() => setSelectedCompany('')} className="ml-1">
+                <button onClick={() => setSelectedCompany('')} className="ml-1 hover:text-green-600">
                   <X className="h-3 w-3" />
                 </button>
               </span>
             )}
             {selectedSalary && (
-              <span className="inline-flex items-center gap-1 px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm">
+              <span className="inline-flex items-center gap-1 px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm font-medium">
                 Salario: {selectedSalary}
-                <button onClick={() => setSelectedSalary('')} className="ml-1">
+                <button onClick={() => setSelectedSalary('')} className="ml-1 hover:text-yellow-600">
                   <X className="h-3 w-3" />
                 </button>
               </span>
             )}
-            {selectedWorkers && (
-              <span className="inline-flex items-center gap-1 px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm">
-                Workers: {selectedWorkers}
-                <button onClick={() => setSelectedWorkers('')} className="ml-1">
+            {selectedCargo && (
+              <span className="inline-flex items-center gap-1 px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm font-medium">
+                Cargo: {selectedCargo}
+                <button onClick={() => setSelectedCargo('')} className="ml-1 hover:text-purple-600">
                   <X className="h-3 w-3" />
                 </button>
               </span>
@@ -536,17 +558,6 @@ export default function TodasVacantes() {
             </div>
           )}
         </>
-      )}
-
-      {/* Cerrar menús al hacer clic fuera */}
-      {(showFilters || showSortMenu) && (
-        <div 
-          className="fixed inset-0 z-10" 
-          onClick={() => {
-            setShowFilters(false);
-            setShowSortMenu(false);
-          }}
-        />
       )}
     </section>
   );
