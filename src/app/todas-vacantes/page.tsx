@@ -423,7 +423,7 @@ export default function TodasVacantes() {
           <div className="flex flex-wrap gap-2 mb-4">
             {searchTerm && (
               <span className="inline-flex items-center gap-1 px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
-                Búsqueda: "{searchTerm}"
+                Búsqueda: &quot;{searchTerm}&quot;
                 <button onClick={() => setSearchTerm('')} className="ml-1 hover:text-blue-600">
                   <X className="h-3 w-3" />
                 </button>
