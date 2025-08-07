@@ -44,6 +44,7 @@ export async function GET(request: NextRequest) {
         workers: true,
         link: true,
         creado_en: true,
+        activa: true,
       }
     });
 
