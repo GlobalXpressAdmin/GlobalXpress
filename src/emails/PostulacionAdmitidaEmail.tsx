@@ -33,7 +33,7 @@ export const PostulacionAdmitidaEmail: React.FC<PostulacionAdmitidaEmailProps> =
       </Text>
 
       <Text style={text}>
-        Este es un momento importante en su proceso de aplicación. Nuestro equipo se pondrá en contacto con usted en los próximos días para coordinar los siguientes pasos.
+        Le informamos que, para continuar con su proceso de selección, deberá remitir en un plazo máximo de tres (3) días hábiles los siguientes documentos:
       </Text>
 
       {/* Detalles de la Postulación */}
@@ -50,17 +50,27 @@ export const PostulacionAdmitidaEmail: React.FC<PostulacionAdmitidaEmailProps> =
         </Text>
       </Section>
 
-      {/* Próximos Pasos */}
+      {/* Documentos Requeridos */}
       <Section style={stepsCard}>
-        <Heading style={cardTitle}>Próximos pasos</Heading>
-        <Text style={stepText}>1. Recibirá una llamada de nuestro equipo de coordinación</Text>
-        <Text style={stepText}>2. Se programará una entrevista detallada</Text>
-        <Text style={stepText}>3. Se le proporcionará información sobre documentación requerida</Text>
-        <Text style={stepText}>4. Se establecerá un cronograma de seguimiento</Text>
+        <Heading style={cardTitle}>Documentos requeridos</Heading>
+        <Text style={stepText}>1. Fotocopia del pasaporte o documento nacional de identidad.</Text>
+        <Text style={stepText}>2. Certificados laborales que acrediten la experiencia relacionada con el cargo o vacante a la que aspira.</Text>
+        <Text style={stepText}>3. Formulario de hoja de vida, diligenciado a través de su abogado asignado.</Text>
+        <Text style={stepText}>4. Certificado de antecedentes penales o documento equivalente, según la legislación de su país de origen.</Text>
+        <Text style={stepText}>5. Comprobante de pago de la tasa de servicio outsourcing de Colombo & Hurd, Immigration Attorneys.</Text>
       </Section>
 
       <Text style={text}>
-        Si tiene alguna pregunta o necesita información adicional, no dude en contactarnos a través de nuestros canales oficiales.
+        <strong>📧 Todos los documentos deberán ser enviados al correo electrónico:</strong><br />
+        <strong style={highlight}>jobs@globalxpresscol.com</strong>
+      </Text>
+
+      <Text style={text}>
+        Una vez verificados los documentos, le informaremos si han sido aprobados o si es necesario realizar ajustes para continuar con su proceso.
+      </Text>
+
+      <Text style={text}>
+        Nuestro abogado asignado se pondrá en contacto con usted en los próximos días para coordinar los siguientes pasos y brindarle toda la asistencia necesaria.
       </Text>
 
       <Text style={closing}>
