@@ -131,13 +131,7 @@ export default function Contacto() {
                   <div className="text-lg text-[#1161A9] font-bold">+1 (949) 5947776</div>
                 </div>
               </div>
-              <div className="bg-[#f1f8fe] rounded-2xl p-6 flex items-center gap-4 shadow">
-                <MapPinIcon className="w-9 h-9 text-[#00E6F6]" />
-                <div>
-                  <div className="text-base text-gray-700 font-semibold">Dirección</div>
-                  <div className="text-lg text-[#1161A9] font-bold">1146 E. Green St. Pasadena, CA 91106</div>
-                </div>
-              </div>
+
             </div>
             {/* Oficinas */}
             <div className="flex flex-col gap-6">
@@ -145,14 +139,7 @@ export default function Contacto() {
                 <MapPinIcon className="w-9 h-9 text-[#00E6F6] mt-1" />
                 <div>
                   <div className="text-base text-gray-700 font-semibold mb-1">Oficina principal</div>
-                  <div className="text-[#1161A9] font-bold">Carrera 45 N.o 108-27, Torre 2, Oficina 502,<br />Edificio Paralelo 108, Bogotá, COL</div>
-                </div>
-              </div>
-              <div className="bg-[#f1f8fe] rounded-2xl p-6 flex items-start gap-4 shadow">
-                <MapPinIcon className="w-9 h-9 text-[#00E6F6] mt-1" />
-                <div>
-                  <div className="text-base text-gray-700 font-semibold mb-1">Oficina USA</div>
-                  <div className="text-[#1161A9] font-bold">7771 W Oakland Park Blvd,<br />Sunrise, Florida 33351</div>
+                  <div className="text-[#1161A9] font-bold">1146 E. Green St. Pasadena, CA 91106</div>
                 </div>
               </div>
               <div className="bg-[#f1f8fe] rounded-2xl p-6 flex items-start gap-4 shadow">
